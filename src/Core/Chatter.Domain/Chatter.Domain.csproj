@@ -7,11 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Chatter.Identity\Chatter.Identity.csproj" />
+      <PackageReference Include="MongoDB.Bson" Version="2.21.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MongoDB.Bson" Version="2.21.0" />
+      <Reference Include="Microsoft.Extensions.Identity.Stores">
+        <HintPath>..\..\..\..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\6.0.21\Microsoft.Extensions.Identity.Stores.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

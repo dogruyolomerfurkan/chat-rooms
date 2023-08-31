@@ -1,11 +1,10 @@
 using Chatter.Common.Settings;
-using Chatter.Domain.Entities.NoSql;
 using Chatter.Domain.Entities.NoSql.Base;
-using Chatter.Persistence.Base;
+using Chatter.Persistence.RepositoryManagement.Base;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace Chatter.Persistence.NoSql;
+namespace Chatter.Persistence.RepositoryManagement.NoSql.Base;
 
 public class NoSqlBaseRepository<TEntity> : IBaseRepository<TEntity, string>
     where TEntity : BaseEntity, new()

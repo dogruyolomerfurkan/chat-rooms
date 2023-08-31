@@ -1,4 +1,4 @@
-namespace Chatter.Domain.Entities.EFCore.Base;
+namespace Chatter.Domain.Entities.EFCore.Application.Base;
 
 public abstract class BaseEntity<TKey>
 {

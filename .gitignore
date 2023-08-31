@@ -423,3 +423,6 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+# Html Templates
+/free-templates/*

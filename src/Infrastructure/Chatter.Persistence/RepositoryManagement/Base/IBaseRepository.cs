@@ -1,4 +1,4 @@
-namespace Chatter.Persistence.Base;
+namespace Chatter.Persistence.RepositoryManagement.Base;
 
 public interface IBaseRepository<TEntity, TKey>
 {

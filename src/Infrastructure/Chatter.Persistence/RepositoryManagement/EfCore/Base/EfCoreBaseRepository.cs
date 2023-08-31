@@ -1,8 +1,8 @@
-using Chatter.Domain.Entities.EFCore.Base;
-using Chatter.Persistence.Base;
+using Chatter.Domain.Entities.EFCore.Application.Base;
+using Chatter.Persistence.RepositoryManagement.Base;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chatter.Persistence.EfCore;
+namespace Chatter.Persistence.RepositoryManagement.EfCore.Base;
 
 public class EfCoreBaseRepository<TEntity, TKey> : IBaseRepository<TEntity, TKey>
     where TEntity : BaseEntity<TKey>, new()

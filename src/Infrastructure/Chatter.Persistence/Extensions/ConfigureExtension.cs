@@ -1,23 +1,30 @@
-using Chatter.Identity.Context;
-using Chatter.Identity.Entities;
+using Chatter.Domain.Entities.EFCore.Identity;
+using Chatter.Persistence.Application.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Chatter.Identity.Extensions;
+namespace Chatter.Persistence.Extensions;
 
 public static class ConfigureExtension
 {
-    
-    public static void ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)
+    public static void ConfigureDatabase(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+    }
+      public static void ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.TryAddScoped<SignInManager<ChatterUser>>();
         services.AddIdentityCore<ChatterUser>()
             .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
         
-        services.AddDbContext<ApplicationIdentityDbContext>(options =>
+        services.
+            AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("IdentityDbConnection")));
         //örnek
             // .AddPasswordValidator<CustomPasswordValidation>()
@@ -40,11 +47,11 @@ public static class ConfigureExtension
             //TODO: Email gönderme işlemi yapılınca burası true olarak değiştirilecek
             options.SignIn.RequireConfirmedEmail = false;
             options.SignIn.RequireConfirmedPhoneNumber = false;
+            options.SignIn.RequireConfirmedAccount = true;
         });
-
     }
     
-    public static void AddDefaultTokenProviders(this IdentityBuilder builder) 
+    private static void AddDefaultTokenProviders(this IdentityBuilder builder) 
     { 
         var userType = builder.UserType; 
         var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(userType); 

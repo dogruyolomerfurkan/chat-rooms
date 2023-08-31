@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Chatter.Identity.Migrations
+namespace Chatter.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateIdentity : Migration
+    public partial class CreatedApplicationEntities : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,6 +51,25 @@ namespace Chatter.Identity.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Rooms",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsPublic = table.Column<bool>(type: "bit", nullable: false),
+                    Capacity = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rooms", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -159,6 +178,92 @@ namespace Chatter.Identity.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Invitations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoomId = table.Column<int>(type: "int", nullable: false),
+                    SenderUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    InvitedUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Invitations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Invitations_AspNetUsers_InvitedUserId",
+                        column: x => x.InvitedUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Invitations_AspNetUsers_SenderUserId",
+                        column: x => x.SenderUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Invitations_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JTable_RoomBlockedUsers",
+                columns: table => new
+                {
+                    BlockedRoomsId = table.Column<int>(type: "int", nullable: false),
+                    BlockedUsersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JTable_RoomBlockedUsers", x => new { x.BlockedRoomsId, x.BlockedUsersId });
+                    table.ForeignKey(
+                        name: "FK_JTable_RoomBlockedUsers_AspNetUsers_BlockedUsersId",
+                        column: x => x.BlockedUsersId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_JTable_RoomBlockedUsers_Rooms_BlockedRoomsId",
+                        column: x => x.BlockedRoomsId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JTable_RoomUsers",
+                columns: table => new
+                {
+                    ChatRoomsId = table.Column<int>(type: "int", nullable: false),
+                    UsersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JTable_RoomUsers", x => new { x.ChatRoomsId, x.UsersId });
+                    table.ForeignKey(
+                        name: "FK_JTable_RoomUsers_AspNetUsers_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_JTable_RoomUsers_Rooms_ChatRoomsId",
+                        column: x => x.ChatRoomsId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -197,6 +302,31 @@ namespace Chatter.Identity.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invitations_InvitedUserId",
+                table: "Invitations",
+                column: "InvitedUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invitations_RoomId",
+                table: "Invitations",
+                column: "RoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invitations_SenderUserId",
+                table: "Invitations",
+                column: "SenderUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JTable_RoomBlockedUsers_BlockedUsersId",
+                table: "JTable_RoomBlockedUsers",
+                column: "BlockedUsersId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JTable_RoomUsers_UsersId",
+                table: "JTable_RoomUsers",
+                column: "UsersId");
         }
 
         /// <inheritdoc />
@@ -218,10 +348,22 @@ namespace Chatter.Identity.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Invitations");
+
+            migrationBuilder.DropTable(
+                name: "JTable_RoomBlockedUsers");
+
+            migrationBuilder.DropTable(
+                name: "JTable_RoomUsers");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Rooms");
         }
     }
 }
