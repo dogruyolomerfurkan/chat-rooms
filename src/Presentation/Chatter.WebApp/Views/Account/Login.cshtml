@@ -1,0 +1,44 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Chatter.WebApp.Models.Account.LoginDto
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        form {
+            width: 300px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input {
+            padding: 5px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 20px;
+            align-self: center;
+        }
+    </style>
+</head>
+<body>
+<form asp-controller="Account" asp-action="Login" method="post">
+    <label asp-for="@Model.Email">Email:</label>
+    <input asp-for="@Model.Email" type="text" id="email" name="email" required>
+
+    <label asp-for="@Model.Password">Password:</label>
+    <input asp-for="@Model.Password" type="password" id="password" name="password" required>
+
+    <button type="submit">Login</button>
+</form>
+</body>
+</html>
