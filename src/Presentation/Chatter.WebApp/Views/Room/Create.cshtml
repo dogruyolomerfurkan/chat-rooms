@@ -1,0 +1,21 @@
+@model Chatter.Application.Dtos.Rooms.CreateRoomInput
+
+<h2>Create Room</h2>
+<form asp-action="Create" asp-controller="Room" method="post">
+    <div class="form-group">
+        <label for="Title">Title</label>
+        <input type="text" class="form-control" id="Title" name="Title" asp-for="Title" required>
+    </div>
+    <div class="form-group">
+        <label for="IsPublic">Is Public</label>
+        <select class="form-control" id="IsPublic" name="IsPublic" asp-for="IsPublic">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="Capacity">Capacity</label>
+        <input type="number" class="form-control" id="Capacity" name="Capacity" asp-for="Capacity" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>

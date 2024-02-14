@@ -1,13 +1,15 @@
-﻿
+﻿@using Chatter.WebApp.Extensions
+
 <!DOCTYPE html>
 
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>ShopApp</title>
+    <title>Chatter</title>
     <link rel="stylesheet" href="/modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+    @RenderSection("Css", false)
 
 </head>
 <body>
@@ -16,6 +18,7 @@
     <div class="container pt-100 mb-5">
         @if(TempData["message"] != null)
         {
+             @Html.Partial("_resultmessage", TempData.Get<ResultMessage>("message"))
             @* <partial name="_resultmessage" model="@(TempData.Get<ResultMessage>("message"))" ></partial> *@
         }
       

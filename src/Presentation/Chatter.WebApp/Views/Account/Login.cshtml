@@ -1,44 +1,46 @@
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model Chatter.WebApp.Models.Account.LoginDto
+@{
+    ViewData["Title"] = "Login";
+}
+@section Script
+{
+    <script src="~/modules/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/modules/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Form</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        form {
-            width: 300px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            margin-top: 10px;
-        }
-        input {
-            padding: 5px;
-            margin-top: 5px;
-        }
-        button {
-            margin-top: 20px;
-            align-self: center;
-        }
-    </style>
-</head>
-<body>
-<form asp-controller="Account" asp-action="Login" method="post">
-    <label asp-for="@Model.Email">Email:</label>
-    <input asp-for="@Model.Email" type="text" id="email" name="email" required>
+<h1>Login</h1>
+<hr />
 
-    <label asp-for="@Model.Password">Password:</label>
-    <input asp-for="@Model.Password" type="password" id="password" name="password" required>
+<div class="row">
+    <div class="col-md-8">
+        @if( ViewBag.ErrorMesage != null)
+        {
+            <div class="text-danger">@ViewBag.ErrorMesage</div>
+        }
 
-    <button type="submit">Login</button>
-</form>
-</body>
-</html>
+        <form asp-controller="Account" asp-action="Login" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group row">
+                <label for="" class="col-md-2 col-form-label">Email</label>
+                <div class="col-md-10">
+                    <input asp-for="@Model.Email"  class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-md-2 col-form-label">Parola</label>
+                <div class="col-md-10">
+                    <input asp-for="@Model.Password"  type="password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+            </div>
+          
+             <div class="form-group row">
+                <div class="col-md-10 offset-md-2">
+                    <button type="submit" class="btn btn-primary">Giriş Yap</button>
+                </div>
+            </div>
+            
+        </form>
+    </div>
+</div>

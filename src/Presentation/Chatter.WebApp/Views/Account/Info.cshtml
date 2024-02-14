@@ -1,0 +1,13 @@
+@{
+
+    if (User.Identity.IsAuthenticated)
+    {
+        <h1>Hoşgeldin
+            @User.Identity.Name 
+        </h1>
+    }
+    else
+    {
+        <h1>Hoşgeldin Misafir</h1>
+    }
+}
