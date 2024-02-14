@@ -1,4 +1,5 @@
 using Chatter.Application.Dtos.Invitations;
+using Chatter.Domain.Entities.EFCore.Application;
 using Chatter.Domain.Entities.EFCore.Identity;
 
 namespace Chatter.Application.Dtos.Rooms;
@@ -29,6 +30,11 @@ public class RoomDto
     /// Oda kapasitesi
     /// </summary>
     public int Capacity { get; set; }
+    
+    /// <summary>
+    /// Oda içindeki user ların yetkileri
+    /// </summary>
+    public List<RoomPermissionDto>? RoomPermissions { get; set; }
 
     /// <summary>
     /// Oda davetiyeleri
@@ -38,10 +44,11 @@ public class RoomDto
     /// <summary>
     /// Odadaki kullanıcılar
     /// </summary>
-    public List<ChatterUser>? Users { get; set; }
+    public List<RoomChatterUser>? Users { get; set; }
 
     /// <summary>
     /// Bloklu kullanıcılar
     /// </summary>
-    public List<ChatterUser>? BlockedUsers { get; set; }
+    public List<RoomChatterUser>? BlockedUsers { get; set; }
+    
 }

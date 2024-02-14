@@ -4,6 +4,7 @@ using Chatter.Persistence.Application.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chatter.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240212214337_AddedRoomPermissionType")]
+    partial class AddedRoomPermissionType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,55 +103,6 @@ namespace Chatter.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Rooms");
-                });
-
-            modelBuilder.Entity("Chatter.Domain.Entities.EFCore.Application.RoomChatterUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ChatterUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ChatterUserId1")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsBlocked")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RoomId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RoomId1")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChatterUserId");
-
-                    b.HasIndex("ChatterUserId1");
-
-                    b.HasIndex("RoomId");
-
-                    b.HasIndex("RoomId1");
-
-                    b.ToTable("RoomChatterUser");
                 });
 
             modelBuilder.Entity("Chatter.Domain.Entities.EFCore.Application.RoomPermission", b =>
@@ -255,6 +209,36 @@ namespace Chatter.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("JTable_RoomBlockedUsers", b =>
+                {
+                    b.Property<int>("BlockedRoomsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BlockedUsersId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("BlockedRoomsId", "BlockedUsersId");
+
+                    b.HasIndex("BlockedUsersId");
+
+                    b.ToTable("JTable_RoomBlockedUsers");
+                });
+
+            modelBuilder.Entity("JTable_RoomUsers", b =>
+                {
+                    b.Property<int>("ChatRoomsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ChatRoomsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("JTable_RoomUsers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -417,33 +401,6 @@ namespace Chatter.Persistence.Migrations
                     b.Navigation("SenderUser");
                 });
 
-            modelBuilder.Entity("Chatter.Domain.Entities.EFCore.Application.RoomChatterUser", b =>
-                {
-                    b.HasOne("Chatter.Domain.Entities.EFCore.Identity.ChatterUser", "ChatterUser")
-                        .WithMany("RoomChatterUsers")
-                        .HasForeignKey("ChatterUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Chatter.Domain.Entities.EFCore.Identity.ChatterUser", null)
-                        .WithMany("RoomBlockedChatterUser")
-                        .HasForeignKey("ChatterUserId1");
-
-                    b.HasOne("Chatter.Domain.Entities.EFCore.Application.Room", "Room")
-                        .WithMany("RoomChatterUsers")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Chatter.Domain.Entities.EFCore.Application.Room", null)
-                        .WithMany("BlockedUsers")
-                        .HasForeignKey("RoomId1");
-
-                    b.Navigation("ChatterUser");
-
-                    b.Navigation("Room");
-                });
-
             modelBuilder.Entity("Chatter.Domain.Entities.EFCore.Application.RoomPermission", b =>
                 {
                     b.HasOne("Chatter.Domain.Entities.EFCore.Identity.ChatterUser", "ChatterUser")
@@ -461,6 +418,36 @@ namespace Chatter.Persistence.Migrations
                     b.Navigation("ChatterUser");
 
                     b.Navigation("Room");
+                });
+
+            modelBuilder.Entity("JTable_RoomBlockedUsers", b =>
+                {
+                    b.HasOne("Chatter.Domain.Entities.EFCore.Application.Room", null)
+                        .WithMany()
+                        .HasForeignKey("BlockedRoomsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Chatter.Domain.Entities.EFCore.Identity.ChatterUser", null)
+                        .WithMany()
+                        .HasForeignKey("BlockedUsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("JTable_RoomUsers", b =>
+                {
+                    b.HasOne("Chatter.Domain.Entities.EFCore.Application.Room", null)
+                        .WithMany()
+                        .HasForeignKey("ChatRoomsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Chatter.Domain.Entities.EFCore.Identity.ChatterUser", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -516,11 +503,7 @@ namespace Chatter.Persistence.Migrations
 
             modelBuilder.Entity("Chatter.Domain.Entities.EFCore.Application.Room", b =>
                 {
-                    b.Navigation("BlockedUsers");
-
                     b.Navigation("Invitations");
-
-                    b.Navigation("RoomChatterUsers");
 
                     b.Navigation("RoomPermissions");
                 });
@@ -528,10 +511,6 @@ namespace Chatter.Persistence.Migrations
             modelBuilder.Entity("Chatter.Domain.Entities.EFCore.Identity.ChatterUser", b =>
                 {
                     b.Navigation("ReceivedInvitations");
-
-                    b.Navigation("RoomBlockedChatterUser");
-
-                    b.Navigation("RoomChatterUsers");
 
                     b.Navigation("SentInvitations");
                 });

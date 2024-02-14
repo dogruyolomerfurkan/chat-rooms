@@ -25,20 +25,20 @@ public class ApplicationDbContext : IdentityDbContext<ChatterUser>
             .HasForeignKey(x => x.InvitedUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Entity<Room>()
-            .HasMany(x => x.Users)
-            .WithMany(x => x.ChatRooms)
-            .UsingEntity("JTable_RoomUsers");
-        
-        builder.Entity<Room>()
-            .HasMany(x => x.BlockedUsers)
-            .WithMany(x => x.BlockedRooms)
-            .UsingEntity("JTable_RoomBlockedUsers");
+        builder.Entity<RoomChatterUser>()
+            .HasOne(x => x.ChatterUser)
+            .WithMany(x => x.RoomChatterUsers)
+            .HasForeignKey(x => x.ChatterUserId);
+     
+        builder.Entity<RoomChatterUser>()
+            .HasOne(x => x.Room)
+            .WithMany(x => x.RoomChatterUsers)
+            .HasForeignKey(x => x.RoomId);
         
         base.OnModelCreating(builder);
     }   
         
-        
     public DbSet<Room> Rooms => Set<Room>();
     public DbSet<Invitation> Invitations  => Set<Invitation>();
+    public DbSet<RoomPermission> RoomPermissions => Set<RoomPermission>();
 }

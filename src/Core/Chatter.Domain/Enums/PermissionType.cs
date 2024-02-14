@@ -4,5 +4,6 @@ public enum PermissionType
 {
     FullAdmin = 1,
     Admin = 2,
-    JustRead = 3
+    Chatter = 3,
+    JustRead = 4
 }

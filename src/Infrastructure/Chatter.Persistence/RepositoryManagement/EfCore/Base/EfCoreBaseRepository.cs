@@ -22,15 +22,16 @@ public class EfCoreBaseRepository<TEntity, TKey> : IBaseRepository<TEntity, TKey
     public async Task CreateAsync(List<TEntity> entities)
     {
         await _context.Set<TEntity>().AddRangeAsync(entities);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
     public async Task<TEntity> CreateAsync(TEntity entity)
     {
-        await _context.Set<TEntity>().AddAsync(entity);
-        _context.SaveChanges();
+         _context.Set<TEntity>().Attach(entity);
+        await _context.SaveChangesAsync();
         return entity;
     }
+    
 
     public void Update(TEntity entity)
     {

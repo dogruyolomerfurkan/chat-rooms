@@ -17,7 +17,10 @@ public static class ConfigureExtension
     public static void ConfigureDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        {
+            options.EnableSensitiveDataLogging();
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+        });
         
         // services.AddSingleton(typeof(EfCoreBaseRepository<,>));
         // services.AddSingleton(typeof(NoSqlBaseRepository<>));
@@ -29,13 +32,15 @@ public static class ConfigureExtension
     public static void ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)
     {
         services.TryAddScoped<SignInManager<ChatterUser>>();
+        services.TryAddScoped<UserManager<ChatterUser>>();
+
         services.AddIdentityCore<ChatterUser>()
             .AddRoles<IdentityRole>()
+            .AddSignInManager<SignInManager<ChatterUser>>()
+            .AddUserManager<UserManager<ChatterUser>>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("IdentityDbConnection")));
         //örnek
         // .AddPasswordValidator<CustomPasswordValidation>()
         // .AddUserValidator<CustomUserValidation>()

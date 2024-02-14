@@ -19,7 +19,7 @@ public class CreateRoomInput
     /// Oda kapasitesi
     /// </summary>
     public int Capacity { get; set; }
-
+    
     /// <summary>
     /// Oda davetiyeleri
     /// </summary>
@@ -28,7 +28,7 @@ public class CreateRoomInput
     /// <summary>
     /// Odadaki kullanıcılar
     /// </summary>
-    public List<ChatterUser>? Users { get; set; }
+    public List<ChatterUser> Users { get; set; } = new List<ChatterUser>();
 
     /// <summary>
     /// Bloklu kullanıcılar
