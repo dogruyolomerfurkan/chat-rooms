@@ -4,7 +4,6 @@ using Chatter.Domain.Entities.EFCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Chatter.WebApp.Controllers;
 
@@ -26,6 +25,7 @@ public class RoomController : Controller
     }
     
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Create()
     {
         return View();
@@ -42,4 +42,13 @@ public class RoomController : Controller
         await _roomService.CreateRoomAsync(createRoomInput);
         return RedirectToAction("Index");
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> Detail(int id)
+    {
+        var room = await _roomService.GetRoomByIdAsync(id);
+        return View(room);
+    }
+    
+    
 }

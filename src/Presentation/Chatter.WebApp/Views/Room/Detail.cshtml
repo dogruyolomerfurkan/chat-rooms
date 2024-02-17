@@ -1,0 +1,188 @@
+@model Chatter.Application.Dtos.Rooms.RoomDto
+
+@section Css
+{
+    <link rel="stylesheet" href="/css/chat.css">
+    <style>
+        .user-profile {
+          display: flex;
+          align-items: center;
+        }
+        
+        #searchInput {
+          width: 100%;
+          padding: 12px 20px;
+          margin: 8px 0;
+          box-sizing: border-box;
+        }
+        
+        .profile-icon {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          margin-right: 10px;
+        }
+        
+        .user-name {
+          font-size: 20px;
+        }
+
+        .profile-icon.search{
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          margin-right: 10px;
+        }
+        
+        .user-name.search{
+          font-size: 10px;
+        }
+   
+            ul {
+                padding: 0;
+                list-style: none;
+            }
+            li {
+            list-style-type: none;
+            
+                text-align: left;
+                margin-left: 0;
+            }
+       
+    </style>
+}
+
+@section Script
+{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <script>
+        function displayResults(results) {
+            let $resultsDiv = $('#searchResults');
+            $resultsDiv.empty();
+            $resultsDiv.css('background-color', '#ccc'); // İsteğe bağlı olarak, sonuçlar bölümünün arka plan rengini değiştirebilirsiniz.
+            // $resultsDiv.style.backgroundColor = '#ccc';
+            if (results.length > 0) {
+                $.each(results, function(index, item) {
+                    $resultsDiv.append('<p>' +  '<div class="user-profile">' +
+                                                                       '<img src="/img/profileImages/' + item.profileImagePath + '" alt="User Name" class="profile-icon search">'
+                                                                       + '<span class="user-name search">' + item.userName + '</span></div></p>'); // Arama sonuçlarını ekranda gösterin.
+                });
+                $resultsDiv.show(); // Sonuçlar gösterildiğinde sonuçlar bölümünü görünür hale getirin.
+            } else {
+                $resultsDiv.hide(); // Sonuç bulunamadıysa sonuçları gizleyin.
+            }
+        } 
+       document.getElementById('searchInput').addEventListener('input', function (e) {
+                var searchResults = document.getElementById('searchResults');
+                searchResults.innerHTML = '';
+                var searchValue = e.target.value;
+                if (searchValue.length > 0) {
+                    fetch('/api/v1/users/search/' + searchValue)
+                        .then(response => response.json())
+                        .then(data => {
+                            displayResults(data)
+                            
+                        });
+                }
+            });
+    
+      document.getElementById('newMessageInput').addEventListener('input', function (e) {
+          if (e.target.value.length <= 0) {
+              document.getElementById('sendMessageClick').onclick = function () {
+                return false;
+              };
+              document.getElementById('sendMessageIcon').style.opacity =  0.5;
+          }
+          else {
+              document.getElementById('sendMessageClick').onclick = function () {
+                sendMessage();
+              };
+              document.getElementById('sendMessageIcon').style.opacity = 1;
+          }
+      });
+    
+     // buraya gelen yazı message-list içine li olarak ekleyecek
+     function sendMessage(){
+        var message = document.getElementById('newMessageInput').value;
+        var messageList = document.getElementById('message-list');
+        messageList.innerHTML += '<li class="message sent-message">' + message + '</li>';
+        document.getElementById('newMessageInput').value = '';
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card mb-12" style="height: 100%">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <b>Kullanıcılar</b>
+                    <hr/>
+                    <input type="text" id="searchInput"/>
+                    <div id="searchResults" style="display: none;"></div>
+                    <ul>
+                        @foreach (var user in Model.Users)
+                        {
+                            <li>
+                                <div class="user-profile">
+                                    <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon">
+                                    <span class="user-name">@user.UserName</span>
+                                </div>
+                            </li>
+                        }
+                        <li>
+                            <div class="user-profile">
+                                <img src="/img/profileImages/emronr.jpg" alt="User Name" class="profile-icon">
+                                <span class="user-name">emronr</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="user-profile">
+                                <img src="/img/profileImages/emronr.jpg" alt="User Name" class="profile-icon">
+                                <span class="user-name">emronr</span>
+                            </div>
+                        </li>
+                    </ul>
+                </h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+
+        <div class="message-container">
+            <div class="message-body">
+                <ul class="message-list" id="message-list">
+                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
+                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
+                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
+                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
+                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
+                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
+                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
+                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
+                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
+                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
+                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
+                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
+                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
+                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
+                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
+                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
+                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
+                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
+                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
+                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
+                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
+                </ul>
+            </div>
+            <div class="message-footer">
+                <input type="text" id="newMessageInput" placeholder="Mesajınızı yazın...">
+                <a id="sendMessageClick" onclick="sendMessage()" href="#"
+                   data-toggle="tooltip" data-placement="bottom" title="Send">
+                    <i id="sendMessageIcon" class="fas fa-solid fa-paper-plane fa-xl" style="color: #74C0FC;"></i>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>

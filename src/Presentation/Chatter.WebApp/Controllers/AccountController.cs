@@ -76,8 +76,11 @@ public class AccountController : Controller
 
         var user = new ChatterUser()
         {
+            FirstName = model.FirstName,
+            LastName = model.LastName,
             UserName = model.UserName,
             Email = model.Email,
+            ProfileImagePath = "default_img_orange.jpg",
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);

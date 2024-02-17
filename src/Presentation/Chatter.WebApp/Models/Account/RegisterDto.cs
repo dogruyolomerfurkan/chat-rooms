@@ -5,7 +5,10 @@ namespace Chatter.WebApp.Models.Account
     public class RegisterDto
     {
         [Required]
-        public string FullName { get; set; }
+        public string FirstName { get; set; }
+        
+        [Required]
+        public string LastName { get; set; }
         
         [Required]
         public string UserName { get; set; }    

@@ -1,0 +1,90 @@
+@model System.Collections.Generic.List<Chatter.Domain.Entities.EFCore.Identity.ChatterUser>
+
+
+@section Css{
+    <link rel="stylesheet" href="~/modules/datatables/media/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="~/modules/datatables/media/css/jquery.dataTables.min.css">
+    
+    <style>
+    .user-profile {
+      display: flex;
+      align-items: center;
+    }
+    
+    .profile-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+    .user-name {
+      font-size: 20px;
+    }
+    </style>
+}
+
+@section Script{
+    <script src="~/modules/datatables/media/js/jquery.dataTables.js"></script>
+    <script src="~/modules/datatables/media/js/jquery.dataTables.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+             $('#userTable').DataTable();
+         }); 
+    </script>
+}
+
+
+<h2>Rooms</h2>
+<hr/>
+
+<table id="userTable" class="cell-border">
+    <thead>
+    <tr>
+        <th> </th>
+        <th>User ID</th>
+        <th>Username</th>
+        <th>Name</th>
+        <th>Surname</th>
+        <th>CreatedDate</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    @if (Model.Count() > 0)
+    {
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-controller="Admin" asp-action="EditUser" asp-route-id="@user.Id"
+                       data-toggle="tooltip" data-placement="bottom" title="Edit">
+                        <i class="fas fa-user-edit"></i>
+                    </a>
+                    <a data-toggle="tooltip" data-placement="bottom" title="Remove"
+                       href="#" onclick="$('#deleteUserForm #id').val('@user.Id'); $('#DeleteUserModal').modal('show')">
+                        <i class="fas fa-user-times"></i>
+                    </a>
+                    <a data-toggle="tooltip" data-placement="bottom" title="Change Password"
+                       href="#" onclick="$('#ChangePasswordForm #email').val('@user.Email'); $('#ChangePasswordModal').modal('show')">
+                        <i class="fas fa-key"></i>
+                    </a>
+                </td>
+                <td>@user.Id</td>
+                <td>
+                    
+                    <div class="user-profile">
+                        <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon">
+                        <span class="user-name">@user.UserName</span>
+                    </div>
+                </td>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@user.CreatedDate</td>
+                
+            </tr>
+        }
+    }
+    </tbody>
+</table>

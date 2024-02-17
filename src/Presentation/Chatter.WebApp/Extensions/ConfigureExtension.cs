@@ -13,8 +13,9 @@ public static class ConfigureExtension
         services.ConfigureApplications();
         
         services.AddHttpContextAccessor();
-        services.AddControllersWithViews();
-        services.AddMvc();
+        services.AddControllersWithViews().AddRazorRuntimeCompilation();
+        services.AddEndpointsApiExplorer(); 
+        services.AddMvc(options => options.EnableEndpointRouting = true);
 
     }
     

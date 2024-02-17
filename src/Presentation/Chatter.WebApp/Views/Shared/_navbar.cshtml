@@ -1,3 +1,4 @@
+@using Chatter.Domain.Enums
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
     <div class="container">
         <a class="navbar-brand" href="/">Chatter</a>
@@ -5,17 +6,20 @@
             <li class="nav-item">
                 <a href="~/" class="nav-link active">Home</a>
             </li>
+            <li class="nav-item">
+                <a asp-controller="Room" asp-action="Index" class="nav-link active">Rooms</a>
+            </li>
             @if (User.Identity.IsAuthenticated)
             {
                 <li class="nav-item">
-                    <a asp-controller="Room" asp-action="Index" class="nav-link active">Rooms</a>
-                </li>
-                <li class="nav-item">
                     <a asp-controller="Room" asp-action="Create" class="nav-link active">Create Room</a>
                 </li>
+              if(User.IsInRole(ChatPermissionType.Admin.ToString()))
+              {
                 <li class="nav-item">
-                    <a href="#" class="nav-link active">Orders</a>
+                    <a asp-controller="Admin" asp-action="Index" class="nav-link active">Admin Ekranı</a>
                 </li>
+              }
             }
         </ul>
         <ul class="navbar-nav ml-auto">
