@@ -21,7 +21,7 @@ public class RoomPermissionDto
     /// <summary>
     ///  User'ın odaya ait izin tipi
     /// </summary>
-    public PermissionType PermissionType { get; set; }
+    public ChatPermissionType PermissionType { get; set; }
 
     /// <summary>
     /// Odaya ait iznin veriliş tarihi

@@ -37,8 +37,14 @@ public class RoomService : BaseService, IRoomService
 
     public async Task<RoomDto> GetRoomByIdAsync(int roomId)
     {
-        var room = await _roomRepository.FindAsync(roomId);
-        return room.Adapt<RoomDto>();
+        return  await _roomRepository.Query()
+            .Include(x => x.RoomPermissions)
+            .ThenInclude(x => x.ChatterUser)
+            .Include(x => x.RoomChatterUsers)
+            .ThenInclude(x => x.ChatterUser)
+            .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).FirstOrDefaultAsync();
+        
+        // return room?.Adapt<RoomDto>();
     }
 
     public async Task<RoomDto> CreateRoomAsync(CreateRoomInput createRoomInput)
@@ -48,7 +54,7 @@ public class RoomService : BaseService, IRoomService
         {
             ChatterUserId = createRoomInput.Users.First().Id,
             RoomId = room.Id,
-            PermissionType = PermissionType.Admin,
+            PermissionType = ChatPermissionType.Admin,
         };
         room.RoomPermissions?.Add(roomPermission);
         var roomChatterUser = new RoomChatterUser()
@@ -59,8 +65,7 @@ public class RoomService : BaseService, IRoomService
         room.RoomChatterUsers?.Add(roomChatterUser);
         await _roomRepository.CreateAsync(room);
 
-        var dto =  room.Adapt<RoomDto>(CreateTypeAdapterConfig(3));
-        return dto;
+        return  room.Adapt<RoomDto>(CreateTypeAdapterConfig(3));
     }
 
     public async Task BlockUserByRoomAsync(int roomId, ChatterUser blockedUser)

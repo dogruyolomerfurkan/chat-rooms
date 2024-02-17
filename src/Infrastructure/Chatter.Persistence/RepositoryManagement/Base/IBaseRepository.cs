@@ -8,5 +8,5 @@ public interface IBaseRepository<TEntity, TKey>
     void Delete(TEntity entity);
     Task<List<TEntity>> GetAllAsync();
     Task<TEntity> FindAsync(TKey entityId);
-    IQueryable<TEntity> Query();
+    IQueryable<TEntity> Query(bool asNoTracking = false);
 }

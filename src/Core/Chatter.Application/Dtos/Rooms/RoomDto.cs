@@ -44,7 +44,13 @@ public class RoomDto
     /// <summary>
     /// Odadaki kullanıcılar
     /// </summary>
-    public List<RoomChatterUser>? Users { get; set; }
+    public List<RoomChatterUser>?  RoomChatterUsers { get; set; }
+    
+    
+    /// <summary>
+    /// Odadaki kullanıcılar
+    /// </summary>
+    public List<ChatterUser>? Users { get => RoomChatterUsers?.Select(x => x.ChatterUser).ToList(); }
 
     /// <summary>
     /// Bloklu kullanıcılar

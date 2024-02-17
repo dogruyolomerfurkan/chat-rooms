@@ -12,5 +12,4 @@ public interface IRoomService
     Task<RoomDto> CreateRoomAsync(CreateRoomInput createRoomInput);
 
     Task BlockUserByRoomAsync(int roomId, ChatterUser blockedUser);
-
 }

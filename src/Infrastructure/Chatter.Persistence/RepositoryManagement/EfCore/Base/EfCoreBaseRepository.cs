@@ -1,4 +1,5 @@
 using Chatter.Domain.Entities.EFCore.Application.Base;
+using Chatter.Persistence.Extensions;
 using Chatter.Persistence.RepositoryManagement.Base;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,40 +10,37 @@ public class EfCoreBaseRepository<TEntity, TKey> : IBaseRepository<TEntity, TKey
     where TKey : IComparable
 {
     private readonly DbContext _context;
-    protected DbSet<TEntity> DbSet { get; set; }
 
     public EfCoreBaseRepository(DbContext context)
     {
         _context = context;
-
         _context.ChangeTracker.LazyLoadingEnabled = true;
-        DbSet = _context.Set<TEntity>();
     }
 
     public async Task CreateAsync(List<TEntity> entities)
     {
         await _context.Set<TEntity>().AddRangeAsync(entities);
-        await _context.SaveChangesAsync();
+        await SaveChangesAsync();
     }
 
     public async Task<TEntity> CreateAsync(TEntity entity)
     {
-         _context.Set<TEntity>().Attach(entity);
-        await _context.SaveChangesAsync();
+        await _context.Set<TEntity>().AddAsync(entity);
+        await SaveChangesAsync();
         return entity;
     }
-    
+
 
     public void Update(TEntity entity)
     {
         _context.Set<TEntity>().Update(entity);
-        _context.SaveChanges();
+        SaveChanges();
     }
 
     public void Delete(TEntity entity)
     {
         _context.Set<TEntity>().Remove(entity);
-        _context.SaveChanges();
+        SaveChanges();
     }
 
     public async Task<TEntity> FindAsync(TKey entityId)
@@ -50,14 +48,26 @@ public class EfCoreBaseRepository<TEntity, TKey> : IBaseRepository<TEntity, TKey
         return await _context.Set<TEntity>().FindAsync(entityId);
     }
 
-    public IQueryable<TEntity> Query()
+    public IQueryable<TEntity> Query(bool asNoTracking = false)
     {
-        return _context.Set<TEntity>().AsQueryable();
+        return asNoTracking
+            ? _context.Set<TEntity>().AsNoTracking()
+            : _context.Set<TEntity>();
     }
 
 
     public async Task<List<TEntity>> GetAllAsync()
     {
         return await _context.Set<TEntity>().ToListAsync();
+    }
+
+    public int SaveChanges()
+    {
+        return _context.SaveChanges();
+    }
+
+    public async Task<int> SaveChangesAsync()
+    {
+        return await _context.SaveChangesAsync();
     }
 }

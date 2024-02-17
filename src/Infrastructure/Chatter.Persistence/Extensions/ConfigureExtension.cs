@@ -4,6 +4,7 @@ using Chatter.Persistence.RepositoryManagement.Base;
 using Chatter.Persistence.RepositoryManagement.EfCore.Base;
 using Chatter.Persistence.RepositoryManagement.EfCore.Invitations;
 using Chatter.Persistence.RepositoryManagement.EfCore.Rooms;
+using Chatter.Persistence.RepositoryManagement.EfCore.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +27,8 @@ public static class ConfigureExtension
         // services.AddSingleton(typeof(NoSqlBaseRepository<>));
         services.AddScoped(typeof(IBaseRepository<,>), typeof(EfCoreBaseRepository<,>));
         services.AddScoped<IRoomRepository, RoomRepository>();
-        services.AddScoped<IInvitationRepository, InvitationRepository>();  
+        services.AddScoped<IInvitationRepository, InvitationRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
     }
 
     public static void ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)

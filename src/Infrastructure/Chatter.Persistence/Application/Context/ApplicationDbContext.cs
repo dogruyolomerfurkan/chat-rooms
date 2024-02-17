@@ -1,5 +1,6 @@
 using Chatter.Domain.Entities.EFCore.Application;
 using Chatter.Domain.Entities.EFCore.Identity;
+using Chatter.Persistence.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,7 @@ public class ApplicationDbContext : IdentityDbContext<ChatterUser>
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
     }
-    
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.Entity<ChatterUser>()
@@ -29,16 +30,28 @@ public class ApplicationDbContext : IdentityDbContext<ChatterUser>
             .HasOne(x => x.ChatterUser)
             .WithMany(x => x.RoomChatterUsers)
             .HasForeignKey(x => x.ChatterUserId);
-     
+
         builder.Entity<RoomChatterUser>()
             .HasOne(x => x.Room)
             .WithMany(x => x.RoomChatterUsers)
             .HasForeignKey(x => x.RoomId);
-        
+
         base.OnModelCreating(builder);
-    }   
-        
+    }
+
+    public override int SaveChanges()
+    {
+        this.SaveChangesAuditAsync().Wait();
+        return base.SaveChanges();
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    {
+        await this.SaveChangesAuditAsync();
+        return await base.SaveChangesAsync();
+    }
+
     public DbSet<Room> Rooms => Set<Room>();
-    public DbSet<Invitation> Invitations  => Set<Invitation>();
+    public DbSet<Invitation> Invitations => Set<Invitation>();
     public DbSet<RoomPermission> RoomPermissions => Set<RoomPermission>();
 }

@@ -1,6 +1,4 @@
 using Chatter.Domain.Entities.EFCore.Application.Base;
-using Chatter.Domain.Entities.EFCore.Identity;
-using Chatter.Domain.Enums;
 
 namespace Chatter.Domain.Entities.EFCore.Application;
 

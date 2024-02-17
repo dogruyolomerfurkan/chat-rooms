@@ -1,9 +1,8 @@
 namespace Chatter.Domain.Enums;
 
-public enum PermissionType
+public enum ChatPermissionType
 {
-    FullAdmin = 1,
-    Admin = 2,
-    Chatter = 3,
-    JustRead = 4
+    Admin = 1,
+    Chatter = 2,
+    JustRead = 3
 }

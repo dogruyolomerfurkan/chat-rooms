@@ -1,6 +1,7 @@
 using Chatter.Common.Settings;
 using Chatter.Domain.Entities.NoSql.Base;
 using Chatter.Persistence.RepositoryManagement.Base;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -19,6 +20,7 @@ public class NoSqlBaseRepository<TEntity> : IBaseRepository<TEntity, string>
         var database = client.GetDatabase(_mongoDbSettings.DatabaseName);
         _collection = database.GetCollection<TEntity>(typeof(TEntity).Name.ToLowerInvariant());
     }
+
     public async Task CreateAsync(List<TEntity> entites)
     {
         await _collection.InsertManyAsync(entites);
@@ -42,7 +44,7 @@ public class NoSqlBaseRepository<TEntity> : IBaseRepository<TEntity, string>
 
     public async Task<List<TEntity>> GetAllAsync()
     {
-        return await _collection.Find(x => true).ToListAsync(); 
+        return await _collection.Find(x => true).ToListAsync();
     }
 
     public async Task<TEntity> FindAsync(string entityId)
@@ -50,8 +52,10 @@ public class NoSqlBaseRepository<TEntity> : IBaseRepository<TEntity, string>
         return await _collection.Find(x => x.Id == entityId).FirstOrDefaultAsync();
     }
 
-    public IQueryable<TEntity> Query()
+    public IQueryable<TEntity> Query(bool asNoTracking = false)
     {
-        return _collection.AsQueryable();
+        return asNoTracking
+            ? _collection.AsQueryable().AsNoTracking()
+            : _collection.AsQueryable();
     }
 }
