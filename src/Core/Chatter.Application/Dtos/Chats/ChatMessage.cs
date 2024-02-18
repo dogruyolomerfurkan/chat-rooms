@@ -1,10 +1,8 @@
-using Chatter.Domain.Entities.NoSql.Base;
-using MongoDB.Bson.Serialization.Attributes;
+using Chatter.Application.Dtos.Users;
 
-namespace Chatter.Domain.Entities.NoSql;
+namespace Chatter.Application.Dtos.Chats;
 
-[BsonIgnoreExtraElements]
-public class RoomMessage : BaseEntity
+public class ChatMessage
 {
     /// <summary>
     /// Oda Id'si
@@ -22,12 +20,9 @@ public class RoomMessage : BaseEntity
     public string Message { get; set; }
 
     /// <summary>
-    /// Gönderilme tarihi
+    /// Mesajın gönderilme tarihi
     /// </summary>
     public DateTime SentDate { get; set; }
 
-    /// <summary>
-    /// Düzenlendi mi?
-    /// </summary>
-    public bool IsEdited { get; set; }
+    public UserShortInfoDto UserInfo { get; set; }
 }

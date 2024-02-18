@@ -1,6 +1,6 @@
 namespace Chatter.Persistence.RepositoryManagement.Base;
 
-public interface IBaseRepository<TEntity, TKey>
+public interface IBaseRepository<TEntity, TKey> 
 {
     Task CreateAsync(List<TEntity> entites);
     Task<TEntity> CreateAsync(TEntity entity);

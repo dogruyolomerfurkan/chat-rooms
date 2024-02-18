@@ -1,5 +1,6 @@
 using Chatter.Persistence.Extensions;
 using Chatter.WebApp.Extensions;
+using Chatter.WebApp.HUB;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,9 @@ app.SeedIdentity();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<ChatHub>("/chatHub");
+
 
 app.MapControllerRoute(
     name: "default",

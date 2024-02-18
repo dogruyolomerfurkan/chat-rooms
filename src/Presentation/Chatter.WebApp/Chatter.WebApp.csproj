@@ -11,7 +11,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Models\Rooms" />
       <Folder Include="wwwroot\img\profileImages" />
+      <Folder Include="wwwroot\lib" />
     </ItemGroup>
 
  

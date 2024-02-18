@@ -1,8 +1,17 @@
+@using Microsoft.AspNetCore.Identity
+@using Chatter.Domain.Entities.EFCore.Identity
 @model Chatter.Application.Dtos.Rooms.RoomDto
+
+@{
+    var chatMessages = (List<Chatter.Application.Dtos.Chats.ChatMessage>) ViewBag.ChatMessages;
+    var currentUserId = (string) ViewBag.CurrentUserId;
+
+}
 
 @section Css
 {
     <link rel="stylesheet" href="/css/chat.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
     <style>
         .user-profile {
           display: flex;
@@ -54,7 +63,9 @@
 
 @section Script
 {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <script src="~/js/chat.js"></script>
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+
     <script>
         function displayResults(results) {
             let $resultsDiv = $('#searchResults');
@@ -88,26 +99,19 @@
     
       document.getElementById('newMessageInput').addEventListener('input', function (e) {
           if (e.target.value.length <= 0) {
-              document.getElementById('sendMessageClick').onclick = function () {
+              document.getElementById('sendMessageBtn').onclick = function () {
                 return false;
               };
               document.getElementById('sendMessageIcon').style.opacity =  0.5;
           }
           else {
-              document.getElementById('sendMessageClick').onclick = function () {
+              document.getElementById('sendMessageBtn').onclick = function () {
                 sendMessage();
               };
               document.getElementById('sendMessageIcon').style.opacity = 1;
           }
       });
     
-     // buraya gelen yazı message-list içine li olarak ekleyecek
-     function sendMessage(){
-        var message = document.getElementById('newMessageInput').value;
-        var messageList = document.getElementById('message-list');
-        messageList.innerHTML += '<li class="message sent-message">' + message + '</li>';
-        document.getElementById('newMessageInput').value = '';
-        }
     </script>
 }
 
@@ -130,54 +134,72 @@
                                 </div>
                             </li>
                         }
-                        <li>
-                            <div class="user-profile">
-                                <img src="/img/profileImages/emronr.jpg" alt="User Name" class="profile-icon">
-                                <span class="user-name">emronr</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="user-profile">
-                                <img src="/img/profileImages/emronr.jpg" alt="User Name" class="profile-icon">
-                                <span class="user-name">emronr</span>
-                            </div>
-                        </li>
                     </ul>
                 </h4>
             </div>
         </div>
     </div>
     <div class="col-md-9">
-
         <div class="message-container">
-            <div class="message-body">
+            <div class="message-body" id="message-body">
                 <ul class="message-list" id="message-list">
-                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
-                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
-                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
-                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
-                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
-                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
-                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
-                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
-                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
-                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
-                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
-                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
-                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
-                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
-                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
-                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
-                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
-                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
-                    <li class="message sent-message">Bu benim gönderdiğim bir mesaj</li>
-                    <li class="message received-message">Bu başkasının gönderdiği bir mesaj</li>
-                    <li class="message sent-message">Bu da benim gönderdiğim bir başka mesaj</li>
+                    @{
+                        foreach (var message in chatMessages)
+                        {
+                            if (message.SenderUserId == currentUserId)
+                            {
+                                <div class="message sent-message">
+                                    <span class="message username">@message.UserInfo.UserName</span>
+                                    <p>@message.Message</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="message received-message">
+                                    <span class="message username">@message.UserInfo.UserName</span>
+                                    <p>@message.Message</p>
+                                </div>
+                            }
+                        }
+                    }
+                    @* <div class="message sent-message"> *@
+                    @*     <span class="message username">Kullanıcı1</span> *@
+                    @*     <p>Bu benim gönderdiğim bir mesaj</p> *@
+                    @* </div> *@
+                    @* <div class="message received-message"> *@
+                    @*     <span class="message username">Kullanıcı2</span> *@
+                    @*     <p>başkasının gönderdiği bir mesaj.</p> *@
+                    @* </div> *@
+                    @* <div class="message sent-message"> *@
+                    @*     <span class="message username">Kullanıcı1</span> *@
+                    @*     <p>Bu benim gönderdiğim bir mesaj</p> *@
+                    @* </div> *@
+                    @* <div class="message received-message"> *@
+                    @*     <span class="message username">Kullanıcı2</span> *@
+                    @*     <p>başkasının gönderdiği bir mesaj.</p> *@
+                    @* </div> *@
+                    @* <div class="message sent-message"> *@
+                    @*     <span class="message username">Kullanıcı1</span> *@
+                    @*     <p>Bu benim gönderdiğim bir mesaj</p> *@
+                    @* </div> *@
+                    @* <div class="message received-message"> *@
+                    @*     <span class="message username">Kullanıcı2</span> *@
+                    @*     <p>başkasının gönderdiği bir mesaj.</p> *@
+                    @* </div> *@
+                    @* <div class="message sent-message"> *@
+                    @*     <span class="message username">Kullanıcı1</span> *@
+                    @*     <p>Bu benim gönderdiğim bir mesaj</p> *@
+                    @* </div> *@
+                    @* <div class="message received-message"> *@
+                    @*     <span class="message username">Kullanıcı2</span> *@
+                    @*     <p>başkasının gönderdiği bir mesaj.</p> *@
+                    @* </div> *@
+
                 </ul>
             </div>
             <div class="message-footer">
                 <input type="text" id="newMessageInput" placeholder="Mesajınızı yazın...">
-                <a id="sendMessageClick" onclick="sendMessage()" href="#"
+                <a id="sendMessageBtn" href="#"
                    data-toggle="tooltip" data-placement="bottom" title="Send">
                     <i id="sendMessageIcon" class="fas fa-solid fa-paper-plane fa-xl" style="color: #74C0FC;"></i>
                 </a>

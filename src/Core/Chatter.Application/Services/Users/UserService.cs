@@ -1,25 +1,31 @@
+using Chatter.Application.Dtos.Rooms;
 using Chatter.Application.Dtos.Users;
-using Chatter.Domain.Entities.EFCore.Identity;
-using Chatter.Persistence.RepositoryManagement.Base;
 using Chatter.Persistence.RepositoryManagement.EfCore.Users;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace Chatter.Application.Services.Users;
 
-public class UserService : IUserService
+public class UserService : BaseService, IUserService
 {
     private readonly IUserRepository _chatterUserRepository;
-
+    
     public UserService(IUserRepository chatterUserRepository)
     {
         _chatterUserRepository = chatterUserRepository;
     }
 
-    public async Task<List<SearchUserShortInfoDto>> GetUsersShortInfoAsync(string searchValue)
+    public async Task<List<UserShortInfoDto>> GetUsersShortInfoAsync(string searchValue)
     {
         return await _chatterUserRepository.Query().Where(x => x.UserName.ToLower().Contains(searchValue.ToLower()))
-            .ProjectToType<SearchUserShortInfoDto>().ToListAsync();
+            .ProjectToType<UserShortInfoDto>().ToListAsync();
+    }
+
+    public async Task<List<RoomDto>> GetUserRooms(string userId)
+    {
+        return await _chatterUserRepository.Query().Where(x => x.Id == userId)
+            .Include(x => x.RoomChatterUsers)
+            .ThenInclude(x => x.Room).SelectMany(x => x.RoomChatterUsers).Select(x => x.Room)
+            .ProjectToType<RoomDto>(CreateTypeAdapterConfig(5)).ToListAsync();
     }
 }

@@ -1,6 +1,6 @@
 namespace Chatter.Application.Dtos.Users;
 
-public class SearchUserShortInfoDto
+public class UserShortInfoDto
 {
     public string Id { get; set; }
     public string UserName { get; set; }

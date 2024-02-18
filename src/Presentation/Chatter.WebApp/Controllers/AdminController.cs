@@ -2,7 +2,6 @@ using Chatter.Application.Services.Rooms;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.WebApp.Extensions;
 using Chatter.WebApp.Models;
-using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

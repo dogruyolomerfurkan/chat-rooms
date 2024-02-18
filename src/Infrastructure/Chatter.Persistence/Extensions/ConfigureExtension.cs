@@ -1,10 +1,11 @@
 using Chatter.Domain.Entities.EFCore.Identity;
+using Chatter.Domain.Entities.NoSql;
 using Chatter.Persistence.Application.Context;
 using Chatter.Persistence.RepositoryManagement.Base;
-using Chatter.Persistence.RepositoryManagement.EfCore.Base;
 using Chatter.Persistence.RepositoryManagement.EfCore.Invitations;
 using Chatter.Persistence.RepositoryManagement.EfCore.Rooms;
 using Chatter.Persistence.RepositoryManagement.EfCore.Users;
+using Chatter.Persistence.RepositoryManagement.NoSql.Base;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,7 +26,11 @@ public static class ConfigureExtension
         
         // services.AddSingleton(typeof(EfCoreBaseRepository<,>));
         // services.AddSingleton(typeof(NoSqlBaseRepository<>));
-        services.AddScoped(typeof(IBaseRepository<,>), typeof(EfCoreBaseRepository<,>));
+        // services.AddScoped(typeof(IBaseRepository<,>), typeof(EfCoreBaseRepository<,>));
+        // services.AddTransient<IBaseRepository<Room, int>, EfCoreBaseRepository<Room,int>>();
+        // services.AddTransient<IBaseRepository<RoomChatterUser, int>, EfCoreBaseRepository<RoomChatterUser,int>>();
+        // services.AddTransient<IBaseRepository<Invitation, int>, EfCoreBaseRepository<Invitation,int>>();
+        services.AddScoped<IBaseRepository<ChatMessage, string>, NoSqlBaseRepository<ChatMessage>>();
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IInvitationRepository, InvitationRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
@@ -65,7 +70,7 @@ public static class ConfigureExtension
             //TODO: Email gönderme işlemi yapılınca burası true olarak değiştirilecek
             options.SignIn.RequireConfirmedEmail = false;
             options.SignIn.RequireConfirmedPhoneNumber = false;
-            options.SignIn.RequireConfirmedAccount = true;
+            options.SignIn.RequireConfirmedAccount = false;
         });
     }
 

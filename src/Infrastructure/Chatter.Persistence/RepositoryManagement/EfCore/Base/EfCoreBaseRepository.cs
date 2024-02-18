@@ -1,5 +1,4 @@
 using Chatter.Domain.Entities.EFCore.Application.Base;
-using Chatter.Persistence.Extensions;
 using Chatter.Persistence.RepositoryManagement.Base;
 using Microsoft.EntityFrameworkCore;
 

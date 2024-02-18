@@ -5,9 +5,10 @@ namespace Chatter.Domain.Entities.NoSql.Base;
 
 public abstract class BaseEntity
 {
+    // = ObjectId.GenerateNewId().ToString();
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
+    public string Id { get; set; } 
 
     [BsonRepresentation(BsonType.DateTime)]
     [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]

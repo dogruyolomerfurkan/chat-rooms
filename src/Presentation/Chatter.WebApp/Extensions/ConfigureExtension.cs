@@ -1,4 +1,5 @@
 using Chatter.Application.Extensions;
+using Chatter.Common.Settings;
 using Chatter.Persistence.Extensions;
 
 namespace Chatter.WebApp.Extensions;
@@ -16,6 +17,10 @@ public static class ConfigureExtension
         services.AddControllersWithViews().AddRazorRuntimeCompilation();
         services.AddEndpointsApiExplorer(); 
         services.AddMvc(options => options.EnableEndpointRouting = true);
+
+        services.AddSignalR();
+        
+        services.Configure<MongoDbSettings>(configuration.GetSection("MongoDbSettings"));
 
     }
     
