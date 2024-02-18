@@ -8,6 +8,7 @@ using Chatter.Persistence.RepositoryManagement.EfCore.Rooms;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver.Linq;
 
 namespace Chatter.Application.Services.Rooms;
 
@@ -16,7 +17,7 @@ public class RoomService : BaseService, IRoomService
     private readonly IRoomRepository _roomRepository;
     private readonly IInvitationRepository _invitationRepository;
     private readonly UserManager<ChatterUser> _userManager;
-    
+
     public RoomService(IRoomRepository roomRepository, IInvitationRepository invitationRepository,
         UserManager<ChatterUser> userManager)
     {
@@ -35,15 +36,38 @@ public class RoomService : BaseService, IRoomService
             .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).ToListAsync();
     }
 
-    public async Task<RoomDto?> GetRoomByIdAsync(int roomId)
+    public async Task<List<RoomDto>> GetRoomsByUserIdAsync(string userId)
     {
-        return  await _roomRepository.Query()
+        return await _roomRepository.Query()
+            .Include(x => x.RoomChatterUsers)
+            .ThenInclude(x => x.Room).SelectMany(x => x.RoomChatterUsers)
+            .Where(x => x.ChatterUser.Id == userId)
+            .Select(x => x.Room)
+            .ProjectToType<RoomDto>(CreateTypeAdapterConfig(5)).ToListAsync();
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<RoomDto>> GetPublicRooms()
+    {
+        return await _roomRepository.Query()
             .Include(x => x.RoomPermissions)
             .ThenInclude(x => x.ChatterUser)
             .Include(x => x.RoomChatterUsers)
             .ThenInclude(x => x.ChatterUser)
+            .Where(x => x.IsPublic)
+            .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).ToListAsync();
+    }
+
+    public async Task<RoomDto?> GetRoomByIdAsync(int roomId)
+    {
+        return await _roomRepository.Query()
+            .Include(x => x.RoomPermissions)
+            .ThenInclude(x => x.ChatterUser)
+            .Include(x => x.RoomChatterUsers)
+            .ThenInclude(x => x.ChatterUser)
+            .Where(x => x.Id == roomId)
             .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).FirstOrDefaultAsync();
-        
+
         // return room?.Adapt<RoomDto>();
     }
 
@@ -65,15 +89,40 @@ public class RoomService : BaseService, IRoomService
         room.RoomChatterUsers?.Add(roomChatterUser);
         await _roomRepository.CreateAsync(room);
 
-        return  room.Adapt<RoomDto>(CreateTypeAdapterConfig(3));
+        return room.Adapt<RoomDto>(CreateTypeAdapterConfig(3));
     }
 
     public async Task BlockUserByRoomAsync(int roomId, ChatterUser blockedUser)
     {
-        var room = await _roomRepository.FindAsync(roomId);
-        if (room is null)
-            throw new FriendlyException("Room not found");
+        throw new NotImplementedException();
+    }
 
-        // room.BlockedUsers.Add(blockedUser);
+    public async Task JoinRoomAsync(JoinRoomInput joinRoomInput)
+    {
+        var room = await _roomRepository.Query()
+            .Include(x => x.RoomChatterUsers)
+            .ThenInclude(x => x.ChatterUser)
+            .FirstOrDefaultAsync(x => x.Id == joinRoomInput.RoomId);
+        
+        if (room is null)
+            throw new FriendlyException("Oda bulunamadı");
+        
+        if (room.Capacity == room.RoomChatterUsers.Count)
+            throw new FriendlyException("Oda kapasitesi dolu");
+
+        var user = await _userManager.FindByIdAsync(joinRoomInput.UserId);
+        if (user is null)
+            throw new FriendlyException("Kullanıcı bulunamadı");
+        
+        if(room.RoomChatterUsers.Select(x => x.ChatterUserId).Contains(user.Id))
+            throw new FriendlyException("Kullanıcı zaten odada");
+
+        var roomChatterUser = new RoomChatterUser()
+        {
+            ChatterUserId = user.Id,
+            RoomId = room.Id,
+        };
+        room.RoomChatterUsers?.Add(roomChatterUser);
+        _roomRepository.Update(room);
     }
 }

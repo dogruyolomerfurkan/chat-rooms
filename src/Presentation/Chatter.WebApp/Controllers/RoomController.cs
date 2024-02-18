@@ -14,6 +14,7 @@ public class RoomController : Controller
     private readonly UserManager<ChatterUser> _userManager;
 
     private readonly IChatService _chatService;
+
     // GET
     public RoomController(IRoomService roomService, UserManager<ChatterUser> userManager, IChatService chatService)
     {
@@ -24,17 +25,29 @@ public class RoomController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var rooms = await _roomService.GetRoomsAsync();
+        List<RoomDto> rooms;
+        if (User.IsInRole("Admin"))
+            rooms = await _roomService.GetRoomsAsync();
+        else
+            rooms = await _roomService.GetPublicRooms();
         return View(rooms);
     }
-    
+
+    [HttpGet]
+    public async Task<IActionResult> MyRooms()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var rooms = await _roomService.GetRoomsByUserIdAsync(user.Id);
+        return View(rooms);
+    }
+
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> Create()
     {
         return View();
     }
-    
+
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> Create(CreateRoomInput createRoomInput)
@@ -42,11 +55,11 @@ public class RoomController : Controller
         // var user =  _userManager.Users.AsNoTracking().First(x => x.UserName == User.Identity.Name);
         var user = await _userManager.GetUserAsync(User);
         createRoomInput.Users.Add(user);
-        
+
         await _roomService.CreateRoomAsync(createRoomInput);
         return RedirectToAction("Index");
     }
-    
+
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> Detail(int id)
@@ -56,9 +69,20 @@ public class RoomController : Controller
 
         ViewBag.ChatMessages = chatMessages;
         ViewBag.CurrentUserId = _userManager.GetUserId(User);
-        
+
         return View(room);
     }
-    
-    
+
+    [HttpPost]
+    public async Task<IActionResult> JoinRoom(int roomId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var joinRoomInput = new JoinRoomInput
+        {
+            RoomId = roomId,
+            UserId = user.Id
+        };
+        await _roomService.JoinRoomAsync(joinRoomInput);
+        return RedirectToAction("Detail", new { id = roomId});
+    }
 }

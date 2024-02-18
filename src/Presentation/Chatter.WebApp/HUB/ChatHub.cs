@@ -38,7 +38,7 @@ public class ChatHub : Hub
     {
         var userId = GetUserId();
 
-        var userRooms = await _userService.GetUserRooms(userId);
+        var userRooms = await _roomService.GetRoomsByUserIdAsync(userId);
 
         foreach (var userRoom in userRooms)
         {

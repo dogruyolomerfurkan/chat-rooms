@@ -34,7 +34,7 @@ public class ChatService : IChatService
     {
         var chatMessages = _chatRepository.Query()
             .Where(x => x.RoomId == roomId)
-            .OrderByDescending(x => x.SentDate)
+            .OrderBy(x => x.SentDate)
             .ProjectToType<Dtos.Chats.ChatMessage>().ToList();
 
         var users = _userRepository.Query()

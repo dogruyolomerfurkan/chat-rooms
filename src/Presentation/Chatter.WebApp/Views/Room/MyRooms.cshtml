@@ -1,0 +1,32 @@
+@model System.Collections.Generic.List<Chatter.Application.Dtos.Rooms.RoomDto>
+
+@if (Model.Count() > 0)
+{
+    <div class="row">
+        @foreach (var room in Model)
+        {
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body" >
+                        <h4 class="card-title" align="center" >
+                            <a href="#">@room.Title</a>
+                        </h4>
+                        <small class="text-muted">
+                        <b>Capacity : </b> @room.Users.Count/@room.Capacity
+                        </small>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a asp-controller="Room" asp-action="Detail" asp-route-id="@room.Id" class="btn btn-outline-primary btn-sm">Details</a>
+                        @if (@User.Identity.IsAuthenticated)
+                        {
+                            <form asp-controller="Room" asp-action="Detail" method="post" style="display:inline;">
+                                <input type="hidden" name="roomId" value="@room.Id">
+                                <button type="submit" class="btn btn-outline-primary btn-sm ml-3">Chat'e Katıl</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

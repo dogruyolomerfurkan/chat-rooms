@@ -63,8 +63,6 @@
 
 @section Script
 {
-    <script src="~/js/chat.js"></script>
-    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
 
     <script>
         function displayResults(results) {
@@ -83,7 +81,10 @@
                 $resultsDiv.hide(); // Sonuç bulunamadıysa sonuçları gizleyin.
             }
         } 
-       document.getElementById('searchInput').addEventListener('input', function (e) {
+        
+        let roomId = @Model.Id.ToString();
+        
+        document.getElementById('searchInput').addEventListener('input', function (e) {
                 var searchResults = document.getElementById('searchResults');
                 searchResults.innerHTML = '';
                 var searchValue = e.target.value;
@@ -97,22 +98,27 @@
                 }
             });
     
-      document.getElementById('newMessageInput').addEventListener('input', function (e) {
+   
+        document.getElementById('newMessageInput').addEventListener('input', function (e) {
           if (e.target.value.length <= 0) {
-              document.getElementById('sendMessageBtn').onclick = function () {
-                return false;
-              };
+              document.getElementById('sendMessageBtn').style.pointerEvents = "none";
+                
               document.getElementById('sendMessageIcon').style.opacity =  0.5;
           }
           else {
-              document.getElementById('sendMessageBtn').onclick = function () {
-                sendMessage();
-              };
+              // document.getElementById('sendMessageIcon').onclick = function () {
+              //     sendMessage(roomId);
+              //     };
+               document.getElementById('sendMessageBtn').style.pointerEvents = "auto";
               document.getElementById('sendMessageIcon').style.opacity = 1;
           }
       });
     
     </script>
+    
+        <script src="~/js/chat.js"></script>
+        <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+
 }
 
 <div class="row">
@@ -162,46 +168,13 @@
                             }
                         }
                     }
-                    @* <div class="message sent-message"> *@
-                    @*     <span class="message username">Kullanıcı1</span> *@
-                    @*     <p>Bu benim gönderdiğim bir mesaj</p> *@
-                    @* </div> *@
-                    @* <div class="message received-message"> *@
-                    @*     <span class="message username">Kullanıcı2</span> *@
-                    @*     <p>başkasının gönderdiği bir mesaj.</p> *@
-                    @* </div> *@
-                    @* <div class="message sent-message"> *@
-                    @*     <span class="message username">Kullanıcı1</span> *@
-                    @*     <p>Bu benim gönderdiğim bir mesaj</p> *@
-                    @* </div> *@
-                    @* <div class="message received-message"> *@
-                    @*     <span class="message username">Kullanıcı2</span> *@
-                    @*     <p>başkasının gönderdiği bir mesaj.</p> *@
-                    @* </div> *@
-                    @* <div class="message sent-message"> *@
-                    @*     <span class="message username">Kullanıcı1</span> *@
-                    @*     <p>Bu benim gönderdiğim bir mesaj</p> *@
-                    @* </div> *@
-                    @* <div class="message received-message"> *@
-                    @*     <span class="message username">Kullanıcı2</span> *@
-                    @*     <p>başkasının gönderdiği bir mesaj.</p> *@
-                    @* </div> *@
-                    @* <div class="message sent-message"> *@
-                    @*     <span class="message username">Kullanıcı1</span> *@
-                    @*     <p>Bu benim gönderdiğim bir mesaj</p> *@
-                    @* </div> *@
-                    @* <div class="message received-message"> *@
-                    @*     <span class="message username">Kullanıcı2</span> *@
-                    @*     <p>başkasının gönderdiği bir mesaj.</p> *@
-                    @* </div> *@
-
                 </ul>
             </div>
             <div class="message-footer">
                 <input type="text" id="newMessageInput" placeholder="Mesajınızı yazın...">
-                <a id="sendMessageBtn" href="#"
+                <a id="sendMessageBtn" href="#" style="pointer-events: none;" 
                    data-toggle="tooltip" data-placement="bottom" title="Send">
-                    <i id="sendMessageIcon" class="fas fa-solid fa-paper-plane fa-xl" style="color: #74C0FC;"></i>
+                    <i id="sendMessageIcon" class="fas fa-solid fa-paper-plane fa-xl" style="color: #74C0FC; opacity: 0.5"></i>
                 </a>
 
             </div>

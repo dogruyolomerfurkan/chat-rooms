@@ -12,5 +12,4 @@ public interface IUserService
     /// <returns></returns>
     Task<List<UserShortInfoDto>> GetUsersShortInfoAsync(string searchValue);
 
-    Task<List<RoomDto>> GetUserRooms(string userId);
 }
