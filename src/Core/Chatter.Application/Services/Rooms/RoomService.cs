@@ -44,7 +44,6 @@ public class RoomService : BaseService, IRoomService
             .Where(x => x.ChatterUser.Id == userId)
             .Select(x => x.Room)
             .ProjectToType<RoomDto>(CreateTypeAdapterConfig(5)).ToListAsync();
-        throw new NotImplementedException();
     }
 
     public async Task<List<RoomDto>> GetPublicRooms()
