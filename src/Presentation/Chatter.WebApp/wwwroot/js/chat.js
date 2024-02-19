@@ -38,46 +38,26 @@ $(function () {
             scrollToBottom();
         });
 
-        // function sendMessage(roomId) {
-        //
-        //     var message = $NewMessageInput.val();
-        //     console.log(message);
-        //     console.log(roomId);
-        //     $NewMessageInput.val("");
-        //
-        //     //2. parametrede grubun id'si g�nderilecek
-        //     signalRConnection.invoke("SendMessage", message, roomId.toString());
-        // }
-
         document.getElementById('newMessageInput').addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 sendMessage();
             }
         });
 
-        $SendMessageBtn.click(sendMessage());
+        $SendMessageBtn.click(sendMessage);
 
         function sendMessage() {
 
             var message = $NewMessageInput.val();
-            console.log(message);
+            if (message === "")
+                return;
             $NewMessageInput.val("");
 
             //2. parametrede grubun id'si g�nderilecek
             signalRConnection.invoke("SendMessage", message, roomId);
         }
 
-        signalRConnection.start().then(function () {
-            signalRConnection.invoke("GetMessages", roomId)
-                .then(function (result) {
-                    console.log("Success");
-                    for (var i = 0; i < result.length; i++) {
-                        console.log(result[i]);
-                    }
-                })
-        }).catch(function (err) {
-            return console.error(err.toString());
-        });
+        signalRConnection.start();
 
 
     }
