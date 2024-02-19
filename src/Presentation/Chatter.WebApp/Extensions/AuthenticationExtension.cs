@@ -27,7 +27,7 @@ public static class AuthenticationExtension
             options.AccessDeniedPath = "/account/accessdenied";
 
             options.SlidingExpiration = true;
-            options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            options.ExpireTimeSpan = TimeSpan.FromHours(2);
             options.SlidingExpiration = true;
             options.Cookie = new CookieBuilder
             {

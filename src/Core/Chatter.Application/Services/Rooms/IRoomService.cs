@@ -55,4 +55,11 @@ public interface IRoomService
     /// <returns></returns>
     Task JoinRoomAsync(JoinRoomInput joinRoomInput);
     
+    /// <summary>
+    /// Odayı terk eder
+    /// </summary>
+    /// <param name="leaveRoomInput"></param>
+    /// <returns></returns>
+    Task LeaveRoomAsync(LeaveRoomInput leaveRoomInput);
+    
 }

@@ -4,6 +4,7 @@ $(function () {
         let $SendMessageBtn = $("#sendMessageBtn");
         let $MessageBox = $("#message-list");
         let $MessageBody = $("#message-body");
+        let $UserProfileDiv = $(".user-profile ");
         let $NewMessageInput = $("#newMessageInput");
 
         let $notificationBell = $("#notification-bell");
@@ -21,8 +22,7 @@ $(function () {
 
         signalRConnection.on("ChatRoom", function (chatMessage, userShortInfo, senderConnectionId) {
             var connectionId = signalRConnection.connectionId;
-            console.log(connectionId);
-            $notificationBell.css('color', 'red');
+
             if (connectionId != senderConnectionId) {
                 $MessageBox.append(`<div class="message received-message">
                                 <span class="message username">${userShortInfo.userName}</span>
@@ -37,6 +37,26 @@ $(function () {
             }
             scrollToBottom();
         });
+
+        signalRConnection.on("UserConnected", function (userIds) {
+            userIds.forEach(userId => {
+                setOnline(userId);
+            });
+        });
+
+        signalRConnection.on("UserDisconnected", function (userIds) {
+            userIds.forEach(userId => {
+                setOffline(userId);
+            });
+        });
+        function setOnline(userId){
+            $(`.user-profile #${userId}`).css('color', 'green');
+
+        }
+    function setOffline(userId){
+        $(`.user-profile #${userId}`).css('color', 'red');
+
+    }
 
         document.getElementById('newMessageInput').addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
@@ -58,8 +78,6 @@ $(function () {
         }
 
         signalRConnection.start();
-
-
     }
 )
 

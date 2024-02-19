@@ -85,4 +85,17 @@ public class RoomController : Controller
         await _roomService.JoinRoomAsync(joinRoomInput);
         return RedirectToAction("Detail", new { id = roomId});
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> LeaveRoom(int roomId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var leaveRoomInput = new LeaveRoomInput()
+        {
+            RoomId = roomId,
+            UserId = user.Id
+        };
+        await _roomService.LeaveRoomAsync(leaveRoomInput);
+        return RedirectToAction("Index");
+    }
 }

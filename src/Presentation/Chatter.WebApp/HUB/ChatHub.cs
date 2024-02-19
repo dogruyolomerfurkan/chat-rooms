@@ -17,7 +17,7 @@ public class ChatHub : Hub
     private readonly UserManager<ChatterUser> _userManager;
     private readonly IUserService _userService;
 
-    private List<SignalRConnection> signalRConnections = new List<SignalRConnection>();
+    private static List<SignalRConnection> signalRConnections = null;
 
     public ChatHub(IHttpContextAccessor httpContextAccessor, IChatService chatService, IRoomService roomService,
         UserManager<ChatterUser> userManager, IUserService userService)
@@ -31,20 +31,27 @@ public class ChatHub : Hub
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
+        var userId = GetUserId();
+        var signalRConnection = signalRConnections.FirstOrDefault(s => s.UserId == userId);
+        if (signalRConnection is not null)
+        {
+            signalRConnections.Remove(signalRConnection);
+        }
+        
+        await Clients.All.SendAsync("UserDisconnected", new List<string>(){userId});
+
+
         await base.OnDisconnectedAsync(exception);
     }
 
     public override async Task OnConnectedAsync()
     {
+        signalRConnections ??= new List<SignalRConnection>();
         var userId = GetUserId();
 
-        var userRooms = await _roomService.GetRoomsByUserIdAsync(userId);
-
-        foreach (var userRoom in userRooms)
-        {
-            await JoinChatRoom(userRoom.Id);
-        }
-
+        //bu kullanım kullanıcının bütün odalarını getirir. Bulunduğu odada ise mesaj gelir.
+        //TODO : Bulunmadığında ise noticiation gelir.
+     
         var signalRConnection = signalRConnections.FirstOrDefault(s => s.UserId == userId);
         if (signalRConnection is null)
         {
@@ -58,8 +65,17 @@ public class ChatHub : Hub
         {
             signalRConnection.ConnectionId = Context.ConnectionId;
         }
+        var userRooms = await _roomService.GetRoomsByUserIdAsync(userId);
+        
+        foreach (var userRoom in userRooms)
+        {
+            await JoinChatRoom(userRoom.Id);
+        }
 
         await base.OnConnectedAsync();
+        
+        await Clients.All.SendAsync("UserConnected", new List<string>(){userId});
+
     }
 
     public async Task<List<Application.Dtos.Chats.ChatMessage>> GetMessages(int roomId)
@@ -90,17 +106,20 @@ public class ChatHub : Hub
         await Clients.Groups(roomId.ToString()).SendAsync("ChatRoom", chatMessage, userShortInfo, Context.ConnectionId);
     }
 
-    public Task JoinChatRoom(int roomId)
+    public async Task JoinChatRoom(int roomId)
     {
-        var singalRConnection = new SignalRConnection
-        {
-            UserId = GetUserId(),
-            ConnectionId = Context.ConnectionId
-        };
-        signalRConnections.Add(singalRConnection);
         //Group name will be group Id
         //Önce grubu ön tarafta oluştur. Kullanıcıyı gruba ata,
-        return Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString());
+        await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString());
+        
+        //odadaki bütün kullanıcıları çek SignalRConnection da olanları userConnected yap
+        var checkRoom = await _roomService.GetRoomByIdAsync(roomId);
+        if (checkRoom is null)
+            return;
+        
+        var userListInRoom = checkRoom.Users.Select(x => x.Id).ToList();
+        var userList = signalRConnections.Where(x => userListInRoom.Contains(x.UserId)).Select(x => x.UserId).ToList();
+        await Clients.Group(roomId.ToString()).SendAsync("UserConnected", userList);
     }
 
     public async Task LeaveChatRoom(int roomId)

@@ -29,8 +29,6 @@ public class RoomService : BaseService, IRoomService
     public async Task<List<RoomDto>> GetRoomsAsync()
     {
         return await _roomRepository.Query()
-            .Include(x => x.RoomPermissions)
-            .ThenInclude(x => x.ChatterUser)
             .Include(x => x.RoomChatterUsers)
             .ThenInclude(x => x.ChatterUser)
             .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).ToListAsync();
@@ -49,22 +47,20 @@ public class RoomService : BaseService, IRoomService
     public async Task<List<RoomDto>> GetPublicRooms()
     {
         return await _roomRepository.Query()
-            .Include(x => x.RoomPermissions)
-            .ThenInclude(x => x.ChatterUser)
+            .Where(x => x.IsPublic)
             .Include(x => x.RoomChatterUsers)
             .ThenInclude(x => x.ChatterUser)
-            .Where(x => x.IsPublic)
             .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).ToListAsync();
     }
 
     public async Task<RoomDto?> GetRoomByIdAsync(int roomId)
     {
         return await _roomRepository.Query()
+            .Where(x => x.Id == roomId)
             .Include(x => x.RoomPermissions)
             .ThenInclude(x => x.ChatterUser)
             .Include(x => x.RoomChatterUsers)
             .ThenInclude(x => x.ChatterUser)
-            .Where(x => x.Id == roomId)
             .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).FirstOrDefaultAsync();
 
         // return room?.Adapt<RoomDto>();
@@ -122,6 +118,28 @@ public class RoomService : BaseService, IRoomService
             RoomId = room.Id,
         };
         room.RoomChatterUsers?.Add(roomChatterUser);
+        _roomRepository.Update(room);
+    }
+
+    public async Task LeaveRoomAsync(LeaveRoomInput leaveRoomInput)
+    {
+        var room = await _roomRepository.Query()
+            .Include(x => x.RoomChatterUsers)
+            .ThenInclude(x => x.ChatterUser)
+            .FirstOrDefaultAsync(x => x.Id == leaveRoomInput.RoomId);
+        
+        if (room is null)
+            throw new FriendlyException("Oda bulunamadı");
+        
+        var user = await _userManager.FindByIdAsync(leaveRoomInput.UserId);
+        if (user is null)
+            throw new FriendlyException("Kullanıcı bulunamadı");
+        
+        if(!room.RoomChatterUsers.Select(x => x.ChatterUserId).Contains(user.Id))
+            throw new FriendlyException("Kullanıcı zaten odada değil");
+        
+        var roomChatterUser = room.RoomChatterUsers.First(x => x.ChatterUserId == user.Id);
+        room.RoomChatterUsers?.Remove(roomChatterUser);
         _roomRepository.Update(room);
     }
 }
