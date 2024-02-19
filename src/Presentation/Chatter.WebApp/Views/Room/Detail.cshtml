@@ -1,5 +1,3 @@
-@using Microsoft.AspNetCore.Identity
-@using Chatter.Domain.Entities.EFCore.Identity
 @model Chatter.Application.Dtos.Rooms.RoomDto
 
 @{
@@ -72,9 +70,14 @@
             // $resultsDiv.style.backgroundColor = '#ccc';
             if (results.length > 0) {
                 $.each(results, function(index, item) {
+                     var existingUser = $('#userList .user-name').filter(function() {
+                                    return $(this).text() === item.userName;
+                                });
+                 if (existingUser.length === 0) {
                     $resultsDiv.append('<p>' +  '<div class="user-profile">' +
-                                                                       '<img src="/img/profileImages/' + item.profileImagePath + '" alt="User Name" class="profile-icon search">'
-                                                                       + '<span class="user-name search">' + item.userName + '</span></div></p>'); // Arama sonuçlarını ekranda gösterin.
+                                   '<img src="/img/profileImages/' + item.profileImagePath + '" alt="User Name" class="profile-icon search">'
+                                   + '<span class="user-name search">' + item.userName + '</span></div></p>'); // Arama sonuçlarını ekranda gösterin.
+                  }
                 });
                 $resultsDiv.show(); // Sonuçlar gösterildiğinde sonuçlar bölümünü görünür hale getirin.
             } else {
@@ -106,18 +109,15 @@
               document.getElementById('sendMessageIcon').style.opacity =  0.5;
           }
           else {
-              // document.getElementById('sendMessageIcon').onclick = function () {
-              //     sendMessage(roomId);
-              //     };
                document.getElementById('sendMessageBtn').style.pointerEvents = "auto";
               document.getElementById('sendMessageIcon').style.opacity = 1;
           }
       });
     
     </script>
-    
-        <script src="~/js/chat.js"></script>
-        <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+
+    <script src="~/js/chat.js"></script>
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
 
 }
 
@@ -130,17 +130,19 @@
                     <hr/>
                     <input type="text" id="searchInput"/>
                     <div id="searchResults" style="display: none;"></div>
-                    <ul>
-                        @foreach (var user in Model.Users)
-                        {
-                            <li>
-                                <div class="user-profile">
-                                    <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon">
-                                    <span class="user-name">@user.UserName</span>
-                                </div>
-                            </li>
-                        }
-                    </ul>
+                    <div id="userList">
+                        <ul>
+                            @foreach (var user in Model.Users)
+                            {
+                                <li>
+                                    <div class="user-profile">
+                                        <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon">
+                                        <span class="user-name">@user.UserName</span>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
                 </h4>
             </div>
         </div>
@@ -172,7 +174,7 @@
             </div>
             <div class="message-footer">
                 <input type="text" id="newMessageInput" placeholder="Mesajınızı yazın...">
-                <a id="sendMessageBtn" href="#" style="pointer-events: none;" 
+                <a id="sendMessageBtn" href="#" style="pointer-events: none;"
                    data-toggle="tooltip" data-placement="bottom" title="Send">
                     <i id="sendMessageIcon" class="fas fa-solid fa-paper-plane fa-xl" style="color: #74C0FC; opacity: 0.5"></i>
                 </a>
