@@ -24,12 +24,6 @@ public static class ConfigureExtension
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
         });
         
-        // services.AddSingleton(typeof(EfCoreBaseRepository<,>));
-        // services.AddSingleton(typeof(NoSqlBaseRepository<>));
-        // services.AddScoped(typeof(IBaseRepository<,>), typeof(EfCoreBaseRepository<,>));
-        // services.AddTransient<IBaseRepository<Room, int>, EfCoreBaseRepository<Room,int>>();
-        // services.AddTransient<IBaseRepository<RoomChatterUser, int>, EfCoreBaseRepository<RoomChatterUser,int>>();
-        // services.AddTransient<IBaseRepository<Invitation, int>, EfCoreBaseRepository<Invitation,int>>();
         services.AddScoped<IBaseRepository<ChatMessage, string>, NoSqlBaseRepository<ChatMessage>>();
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IInvitationRepository, InvitationRepository>();
