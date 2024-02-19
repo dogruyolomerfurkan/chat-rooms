@@ -30,7 +30,9 @@ public static class SeedExtension
                     Email = email,
                     FirstName = firstName,
                     LastName = lastName,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    ProfileImagePath = username + ".jpg"
+                    
                 };
 
                 var result = userManager.CreateAsync(user, password).Result;
