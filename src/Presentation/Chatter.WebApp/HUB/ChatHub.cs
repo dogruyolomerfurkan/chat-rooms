@@ -1,9 +1,11 @@
 using Chatter.Application.Dtos.Chats;
+using Chatter.Application.Dtos.Users;
 using Chatter.Application.Services.Chats;
 using Chatter.Application.Services.Rooms;
 using Chatter.Application.Services.Users;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Domain.Entities.NoSql;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 
@@ -101,7 +103,8 @@ public class ChatHub : Hub
         };
         var chatMessage = await _chatService.SendMessageAsync(sendChatMessageInput);
 
-        var userShortInfo = _userService.GetUsersShortInfoAsync(GetUserName()).Result.FirstOrDefault();
+        var userShortInfo = checkRoom.Users.FirstOrDefault(x =>x.Id == GetUserId()).Adapt<UserShortInfoDto>();
+        // var userShortInfo = _userService.GetUsersShortInfoAsync(GetUserName()).Result.FirstOrDefault();
 
         await Clients.Groups(roomId.ToString()).SendAsync("ChatRoom", chatMessage, userShortInfo, Context.ConnectionId);
     }
@@ -117,7 +120,7 @@ public class ChatHub : Hub
         if (checkRoom is null)
             return;
         
-        var userListInRoom = checkRoom.Users.Select(x => x.Id).ToList();
+        var userListInRoom = checkRoom.RoomChatterUsers.Select(x => x.ChatterUserId).ToList();
         var userList = signalRConnections.Where(x => userListInRoom.Contains(x.UserId)).Select(x => x.UserId).ToList();
         await Clients.Group(roomId.ToString()).SendAsync("UserConnected", userList);
     }

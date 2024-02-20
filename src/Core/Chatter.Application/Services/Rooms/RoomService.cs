@@ -5,6 +5,7 @@ using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Domain.Enums;
 using Chatter.Persistence.RepositoryManagement.EfCore.Invitations;
 using Chatter.Persistence.RepositoryManagement.EfCore.Rooms;
+using Chatter.Persistence.RepositoryManagement.EfCore.Users;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -17,31 +18,33 @@ public class RoomService : BaseService, IRoomService
     private readonly IRoomRepository _roomRepository;
     private readonly IInvitationRepository _invitationRepository;
     private readonly UserManager<ChatterUser> _userManager;
-
+    private readonly IUserRepository _userRepository;
     public RoomService(IRoomRepository roomRepository, IInvitationRepository invitationRepository,
-        UserManager<ChatterUser> userManager)
+        UserManager<ChatterUser> userManager, IUserRepository userRepository)
     {
         _roomRepository = roomRepository;
         _invitationRepository = invitationRepository;
         _userManager = userManager;
+        _userRepository = userRepository;
     }
 
     public async Task<List<RoomDto>> GetRoomsAsync()
     {
         return await _roomRepository.Query()
             .Include(x => x.RoomChatterUsers)
-            .ThenInclude(x => x.ChatterUser)
             .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).ToListAsync();
     }
 
     public async Task<List<RoomDto>> GetRoomsByUserIdAsync(string userId)
     {
+        var roomIds = await _userRepository.Query()
+            .Include(x => x.RoomChatterUsers)
+            .SelectMany(x => x.RoomChatterUsers!).Select(x => x.RoomId).ToListAsync();
+        
         return await _roomRepository.Query()
             .Include(x => x.RoomChatterUsers)
-            .ThenInclude(x => x.Room).SelectMany(x => x.RoomChatterUsers)
-            .Where(x => x.ChatterUser.Id == userId)
-            .Select(x => x.Room)
-            .ProjectToType<RoomDto>(CreateTypeAdapterConfig(5)).ToListAsync();
+            .Where(x => roomIds.Contains(x.Id))
+            .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).ToListAsync();
     }
 
     public async Task<List<RoomDto>> GetPublicRooms()
@@ -49,7 +52,6 @@ public class RoomService : BaseService, IRoomService
         return await _roomRepository.Query()
             .Where(x => x.IsPublic)
             .Include(x => x.RoomChatterUsers)
-            .ThenInclude(x => x.ChatterUser)
             .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).ToListAsync();
     }
 
@@ -62,8 +64,6 @@ public class RoomService : BaseService, IRoomService
             .Include(x => x.RoomChatterUsers)
             .ThenInclude(x => x.ChatterUser)
             .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).FirstOrDefaultAsync();
-
-        // return room?.Adapt<RoomDto>();
     }
 
     public async Task<RoomDto> CreateRoomAsync(CreateRoomInput createRoomInput)

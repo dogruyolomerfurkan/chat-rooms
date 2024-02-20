@@ -38,7 +38,7 @@ public class RoomController : Controller
     {
         var user = await _userManager.GetUserAsync(User);
         var rooms = await _roomService.GetRoomsByUserIdAsync(user.Id);
-        return View(rooms);
+        return View("Index", rooms);
     }
 
     [HttpGet]
@@ -52,7 +52,6 @@ public class RoomController : Controller
     [Authorize]
     public async Task<IActionResult> Create(CreateRoomInput createRoomInput)
     {
-        // var user =  _userManager.Users.AsNoTracking().First(x => x.UserName == User.Identity.Name);
         var user = await _userManager.GetUserAsync(User);
         createRoomInput.Users.Add(user);
 
@@ -83,9 +82,9 @@ public class RoomController : Controller
             UserId = user.Id
         };
         await _roomService.JoinRoomAsync(joinRoomInput);
-        return RedirectToAction("Detail", new { id = roomId});
+        return RedirectToAction("Detail", new {id = roomId});
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> LeaveRoom(int roomId)
     {
