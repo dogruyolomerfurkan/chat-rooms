@@ -45,17 +45,17 @@
           font-size: 10px;
         }
    
-            ul {
-                padding: 0;
-                list-style: none;
-            }
-            li {
-            list-style-type: none;
-            
-                text-align: left;
-                margin-left: 0;
-            }
-       
+        ul {
+            padding: 0;
+            list-style: none;
+        }
+        li {
+        list-style-type: none;
+        
+            text-align: left;
+            margin-left: 0;
+        }
+   
     </style>
 }
 
@@ -136,7 +136,7 @@
                             {
                                 <li>
                                     <div class="user-profile">
-                                        <span style="color:red" id="@user.Id" >&#11044;&nbsp&nbsp</span>
+                                        <span style="color:red" id="@user.Id">&#11044;&nbsp&nbsp</span>
                                         <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon">
                                         <span class="user-name">@user.UserName</span>
                                     </div>
@@ -149,37 +149,62 @@
         </div>
     </div>
     <div class="col-md-9">
-        <div class="message-container">
-            <div class="message-body" id="message-body">
-                <ul class="message-list" id="message-list">
-                    @{
-                        foreach (var message in chatMessages)
-                        {
-                            if (message.SenderUserId == currentUserId)
-                            {
-                                <div class="message sent-message">
-                                    <span class="message username">@message.UserInfo.UserName</span>
-                                    <p>@message.Message</p>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="message received-message">
-                                    <span class="message username">@message.UserInfo.UserName</span>
-                                    <p>@message.Message</p>
-                                </div>
-                            }
-                        }
-                    }
-                </ul>
-            </div>
-            <div class="message-footer">
-                <input type="text" id="newMessageInput" placeholder="Mesajınızı yazın...">
-                <a id="sendMessageBtn" href="#" style="pointer-events: none;"
-                   data-toggle="tooltip" data-placement="bottom" title="Send">
-                    <i id="sendMessageIcon" class="fas fa-solid fa-paper-plane fa-xl" style="color: #74C0FC; opacity: 0.5"></i>
-                </a>
+        <div class="card mb-12">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <h4 class="card-title">
+                        <b>@Model.Title</b>
+                    </h4>
+                    <div class="mb-1">
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                <i class="fa-sharp fa-solid fa-gear fa-xl"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <form method="post" asp-controller="Room" asp-action="LeaveRoom">
+                                        <input type="hidden" name="roomId" value="@Model.Id" />
+                                        <button type="submit" class="nav-link text-dark">Odadan Ayrıl</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
 
+                    </div>
+                </div>
+                <div class="message-container">
+                    <div class="message-body" id="message-body">
+                        <ul class="message-list" id="message-list">
+                            @{
+                                foreach (var message in chatMessages)
+                                {
+                                    if (message.SenderUserId == currentUserId)
+                                    {
+                                        <div class="message sent-message">
+                                            <span class="message username">@message.UserInfo.UserName</span>
+                                            <p>@message.Message</p>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="message received-message">
+                                            <span class="message username">@message.UserInfo.UserName</span>
+                                            <p>@message.Message</p>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </ul>
+                    </div>
+                    <div class="message-footer">
+                        <input type="text" id="newMessageInput" placeholder="Mesajınızı yazın...">
+                        <a id="sendMessageBtn" href="#" style="pointer-events: none;"
+                           data-toggle="tooltip" data-placement="bottom" title="Send">
+                            <i id="sendMessageIcon" class="fas fa-solid fa-paper-plane fa-xl" style="color: #74C0FC; opacity: 0.5"></i>
+                        </a>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>

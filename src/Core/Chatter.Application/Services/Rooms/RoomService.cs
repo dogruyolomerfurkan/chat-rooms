@@ -38,6 +38,7 @@ public class RoomService : BaseService, IRoomService
     public async Task<List<RoomDto>> GetRoomsByUserIdAsync(string userId)
     {
         var roomIds = await _userRepository.Query()
+            .Where(x => x.Id == userId)
             .Include(x => x.RoomChatterUsers)
             .SelectMany(x => x.RoomChatterUsers!).Select(x => x.RoomId).ToListAsync();
         

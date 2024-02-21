@@ -22,10 +22,10 @@
         @Html.Partial("_resultmessage", TempData.Get<ResultMessage>("message"))
                 @* <partial name="_resultmessage" model="@(TempData.Get<ResultMessage>("message"))" ></partial> *@
     }
-        <main role="main" class="pb-3">
-          
-            @RenderBody()
-        </main>
+    <main role="main" class="pb-3">
+
+        @RenderBody()
+    </main>
 </div>
 
 <footer class="border-top footer text-muted">
