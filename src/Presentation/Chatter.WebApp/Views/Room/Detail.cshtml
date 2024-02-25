@@ -177,14 +177,14 @@
                                 @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
                                 {
                                     <li>
-                                        <form method="post" asp-controller="Room" asp-action="DeleteRoom">
-                                            <input type="hidden" name="roomId" value="@Model.Id"/>
-                                            <button type="submit" class="nav-link text-dark">Odayı sil</button>
-                                        </form>
+                                   
+                                        <button type="button" class="nav-link text-dark" onclick="$('#EditRoomForm #Id').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#EditRoomModal">Odayı düzenle</button>
                                     </li>
-
+                                    <li>
+                                        <button type="button" class="nav-link text-dark" onclick="$('#DeleteRoomModal #roomId').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#DeleteRoomModal">Odayı sil</button>
+                                    </li>
                                 }
-                               
+
                             </ul>
                         </div>
 
@@ -223,6 +223,74 @@
 
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="EditRoomModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Oda Güncelleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form asp-controller="Room" asp-action="EditRoom" method="POST" id="EditRoomForm">
+                <div class="modal-body">
+                    <input type="hidden" name="Id" id="Id" value="" asp-for="Id"/>
+                    <div class="form-group row">
+                        <label asp-for="Title" class="col-md-2 col-form-label">Oda Konusu</label>
+                        <div class="col-md-10">
+                            <input type="text" name="Title" id="Title" asp-for="Title" required/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="IsPublic" class="col-md-2 col-form-label">Herkese Açık</label>
+                        <div class="col-md-10">
+                            <select class="form-control" id="IsPublic" name="IsPublic" asp-for="IsPublic" required>
+                                <option value="true">Evet</option>
+                                <option value="false">Hayır</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Capacity" class="col-md-2 col-form-label">Kapasite</label>
+                        <div class="col-md-10">
+                            <input type="number" name="Capacity" id="Capacity" asp-for="Capacity"  required/>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hayır</button>
+                    <button type="submit" class="btn btn-primary">Evet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal" id="DeleteRoomModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" >Bu oda silenecek emin misin?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hayır</button>
+                <form method="post" asp-controller="Room" asp-action="DeleteRoom" id="DeleteRoomForm">
+                    <input type="hidden" name="roomId" id="roomId" value="" />
+                    <button type="submit" class="btn btn-primary">Evet</button>
+                </form>
+
             </div>
         </div>
     </div>

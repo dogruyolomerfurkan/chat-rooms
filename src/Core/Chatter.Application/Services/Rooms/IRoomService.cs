@@ -68,4 +68,6 @@ public interface IRoomService
     /// <param name="deleteRoomInput"></param>
     /// <returns></returns>
     Task DeleteRoomAsync(DeleteRoomInput deleteRoomInput);
+    
+    Task EditRoomAsync(EditRoomInput editRoomInput);
 }

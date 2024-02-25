@@ -153,7 +153,6 @@ public class RoomService : BaseService, IRoomService
     {
         var room = await _roomRepository.Query()
             .Include(x => x.RoomPermissions)
-            .Include(x => x.RoomChatterUsers)
             .FirstOrDefaultAsync(x => x.Id == deleteRoomInput.RoomId);
         
         if (room is null)
@@ -169,5 +168,26 @@ public class RoomService : BaseService, IRoomService
         
         _roomRepository.Delete(room);
     }
-  
+
+    public async Task EditRoomAsync(EditRoomInput editRoomInput)
+    {
+        var room = await _roomRepository.Query()
+            .Include(x => x.RoomPermissions)
+            .FirstOrDefaultAsync(x => x.Id == editRoomInput.Id);
+        
+        if (room is null)
+            throw new FriendlyException("Oda bulunamadı");
+        
+        var user = await _userManager.FindByIdAsync(editRoomInput.UserId);
+        if (user is null)
+            throw new FriendlyException("Kullanıcı bulunamadı");
+
+        if (room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == editRoomInput.UserId)?.PermissionType !=
+            ChatPermissionType.Admin)
+            throw new FriendlyException("Odayı güncelleme yetkiniz yok");
+
+        editRoomInput.Adapt(room);
+        
+        _roomRepository.Update(room);
+    }
 }

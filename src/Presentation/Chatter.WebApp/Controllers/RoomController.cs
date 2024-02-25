@@ -110,4 +110,14 @@ public class RoomController : Controller
         await _roomService.DeleteRoomAsync(deleteRoomInput);
         return RedirectToAction("Index");
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> EditRoom(EditRoomInput editRoomInput)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        editRoomInput.UserId = user.Id;
+        await _roomService.EditRoomAsync(editRoomInput);
+        return RedirectToAction("Detail", new {id = editRoomInput.Id});
+    }
+  
 }
