@@ -1,4 +1,6 @@
 @using Chatter.Domain.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Security.Claims
 @model Chatter.Application.Dtos.Rooms.RoomDto
 
 @{
@@ -168,10 +170,21 @@
                             <ul class="dropdown-menu">
                                 <li>
                                     <form method="post" asp-controller="Room" asp-action="LeaveRoom">
-                                        <input type="hidden" name="roomId" value="@Model.Id" />
+                                        <input type="hidden" name="roomId" value="@Model.Id"/>
                                         <button type="submit" class="nav-link text-dark">Odadan Ayrıl</button>
                                     </form>
                                 </li>
+                                @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
+                                {
+                                    <li>
+                                        <form method="post" asp-controller="Room" asp-action="DeleteRoom">
+                                            <input type="hidden" name="roomId" value="@Model.Id"/>
+                                            <button type="submit" class="nav-link text-dark">Odayı sil</button>
+                                        </form>
+                                    </li>
+
+                                }
+                               
                             </ul>
                         </div>
 

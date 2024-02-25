@@ -38,7 +38,8 @@ public class EfCoreBaseRepository<TEntity, TKey> : IBaseRepository<TEntity, TKey
 
     public void Delete(TEntity entity)
     {
-        _context.Set<TEntity>().Remove(entity);
+        entity.IsDeleted = true;
+        _context.Set<TEntity>().Update(entity);
         SaveChanges();
     }
 
@@ -62,11 +63,45 @@ public class EfCoreBaseRepository<TEntity, TKey> : IBaseRepository<TEntity, TKey
 
     public int SaveChanges()
     {
+        SetAuditability();
         return _context.SaveChanges();
     }
 
     public async Task<int> SaveChangesAsync()
     {
+        SetAuditability();
         return await _context.SaveChangesAsync();
+    }
+
+    protected virtual void SetAuditability()
+    {
+        var entries = _context.ChangeTracker.Entries();
+        foreach (var entityEntry in entries)
+        {
+            switch (entityEntry.Entity, entityEntry.State)
+            {
+                case (BaseEntity<TKey>, EntityState.Added):
+                {
+                    entityEntry.Property(nameof(BaseEntity<TKey>.CreatedDate)).CurrentValue = DateTime.UtcNow;
+                }
+
+                    break;
+                case (BaseEntity<TKey>, EntityState.Modified):
+                {
+                    if (entityEntry.Property(nameof(BaseEntity<TKey>.IsDeleted)).CurrentValue is true)
+                    {
+                        entityEntry.Property(nameof(BaseEntity<TKey>.DeletedDate)).CurrentValue =
+                            DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        entityEntry.Property(nameof(BaseEntity<TKey>.ModifiedDate)).CurrentValue =
+                            DateTime.UtcNow;
+                    }
+
+                    break;
+                }
+            }
+        }
     }
 }

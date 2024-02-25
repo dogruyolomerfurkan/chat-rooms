@@ -97,4 +97,17 @@ public class RoomController : Controller
         await _roomService.LeaveRoomAsync(leaveRoomInput);
         return RedirectToAction("Index");
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> DeleteRoom(int roomId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var deleteRoomInput = new DeleteRoomInput()
+        {
+            RoomId = roomId,
+            UserId = user.Id
+        };
+        await _roomService.DeleteRoomAsync(deleteRoomInput);
+        return RedirectToAction("Index");
+    }
 }

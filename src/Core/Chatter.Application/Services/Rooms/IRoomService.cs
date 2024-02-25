@@ -61,4 +61,11 @@ public interface IRoomService
     /// <param name="leaveRoomInput"></param>
     /// <returns></returns>
     Task LeaveRoomAsync(LeaveRoomInput leaveRoomInput);
+    
+    /// <summary>
+    /// Odayı siler
+    /// </summary>
+    /// <param name="deleteRoomInput"></param>
+    /// <returns></returns>
+    Task DeleteRoomAsync(DeleteRoomInput deleteRoomInput);
 }

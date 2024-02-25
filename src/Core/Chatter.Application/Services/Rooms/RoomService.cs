@@ -124,6 +124,7 @@ public class RoomService : BaseService, IRoomService
     public async Task LeaveRoomAsync(LeaveRoomInput leaveRoomInput)
     {
         var room = await _roomRepository.Query()
+            .Include(x => x.RoomPermissions)
             .Include(x => x.RoomChatterUsers)
             .ThenInclude(x => x.ChatterUser)
             .FirstOrDefaultAsync(x => x.Id == leaveRoomInput.RoomId);
@@ -137,9 +138,36 @@ public class RoomService : BaseService, IRoomService
         
         if(!room.RoomChatterUsers.Select(x => x.ChatterUserId).Contains(user.Id))
             throw new FriendlyException("Kullanıcı zaten odada değil");
-        
+
+        if (room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType ==
+            ChatPermissionType.Admin &&
+            room.RoomPermissions.Count(x => x.PermissionType == ChatPermissionType.Admin) == 1)
+            throw new FriendlyException("Odada başka admin yok. Lütfen başka bir admin atayın.");
+            
         var roomChatterUser = room.RoomChatterUsers.First(x => x.ChatterUserId == user.Id);
         room.RoomChatterUsers?.Remove(roomChatterUser);
         _roomRepository.Update(room);
     }
+
+    public async Task DeleteRoomAsync(DeleteRoomInput deleteRoomInput)
+    {
+        var room = await _roomRepository.Query()
+            .Include(x => x.RoomPermissions)
+            .Include(x => x.RoomChatterUsers)
+            .FirstOrDefaultAsync(x => x.Id == deleteRoomInput.RoomId);
+        
+        if (room is null)
+            throw new FriendlyException("Oda bulunamadı");
+        
+        var user = await _userManager.FindByIdAsync(deleteRoomInput.UserId);
+        if (user is null)
+            throw new FriendlyException("Kullanıcı bulunamadı");
+
+        if (room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == deleteRoomInput.UserId)?.PermissionType !=
+            ChatPermissionType.Admin)
+            throw new FriendlyException("Odayı silme yetkiniz yok");
+        
+        _roomRepository.Delete(room);
+    }
+  
 }

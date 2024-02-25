@@ -39,18 +39,6 @@ public class ApplicationDbContext : IdentityDbContext<ChatterUser>
         base.OnModelCreating(builder);
     }
 
-    public override int SaveChanges()
-    {
-        this.SaveChangesAuditAsync().Wait();
-        return base.SaveChanges();
-    }
-
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
-    {
-        await this.SaveChangesAuditAsync();
-        return await base.SaveChangesAsync();
-    }
-
     public DbSet<Room> Rooms => Set<Room>();
     public DbSet<Invitation> Invitations => Set<Invitation>();
     public DbSet<RoomPermission> RoomPermissions => Set<RoomPermission>();
