@@ -55,12 +55,11 @@ public class RoomService : BaseService, IRoomService
             .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).ToListAsync();
     }
 
-    public async Task<RoomDto?> GetRoomByIdAsync(int roomId)
+    public async Task<RoomDto?> GetRoomDetailAsync(int roomId)
     {
         return await _roomRepository.Query()
             .Where(x => x.Id == roomId)
             .Include(x => x.RoomPermissions)
-            .ThenInclude(x => x.ChatterUser)
             .Include(x => x.RoomChatterUsers)
             .ThenInclude(x => x.ChatterUser)
             .ProjectToType<RoomDto>(CreateTypeAdapterConfig(3)).FirstOrDefaultAsync();

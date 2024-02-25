@@ -1,3 +1,4 @@
+@using Chatter.Domain.Enums
 @model Chatter.Application.Dtos.Rooms.RoomDto
 
 @{
@@ -122,7 +123,7 @@
 }
 
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="card mb-12" style="height: 100%">
             <div class="card-body">
                 <h4 class="card-title">
@@ -139,6 +140,10 @@
                                         <span style="color:red" id="@user.Id">&#11044;&nbsp&nbsp</span>
                                         <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon">
                                         <span class="user-name">@user.UserName</span>
+                                        @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType == ChatPermissionType.Admin)
+                                        {
+                                            <span style="opacity: 0.5; font-size: 13px; margin-left: 10px;"> ~ Admin</span>
+                                        }
                                     </div>
                                 </li>
                             }
@@ -148,7 +153,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-9">
+    <div class="col-md-8">
         <div class="card mb-12">
             <div class="card-body">
                 <div class="d-flex justify-content-between">

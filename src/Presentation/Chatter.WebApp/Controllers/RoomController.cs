@@ -63,7 +63,7 @@ public class RoomController : Controller
     [Authorize]
     public async Task<IActionResult> Detail(int id)
     {
-        var room = await _roomService.GetRoomByIdAsync(id);
+        var room = await _roomService.GetRoomDetailAsync(id);
         var chatMessages = await _chatService.GetChatMessagesAsync(id);
 
         ViewBag.ChatMessages = chatMessages;

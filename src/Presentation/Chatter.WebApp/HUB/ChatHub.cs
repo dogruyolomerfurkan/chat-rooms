@@ -87,7 +87,7 @@ public class ChatHub : Hub
 
     public async Task SendMessage(string message, int roomId)
     {
-        var checkRoom = await _roomService.GetRoomByIdAsync(roomId);
+        var checkRoom = await _roomService.GetRoomDetailAsync(roomId);
         if (checkRoom is null)
             return;
         var checkUserInRoom = checkRoom?.Users?.FirstOrDefault(x => x.Id == GetUserId());
@@ -115,7 +115,7 @@ public class ChatHub : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString());
         
         //odadaki bütün kullanıcıları çek SignalRConnection da olanları userConnected yap
-        var checkRoom = await _roomService.GetRoomByIdAsync(roomId);
+        var checkRoom = await _roomService.GetRoomDetailAsync(roomId);
         if (checkRoom is null)
             return;
         

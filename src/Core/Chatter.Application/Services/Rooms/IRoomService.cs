@@ -16,7 +16,7 @@ public interface IRoomService
     /// </summary>
     /// <param name="roomId"></param>
     /// <returns></returns>
-    Task<RoomDto?> GetRoomByIdAsync(int roomId);
+    Task<RoomDto?> GetRoomDetailAsync(int roomId);
     
     /// <summary>
     /// Kullanıcının olduğu odalar
@@ -61,5 +61,4 @@ public interface IRoomService
     /// <param name="leaveRoomInput"></param>
     /// <returns></returns>
     Task LeaveRoomAsync(LeaveRoomInput leaveRoomInput);
-    
 }
