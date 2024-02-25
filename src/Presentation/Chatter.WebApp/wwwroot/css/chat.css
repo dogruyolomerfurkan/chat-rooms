@@ -1,0 +1,67 @@
+.message-container {
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    margin: auto; /* Yatayda ortalamak için */
+    overflow: hidden;
+    position: relative; /* İçerik pozisyonu için */
+}
+
+.message-body {
+    max-height: 700px; /* Container yüksekliği */
+    overflow-y: auto; /* Dikey scrollbar sadece gerektiğinde görüntüler */
+    margin-bottom: 55px;
+}
+
+.message-list {
+    padding: 10px;
+    margin: 0;
+    list-style: none;
+}
+
+.message {
+    padding: 10px;
+    margin: 5px 0;
+    clear: both;
+    border-radius: 15px;
+}
+.message.username{
+    color:blue;
+    text-decoration: underline;
+    padding: 0px;
+}
+
+.sent-message {
+    background-color: #DCF8C6; /* Sağa gönderilen mesajlar için arka plan rengi */
+    float: right;
+}
+
+.received-message {
+    background-color: #E8E8E8; /* Sola gönderilen mesajlar için arka plan rengi */
+    float: left;
+}
+
+.message-footer {
+    padding: 10px;
+    background-color: #f7f7f7;
+    position: absolute; /* Footer'ın sabitlenmesi */
+    bottom: 0; /* Alttan ayarlama */
+    width: 100%; /* Container ile aynı genişlik */
+}
+
+.message-footer input[type="text"] {
+    width: calc(100% - 30px); /* İnput alanının genişliği */
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.message-footer input[type="submit"] {
+    width: 50px;
+    padding: 5px;
+    margin-left: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}

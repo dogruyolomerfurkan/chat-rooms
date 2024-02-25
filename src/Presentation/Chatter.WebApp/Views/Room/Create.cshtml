@@ -1,0 +1,62 @@
+@model Chatter.Application.Dtos.Rooms.CreateRoomInput
+
+<h2>Yeni Oda</h2>
+<form asp-action="Create" asp-controller="Room" method="post">
+    <div class="form-group">
+        <label for="Title">Oda Konusu</label>
+        <input type="text" class="form-control" id="Title" name="Title" asp-for="Title" required>
+    </div>
+    <div class="form-group">
+        <label for="IsPublic">Herkese Açık</label>
+        <select class="form-control" id="IsPublic" name="IsPublic" asp-for="IsPublic">
+            <option value="true">Evet</option>
+            <option value="false">Hayır</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="Capacity">Kapasite</label>
+        <input type="number" class="form-control" id="Capacity" name="Capacity" asp-for="Capacity" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Oluştur</button>
+</form>
+@* *@
+@* *@
+@* *@
+@* <!-- Modal --> *@
+@* <div class="modal fade" id="CreateRoomModal" aria-labelledby="createRoomLabel" aria-hidden="true"> *@
+@*     <div class="modal-dialog"> *@
+@*         <div class="modal-content"> *@
+@*             <form asp-controller="Room" asp-action="Create" method="post"> *@
+@* *@
+@*                 <div class="modal-header"> *@
+@*                     <h5 class="modal-title" id="createRoomLabel">Create Room</h5> *@
+@*                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"> *@
+@*                         <span aria-hidden="true">&times;</span> *@
+@*                     </button> *@
+@*                 </div> *@
+@*                 <div class="modal-body"> *@
+@*                     <div class="form-group"> *@
+@*                         <label for="Title">Title</label> *@
+@*                         <input type="text" class="form-control" id="Title" name="Title" asp-for="Title" required> *@
+@*                     </div> *@
+@*                     <div class="form-group"> *@
+@*                         <label for="IsPublic">Is Public</label> *@
+@*                         <select class="form-control" id="IsPublic" name="IsPublic" asp-for="IsPublic"> *@
+@*                             <option value="true">Yes</option> *@
+@*                             <option value="false">No</option> *@
+@*                         </select> *@
+@*                     </div> *@
+@*                     <div class="form-group"> *@
+@*                         <label for="Capacity">Capacity</label> *@
+@*                         <input type="number" class="form-control" id="Capacity" name="Capacity" asp-for="Capacity" required> *@
+@*                     </div> *@
+@* *@
+@*                 </div> *@
+@*                 <div class="modal-footer"> *@
+@*                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> *@
+@*                     <button type="submit" class="btn btn-primary">Create</button> *@
+@*                 </div> *@
+@*             </form> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
