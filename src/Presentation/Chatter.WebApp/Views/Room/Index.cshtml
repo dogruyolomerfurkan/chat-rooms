@@ -1,3 +1,5 @@
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model System.Collections.Generic.List<Chatter.Application.Dtos.Rooms.RoomDto>
 @* <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CreateRoomModal2">Yeni Oda</button> *@
 
@@ -47,10 +49,20 @@
                         <a asp-controller="Room" asp-action="Detail" asp-route-id="@room.Id" class="btn btn-outline-primary btn-sm">Details</a>
                         @if (@User.Identity.IsAuthenticated)
                         {
-                            <form asp-controller="Room" asp-action="JoinRoom" method="post" style="display:inline;">
-                                <input type="hidden" name="roomId" value="@room.Id">
-                                <button type="submit" class="btn btn-outline-primary btn-sm ml-3">Chat'e Katıl</button>
-                            </form>
+                            if(room.RoomChatterUsers.Exists(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+                            {
+                                <form asp-controller="Room" asp-action="LeaveRoom" method="post" style="display:inline;">
+                                    <input type="hidden" name="roomId" value="@room.Id">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm ml-3">Leave</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-controller="Room" asp-action="JoinRoom" method="post" style="display:inline;">
+                                    <input type="hidden" name="roomId" value="@room.Id">
+                                    <button type="submit" class="btn btn-outline-primary btn-sm ml-3">Join</button>
+                                </form>
+                            }
                         }
                     </div>
                 </div>

@@ -75,30 +75,14 @@ public class RoomController : Controller
     [HttpPost]
     public async Task<IActionResult> JoinRoom(int roomId)
     {
-        // try
-        // {
-            var user = await _userManager.GetUserAsync(User);
-            var joinRoomInput = new JoinRoomInput
-            {
-                RoomId = roomId,
-                UserId = user.Id
-            };
-            await _roomService.JoinRoomAsync(joinRoomInput);
-            return RedirectToAction("Detail", new {id = roomId});
-        // }
-        // catch (FriendlyException fe)
-        // {
-        //     TempData.Put("message", new ResultMessage()
-        //     {
-        //         Title = "Hata",
-        //         Message = fe.Message,
-        //         Css = "danger"
-        //     });
-        //     RequestHeaders header = Request.GetTypedHeaders();
-        //     Uri uriReferer = header.Referer;
-        //     
-        //     return Redirect(uriReferer?.AbsolutePath);
-        // }
+        var user = await _userManager.GetUserAsync(User);
+        var joinRoomInput = new JoinRoomInput
+        {
+            RoomId = roomId,
+            UserId = user.Id
+        };
+        await _roomService.JoinRoomAsync(joinRoomInput);
+        return RedirectToAction("Detail", new {id = roomId});
     }
 
     [HttpPost]
