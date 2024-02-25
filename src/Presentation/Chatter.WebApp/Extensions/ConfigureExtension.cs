@@ -16,7 +16,11 @@ public static class ConfigureExtension
         services.AddHttpContextAccessor();
         services.AddControllersWithViews().AddRazorRuntimeCompilation();
         services.AddEndpointsApiExplorer(); 
-        services.AddMvc(options => options.EnableEndpointRouting = true);
+        services.AddMvc(options =>
+        {
+            options.Filters.Add<CustomErrorAttribute>();
+            options.EnableEndpointRouting = true;
+        });
 
         services.AddSignalR();
         

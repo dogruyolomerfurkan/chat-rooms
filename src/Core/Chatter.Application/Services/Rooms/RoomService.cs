@@ -9,7 +9,6 @@ using Chatter.Persistence.RepositoryManagement.EfCore.Users;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver.Linq;
 
 namespace Chatter.Application.Services.Rooms;
 
@@ -102,16 +101,17 @@ public class RoomService : BaseService, IRoomService
         
         if (room is null)
             throw new FriendlyException("Oda bulunamadı");
-        
-        if (room.Capacity == room.RoomChatterUsers.Count)
-            throw new FriendlyException("Oda kapasitesi dolu");
 
         var user = await _userManager.FindByIdAsync(joinRoomInput.UserId);
+        
         if (user is null)
             throw new FriendlyException("Kullanıcı bulunamadı");
         
         if(room.RoomChatterUsers.Select(x => x.ChatterUserId).Contains(user.Id))
             throw new FriendlyException("Kullanıcı zaten odada");
+
+        if (room.Capacity == room.RoomChatterUsers.Count)
+            throw new FriendlyException("Oda kapasitesi dolu");
 
         var roomChatterUser = new RoomChatterUser()
         {

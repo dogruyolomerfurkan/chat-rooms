@@ -4,7 +4,6 @@ using Chatter.Application.Services.Chats;
 using Chatter.Application.Services.Rooms;
 using Chatter.Application.Services.Users;
 using Chatter.Domain.Entities.EFCore.Identity;
-using Chatter.Domain.Entities.NoSql;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;

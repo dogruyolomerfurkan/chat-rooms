@@ -23,9 +23,11 @@ public class AccountController : Controller
         return View();
     }
 
-    public IActionResult Login()
+    public IActionResult Login(string? ReturnUrl = null)
     {
-        return View();
+        var loginDto = new LoginDto();
+        loginDto.ReturnUrl = ReturnUrl;
+        return View(loginDto);
     }
     
     [HttpPost]
@@ -38,7 +40,7 @@ public class AccountController : Controller
         var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, false, false);
         if (result.Succeeded)
         {
-            return RedirectToAction("Index", "Home");
+            return Redirect(loginDto.ReturnUrl ?? "~/");
         }
         return View();
     }

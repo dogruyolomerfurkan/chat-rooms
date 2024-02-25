@@ -1,9 +1,7 @@
 using Chatter.Application.Dtos.Chats;
-using Chatter.Domain.Entities.NoSql;
 using Chatter.Persistence.RepositoryManagement.Base;
 using Chatter.Persistence.RepositoryManagement.EfCore.Users;
 using Mapster;
-using Microsoft.EntityFrameworkCore;
 using ChatMessage = Chatter.Domain.Entities.NoSql.ChatMessage;
 
 namespace Chatter.Application.Services.Chats;

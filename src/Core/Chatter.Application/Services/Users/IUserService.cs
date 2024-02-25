@@ -1,4 +1,3 @@
-using Chatter.Application.Dtos.Rooms;
 using Chatter.Application.Dtos.Users;
 
 namespace Chatter.Application.Services.Users;

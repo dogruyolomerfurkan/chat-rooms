@@ -1,4 +1,3 @@
-using Chatter.Application.Dtos.Rooms;
 using Chatter.Application.Dtos.Users;
 using Chatter.Persistence.RepositoryManagement.EfCore.Users;
 using Mapster;
