@@ -12,6 +12,9 @@ public static class ConfigureExtension
         services.AddScoped<IRoomService, RoomService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IChatService, ChatService>();
+        
+        services.AddMapsterConfigurations();
+
     }
     
 }

@@ -69,5 +69,18 @@ public interface IRoomService
     /// <returns></returns>
     Task DeleteRoomAsync(DeleteRoomInput deleteRoomInput);
     
+    /// <summary>
+    /// Oda bilgilerini günceller
+    /// </summary>
+    /// <param name="editRoomInput"></param>
+    /// <returns></returns>
     Task EditRoomAsync(EditRoomInput editRoomInput);
+    
+    
+    /// <summary>
+    /// Odadaki kullanıcılara ait yeni bir izin ekler
+    /// </summary>
+    /// <param name="addPermissionToRoomInput"></param>
+    /// <returns></returns>
+    Task AddPermissionToRoomAsync(AddPermissionToRoomInput addPermissionToRoomInput);
 }
