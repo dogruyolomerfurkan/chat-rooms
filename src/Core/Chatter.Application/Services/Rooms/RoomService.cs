@@ -31,7 +31,7 @@ public class RoomService : BaseService, IRoomService
 
     public async Task<List<RoomDto>> GetRoomsAsync()
     {
-        var rooms = await _roomRepository.Query(false)
+        var rooms = await _roomRepository.Query()
             .Include(x => x.RoomChatterUsers.Where(x => !x.IsDeleted))
             .ToListAsync();
 
@@ -40,7 +40,7 @@ public class RoomService : BaseService, IRoomService
 
     public async Task<List<RoomDto>> GetRoomsByUserIdAsync(string userId)
     {
-        var roomIds = await _userRepository.Query(false)
+        var roomIds = await _userRepository.Query()
             .Where(x => x.Id == userId)
             .Include(x => x.RoomChatterUsers.Where(x => !x.IsDeleted))
             .SelectMany(x => x.RoomChatterUsers!).Select(x => x.RoomId).ToListAsync();
@@ -54,7 +54,7 @@ public class RoomService : BaseService, IRoomService
 
     public async Task<List<RoomDto>> GetPublicRooms()
     {
-        var rooms = await _roomRepository.Query(true)
+        var rooms = await _roomRepository.Query()
             .Where(x => x.IsPublic)
             .Include(x => x.RoomChatterUsers.Where(x => !x.IsDeleted)).ToListAsync();
         
@@ -63,7 +63,7 @@ public class RoomService : BaseService, IRoomService
 
     public async Task<RoomDto?> GetRoomDetailAsync(int roomId)
     {
-        var room = await _roomRepository.Query(true)
+        var room = await _roomRepository.Query()
             .Where(x => x.Id == roomId)
             .Include(x => x.RoomPermissions)
             .Include(x => x.RoomChatterUsers.Where(x => !x.IsDeleted))
@@ -103,7 +103,6 @@ public class RoomService : BaseService, IRoomService
 
     public async Task JoinRoomAsync(JoinRoomInput joinRoomInput)
     {
-        // TODO : AsnoTracking yapmayınca Include conditionı çalışmıyor.
         var room = await _roomRepository.Query()
             .Include(x => x.RoomChatterUsers.Where(x => !x.IsDeleted))
             .ThenInclude(x => x.ChatterUser)
