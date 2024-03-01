@@ -12,11 +12,11 @@
     @RenderSection("Css", false)
 
 </head>
-<body style="background-color: #054640">
+<body style=" background-color: #054640">
 <header>
     @Html.Partial("_navbar")
 </header>
-<div class="container pt-100 mb-5">
+<div class="mb-5" style="padding-top: 70px;">
     @if (TempData["message"] != null)
     {
         @Html.Partial("_resultmessage", TempData.Get<ResultMessage>("message"))
@@ -29,7 +29,7 @@
 </div>
 
 <footer class="border-top footer text-muted">
-    <div class="container">
+    <div class="container" style="color:white">
         &copy; 2024 - Emre Onur | Chatter App - Privacy
     </div>
 </footer>

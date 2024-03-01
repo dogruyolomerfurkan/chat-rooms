@@ -6,7 +6,7 @@
 @{
     var chatMessages = (List<Chatter.Application.Dtos.Chats.ChatMessage>) ViewBag.ChatMessages;
     var currentUserId = (string) ViewBag.CurrentUserId;
-
+    Layout = "_ChatLayout";
 }
 
 @section Css
@@ -61,6 +61,7 @@
         #userList .dropend:hover{
             background-color: #f1f1f1;
         }
+     
    
     </style>
 }
@@ -177,71 +178,67 @@
         </div>
     </div>
     <div class="col-md-8">
-        <div class="card mb-12">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <h4 class="card-title">
-                        <b>@Model.Title</b>
-                    </h4>
-                    <div class="mb-1">
-                        <div class="dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                                <i class="fa-sharp fa-solid fa-gear fa-xl"></i>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <button type="button" class="nav-link text-dark" onclick="$('#LeaveRoomForm #roomId').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#LeaveRoomModal">
-                                        Odadan Ayrıl
-                                    </button>
-                                </li>
-                                @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
-                                {
-                                    <li>
-                                        <button type="button" class="nav-link text-dark" onclick="$('#EditRoomForm #Id').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#EditRoomModal">Odayı düzenle</button>
-                                    </li>
-                                    <li>
-                                        <button type="button" class="nav-link text-dark" onclick="$('#DeleteRoomForm #roomId').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#DeleteRoomModal">Odayı sil</button>
-                                    </li>
-                                }
+        <div class="d-flex justify-content-between">
+            <h4 class="card-title" style="color:white;">
+                <b style="margin-left: 10px;">@Model.Title</b>
+            </h4>
+            <div class="mb-1">
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                        <i class="fa-sharp fa-solid fa-gear fa-xl"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <button type="button" class="nav-link text-dark" onclick="$('#LeaveRoomForm #roomId').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#LeaveRoomModal">
+                                Odadan Ayrıl
+                            </button>
+                        </li>
+                        @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
+                        {
+                            <li>
+                                <button type="button" class="nav-link text-dark" onclick="$('#EditRoomForm #Id').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#EditRoomModal">Odayı düzenle</button>
+                            </li>
+                            <li>
+                                <button type="button" class="nav-link text-dark" onclick="$('#DeleteRoomForm #roomId').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#DeleteRoomModal">Odayı sil</button>
+                            </li>
+                        }
 
-                            </ul>
-                        </div>
-
-                    </div>
+                    </ul>
                 </div>
-                <div class="message-container">
-                    <div class="message-body" id="message-body">
-                        <ul class="message-list" id="message-list">
-                            @{
-                                foreach (var message in chatMessages)
-                                {
-                                    if (message.SenderUserId == currentUserId)
-                                    {
-                                        <div class="message sent-message">
-                                            <span class="message username">@message.UserInfo.UserName</span>
-                                            <p>@message.Message</p>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="message received-message">
-                                            <span class="message username">@message.UserInfo.UserName</span>
-                                            <p>@message.Message</p>
-                                        </div>
-                                    }
-                                }
+
+            </div>
+        </div>
+        <div class="message-container">
+            <div class="message-body" id="message-body">
+                <ul class="message-list" id="message-list">
+                    @{
+                        foreach (var message in chatMessages)
+                        {
+                            if (message.SenderUserId == currentUserId)
+                            {
+                                <div class="message sent-message ">
+                                    <span class="message username">@message.UserInfo.UserName</span>
+                                    <p>@message.Message</p>
+                                </div>
                             }
-                        </ul>
-                    </div>
-                    <div class="message-footer">
-                        <input type="text" id="newMessageInput" placeholder="Mesajınızı yazın...">
-                        <a id="sendMessageBtn" href="#" style="pointer-events: none;"
-                           data-toggle="tooltip" data-placement="bottom" title="Send">
-                            <i id="sendMessageIcon" class="fas fa-solid fa-paper-plane fa-xl" style="color: #74C0FC; opacity: 0.5"></i>
-                        </a>
+                            else
+                            {
+                                <div class="message received-message ">
+                                    <span class="message username">@message.UserInfo.UserName</span>
+                                    <p>@message.Message</p>
+                                </div>
+                            }
+                        }
+                    }
+                </ul>
+            </div>
+            <div class="message-footer">
+                <input type="text" id="newMessageInput" placeholder="Mesajınızı yazın...">
+                <a id="sendMessageBtn" href="#" style="pointer-events: none;"
+                   data-toggle="tooltip" data-placement="bottom" title="Send">
+                    <i id="sendMessageIcon" class="fas fa-solid fa-paper-plane fa-xl" style="color: #74C0FC; opacity: 0.5"></i>
+                </a>
 
-                    </div>
-                </div>
             </div>
         </div>
     </div>

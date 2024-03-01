@@ -13,7 +13,6 @@ $(function () {
         function scrollToBottom() {
             var container = document.getElementById("message-body");
             container.scrollTop = container.scrollHeight;
-            console.log("Aşağı kaydırdım");
         }
 
         window.onload = scrollToBottom;

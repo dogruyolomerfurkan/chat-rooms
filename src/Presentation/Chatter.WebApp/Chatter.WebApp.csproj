@@ -35,4 +35,9 @@
       <_ContentIncludedByDefault Remove="Pages\Room\Index.cshtml" />
     </ItemGroup>
 
+ 
+    <ItemGroup>
+      <AdditionalFiles Include="Views\Shared\_ChatLayout.cshtml" />
+    </ItemGroup>
+
 </Project>
