@@ -22,7 +22,7 @@ app.UseStaticFiles();
 app.CustomStaticFiles();
 app.UseRouting();
 
-app.UpdateApplicationDb();
+await app.UpdateApplicationDb();
 app.SeedIdentity();
 
 app.UseAuthentication();

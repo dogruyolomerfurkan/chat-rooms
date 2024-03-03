@@ -7,7 +7,7 @@ namespace Chatter.Persistence.Extensions;
 
 public static class UpdateDatabaseExtension
 {
-    public static void UpdateApplicationDb(this IApplicationBuilder app, bool useMigrate = true)
+    public static async Task UpdateApplicationDb(this IApplicationBuilder app, bool useMigrate = true)
     {
         using (var serviceScope = app.ApplicationServices.CreateScope())
         {
@@ -16,7 +16,7 @@ public static class UpdateDatabaseExtension
                 var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     
                 if(useMigrate)
-                    context.Database.Migrate();
+                    await context.Database.MigrateAsync();
                     
             }
             catch (System.Exception ex)
