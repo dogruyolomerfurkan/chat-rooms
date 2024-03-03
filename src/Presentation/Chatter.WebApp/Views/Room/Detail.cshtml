@@ -52,17 +52,39 @@
             padding: 0;
             list-style: none;
         }
+        
         li {
         list-style-type: none;
         
             text-align: left;
             margin-left: 0;
         }
+        
         #userList .dropend:hover{
-            background-color: #f1f1f1;
+            background-color: #0d1e24;
         }
-     
-   
+        #detailDiv
+        {
+          margin-right: auto;
+          margin-left: auto;
+        }
+        
+        .title-container
+        {
+           background-color: #025043;
+           border: 2px solid #025043;
+           border-radius: 10px 10px 0 0;
+        } 
+    .dropdown-toggle::after {
+        display: none;
+    }
+    .user-container .card-body{
+        background-color: #025043;
+        border: 2px solid #025043;
+        border-radius: 10px;
+        color: white;
+    }
+    
     </style>
 }
 
@@ -128,9 +150,9 @@
 
 }
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="card mb-12" style="height: 100%">
+<div class="row" id="detailDiv">
+    <div class="col-md-3">
+        <div class="card mb-12 user-container" style="height: 100%">
             <div class="card-body">
                 <h4 class="card-title">
                     <b>Kullanıcılar</b>
@@ -177,29 +199,29 @@
             </div>
         </div>
     </div>
-    <div class="col-md-8">
-        <div class="d-flex justify-content-between">
+    <div class="col-md-9">
+        <div class="d-flex justify-content-between title-container">
             <h4 class="card-title" style="color:white;">
                 <b style="margin-left: 10px;">@Model.Title</b>
             </h4>
             <div class="mb-1">
                 <div class="dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                        <i class="fa-sharp fa-solid fa-gear fa-xl"></i>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" id="settingDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false" style="padding-right: 10px;">
+                        <i class="fa-sharp fa-solid fa-gear fa-lg text-light"></i>
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="settingDropdownMenu">
                         <li>
-                            <button type="button" class="nav-link text-dark" onclick="$('#LeaveRoomForm #roomId').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#LeaveRoomModal">
+                            <button type="button" class="dropdown-item" onclick="$('#LeaveRoomForm #roomId').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#LeaveRoomModal">
                                 Odadan Ayrıl
                             </button>
                         </li>
                         @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
                         {
                             <li>
-                                <button type="button" class="nav-link text-dark" onclick="$('#EditRoomForm #Id').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#EditRoomModal">Odayı düzenle</button>
+                                <button type="button" class="dropdown-item" onclick="$('#EditRoomForm #Id').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#EditRoomModal">Odayı düzenle</button>
                             </li>
                             <li>
-                                <button type="button" class="nav-link text-dark" onclick="$('#DeleteRoomForm #roomId').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#DeleteRoomModal">Odayı sil</button>
+                                <button type="button" class="dropdown-item" onclick="$('#DeleteRoomForm #roomId').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#DeleteRoomModal">Odayı sil</button>
                             </li>
                         }
 

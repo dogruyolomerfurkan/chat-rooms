@@ -1,6 +1,6 @@
 .message-container {
-    border: 2px solid #ccc;
-    border-radius: 10px;
+    border: 2px solid #696363;
+    border-radius: 0 0 10px 10px;
     margin: auto; /* Yatayda ortalamak için */
     overflow: hidden;
     position: relative; /* İçerik pozisyonu için */
