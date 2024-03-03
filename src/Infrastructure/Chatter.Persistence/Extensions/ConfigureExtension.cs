@@ -1,6 +1,7 @@
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Domain.Entities.NoSql;
 using Chatter.Persistence.Application.Context;
+using Chatter.Persistence.Constants;
 using Chatter.Persistence.RepositoryManagement.Base;
 using Chatter.Persistence.RepositoryManagement.EfCore.Invitations;
 using Chatter.Persistence.RepositoryManagement.EfCore.Rooms;
@@ -20,10 +21,31 @@ public static class ConfigureExtension
     {
         services.AddDbContext<ApplicationDbContext>(options =>
         {
+            var provider = configuration.GetValue("provider", Provider.Postgres.Name);
+
+            if (provider == Provider.Postgres.Name)
+            {
+                options.UseNpgsql(
+                    configuration.GetConnectionString(Provider.Postgres.Name)!,
+                    x => x.MigrationsAssembly(Provider.Postgres.Assembly)
+                ).UseSnakeCaseNamingConvention();
+                
+                AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+                AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+            }
+
+            if (provider == Provider.SqlServer.Name)
+            {
+                options.UseSqlServer(
+                    configuration.GetConnectionString(Provider.SqlServer.Name)!,
+                    x => x.MigrationsAssembly(Provider.SqlServer.Assembly)
+                );
+            }
+
             options.EnableSensitiveDataLogging();
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            
         });
-        
+
         services.AddScoped<IBaseRepository<ChatMessage, string>, NoSqlBaseRepository<ChatMessage>>();
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IInvitationRepository, InvitationRepository>();

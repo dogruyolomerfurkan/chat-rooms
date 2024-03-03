@@ -10,10 +10,33 @@ public class ApplicationDbContext : IdentityDbContext<ChatterUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
+       
     }
-
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.EnableSensitiveDataLogging();
+    }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        builder.Entity<RoomChatterUser>()
+            .HasKey(tl => new {tl.ChatterUserId, tl.RoomId});
+        
+        builder.Entity<RoomChatterUser>()
+            .HasOne(x => x.ChatterUser)
+            .WithMany(x => x.RoomChatterUsers)
+            .HasForeignKey(x => x.ChatterUserId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.Entity<RoomChatterUser>()
+            .HasOne(x => x.Room)
+            .WithMany(x => x.RoomChatterUsers)
+            .HasForeignKey(x => x.RoomId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+        
         builder.Entity<ChatterUser>()
             .HasMany(x => x.SentInvitations)
             .WithOne(x => x.SenderUser)
@@ -25,17 +48,8 @@ public class ApplicationDbContext : IdentityDbContext<ChatterUser>
             .WithOne(x => x.InvitedUser)
             .HasForeignKey(x => x.InvitedUserId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Entity<RoomChatterUser>()
-            .HasOne(x => x.ChatterUser)
-            .WithMany(x => x.RoomChatterUsers)
-            .HasForeignKey(x => x.ChatterUserId);
-
-        builder.Entity<RoomChatterUser>()
-            .HasOne(x => x.Room)
-            .WithMany(x => x.RoomChatterUsers)
-            .HasForeignKey(x => x.RoomId);
-
+            
+        
         base.OnModelCreating(builder);
     }
 

@@ -4,14 +4,16 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Core\Chatter.Application\Chatter.Application.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\Migrations\Chatter.PostgreMigrations\Chatter.PostgreMigrations.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\Migrations\Chatter.SqlServerMigrations\Chatter.SqlServerMigrations.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Models\Rooms" />
       <Folder Include="wwwroot\img\profileImages" />
       <Folder Include="wwwroot\lib" />
     </ItemGroup>
@@ -31,13 +33,9 @@
 
  
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Pages\Room\Create.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Room\Index.cshtml" />
+      <Content Remove="wwwroot\img\profileImages\berfoline.jpg" />
+      <Content Remove="wwwroot\img\profileImages\berfoberfo.jpg" />
     </ItemGroup>
 
  
-    <ItemGroup>
-      <AdditionalFiles Include="Views\Shared\_ChatLayout.cshtml" />
-    </ItemGroup>
-
 </Project>

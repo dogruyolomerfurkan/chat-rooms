@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Chatter.Persistence.Migrations
+namespace Chatter.SqlServerMigrations.Migrations
 {
     /// <inheritdoc />
-    public partial class CreatedApplicationEntities : Migration
+    public partial class InitialProject : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,6 +33,11 @@ namespace Chatter.Persistence.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StatusDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProfileImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -217,48 +222,58 @@ namespace Chatter.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "JTable_RoomBlockedUsers",
+                name: "RoomChatterUser",
                 columns: table => new
                 {
-                    BlockedRoomsId = table.Column<int>(type: "int", nullable: false),
-                    BlockedUsersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    RoomId = table.Column<int>(type: "int", nullable: false),
+                    ChatterUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsBlocked = table.Column<bool>(type: "bit", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_JTable_RoomBlockedUsers", x => new { x.BlockedRoomsId, x.BlockedUsersId });
+                    table.PrimaryKey("PK_RoomChatterUser", x => new { x.ChatterUserId, x.RoomId });
                     table.ForeignKey(
-                        name: "FK_JTable_RoomBlockedUsers_AspNetUsers_BlockedUsersId",
-                        column: x => x.BlockedUsersId,
+                        name: "FK_RoomChatterUser_AspNetUsers_ChatterUserId",
+                        column: x => x.ChatterUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_JTable_RoomBlockedUsers_Rooms_BlockedRoomsId",
-                        column: x => x.BlockedRoomsId,
+                        name: "FK_RoomChatterUser_Rooms_RoomId",
+                        column: x => x.RoomId,
                         principalTable: "Rooms",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "JTable_RoomUsers",
+                name: "RoomPermissions",
                 columns: table => new
                 {
-                    ChatRoomsId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoomId = table.Column<int>(type: "int", nullable: false),
+                    ChatterUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PermissionType = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_JTable_RoomUsers", x => new { x.ChatRoomsId, x.UsersId });
+                    table.PrimaryKey("PK_RoomPermissions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_JTable_RoomUsers_AspNetUsers_UsersId",
-                        column: x => x.UsersId,
+                        name: "FK_RoomPermissions_AspNetUsers_ChatterUserId",
+                        column: x => x.ChatterUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_JTable_RoomUsers_Rooms_ChatRoomsId",
-                        column: x => x.ChatRoomsId,
+                        name: "FK_RoomPermissions_Rooms_RoomId",
+                        column: x => x.RoomId,
                         principalTable: "Rooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -319,14 +334,19 @@ namespace Chatter.Persistence.Migrations
                 column: "SenderUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_JTable_RoomBlockedUsers_BlockedUsersId",
-                table: "JTable_RoomBlockedUsers",
-                column: "BlockedUsersId");
+                name: "IX_RoomChatterUser_RoomId",
+                table: "RoomChatterUser",
+                column: "RoomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_JTable_RoomUsers_UsersId",
-                table: "JTable_RoomUsers",
-                column: "UsersId");
+                name: "IX_RoomPermissions_ChatterUserId",
+                table: "RoomPermissions",
+                column: "ChatterUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RoomPermissions_RoomId",
+                table: "RoomPermissions",
+                column: "RoomId");
         }
 
         /// <inheritdoc />
@@ -351,10 +371,10 @@ namespace Chatter.Persistence.Migrations
                 name: "Invitations");
 
             migrationBuilder.DropTable(
-                name: "JTable_RoomBlockedUsers");
+                name: "RoomChatterUser");
 
             migrationBuilder.DropTable(
-                name: "JTable_RoomUsers");
+                name: "RoomPermissions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

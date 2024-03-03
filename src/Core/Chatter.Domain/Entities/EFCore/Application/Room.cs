@@ -39,12 +39,5 @@ public class Room : BaseEntity<int>
     /// </summary>
     public List<RoomChatterUser> RoomChatterUsers { get; set; } = new List<RoomChatterUser>();
 
-    /// <summary>
-    /// Bloklu kullanıcılar
-    /// </summary>
-    public List<RoomChatterUser>? BlockedUsers
-    {
-        get => RoomChatterUsers?.Where(x => x.IsBlocked).ToList();
-    }
 
 }

@@ -1,4 +1,5 @@
-﻿using Chatter.Domain.Entities.EFCore.Application;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Chatter.Domain.Entities.EFCore.Application;
 using Microsoft.AspNetCore.Identity;
 
 namespace Chatter.Domain.Entities.EFCore.Identity;
@@ -25,9 +26,5 @@ public class ChatterUser : IdentityUser
     public List<Invitation>? SentInvitations { get; set; }
     public List<Invitation>? ReceivedInvitations { get; set; }
     public List<RoomChatterUser>? RoomChatterUsers { get; set; }
-
-    public List<RoomChatterUser>? RoomBlockedChatterUser
-    {
-        get => RoomChatterUsers?.Where(x => x.IsBlocked).ToList();
-    }
+    
 }
