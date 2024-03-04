@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chatter.WebApp.Controllers;
 
-
 [Authorize(Roles = "Admin")]
 public class AdminController : Controller
 {
@@ -27,36 +26,40 @@ public class AdminController : Controller
     {
         return View();
     }
+
     public async Task<IActionResult> ListRoom()
     {
         var rooms = await _roomService.GetRoomsAsync();
         return View(rooms);
     }
+
     public async Task<IActionResult> ListUser()
     {
         var users = await _userManager.Users.ToListAsync();
-        return View("User/List",users);
+        return View("User/List", users);
     }
-    
+
     [HttpGet("/Admin/EditUser/{userId}")]
     public async Task<IActionResult> EditUser(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         user.ProfileImagePath ??= "default_img_orange.jpg";
-        return View("User/Edit",user);
+        return View("User/Edit", user);
     }
+
     [HttpPost]
     public async Task<IActionResult> EditUser(ChatterUser chatterUser, IFormFile profileImage)
     {
         var user = await _userManager.FindByIdAsync(chatterUser.Id);
 
-        if(profileImage != null)
+        if (profileImage != null)
         {
             user.ProfileImagePath = chatterUser.UserName + ".jpg";
-                    
-            var path = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot\\img\\profileImages",chatterUser.UserName + ".jpg");
 
-            using(var stream = new FileStream(path,FileMode.Create))
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "profileImages",
+                chatterUser.UserName + ".jpg");
+
+            using (var stream = new FileStream(path, FileMode.Create))
             {
                 await profileImage.CopyToAsync(stream);
             }
@@ -66,7 +69,7 @@ public class AdminController : Controller
         user.LastName = chatterUser.LastName;
         user.UserName = chatterUser.UserName;
         user.Email = chatterUser.Email;
-        
+
         var result = await _userManager.UpdateAsync(user);
         if (result.Succeeded)
         {
@@ -82,7 +85,7 @@ public class AdminController : Controller
         {
             ModelState.AddModelError("", "Bilinmeyen bir hata oluştu lütfen tekrar deneyiniz");
         }
+
         return RedirectToAction("ListUser");
     }
-   
 }
