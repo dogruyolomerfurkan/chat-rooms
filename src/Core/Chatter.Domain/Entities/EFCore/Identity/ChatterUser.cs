@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Chatter.Domain.Entities.EFCore.Application;
+﻿using Chatter.Domain.Entities.EFCore.Application;
 using Microsoft.AspNetCore.Identity;
 
 namespace Chatter.Domain.Entities.EFCore.Identity;

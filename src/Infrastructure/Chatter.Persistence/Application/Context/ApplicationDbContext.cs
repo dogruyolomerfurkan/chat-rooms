@@ -1,6 +1,5 @@
 using Chatter.Domain.Entities.EFCore.Application;
 using Chatter.Domain.Entities.EFCore.Identity;
-using Chatter.Persistence.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

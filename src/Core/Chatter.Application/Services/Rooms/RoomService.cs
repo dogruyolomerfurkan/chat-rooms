@@ -1,6 +1,5 @@
 using Chatter.Application.Dtos.Rooms;
 using Chatter.Common.Exceptions;
-using Chatter.Common.Models.ErrorModels;
 using Chatter.Domain.Entities.EFCore.Application;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Domain.Enums;
@@ -184,7 +183,7 @@ public class RoomService : BaseService, IRoomService
         if (user is null)
             throw new FriendlyException("Kullanıcı bulunamadı");
 
-        if (room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == deleteRoomInput.UserId)?.PermissionType !=
+        if (!IsFullAdmin(deleteRoomInput.UserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == deleteRoomInput.UserId)?.PermissionType !=
             ChatPermissionType.Admin)
             throw new FriendlyException("Odayı silme yetkiniz yok");
 
@@ -204,7 +203,7 @@ public class RoomService : BaseService, IRoomService
         if (user is null)
             throw new FriendlyException("Kullanıcı bulunamadı");
 
-        if (room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == editRoomInput.UserId)?.PermissionType !=
+        if (!IsFullAdmin(editRoomInput.UserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == editRoomInput.UserId)?.PermissionType !=
             ChatPermissionType.Admin)
             throw new FriendlyException("Odayı güncelleme yetkiniz yok");
 
@@ -226,7 +225,7 @@ public class RoomService : BaseService, IRoomService
         if (requesterUser is null)
             throw new FriendlyException("İstek atan kullanıcı bulunamadı");
 
-        if (room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == addPermissionToRoomInput.RequestedUserId)
+        if (!IsFullAdmin(addPermissionToRoomInput.RequestedUserId) || room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == addPermissionToRoomInput.RequestedUserId)
                 ?.PermissionType !=
             ChatPermissionType.Admin)
             throw new FriendlyException("Odaya izin verme yetkiniz yok");
@@ -245,5 +244,13 @@ public class RoomService : BaseService, IRoomService
         existPermission!.PermissionType = addPermissionToRoomInput.PermissionType;
 
         _roomRepository.Update(room);
+    }
+
+    private bool IsFullAdmin(string userId)
+    {
+        var user = _userManager.FindByIdAsync(userId).Result;
+        var userRoles = _userManager.GetRolesAsync(user).Result;
+
+        return userRoles.Any(x => x == ChatPermissionType.Admin.ToString());
     }
 }

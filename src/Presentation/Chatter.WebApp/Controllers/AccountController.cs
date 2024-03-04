@@ -1,4 +1,5 @@
 using Chatter.Domain.Entities.EFCore.Identity;
+using Chatter.Domain.Enums;
 using Chatter.WebApp.Extensions;
 using Chatter.WebApp.Models;
 using Chatter.WebApp.Models.Account;
@@ -89,9 +90,17 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
+            var roleResult = await _userManager.AddToRoleAsync(user, ChatPermissionType.Chatter.ToString());
+            
+            if (!roleResult.Succeeded)
+            {
+                ModelState.AddModelError("", "Bilinmeyen bir hata oluştu lütfen tekrar deneyiniz");
+                return View(model);
+            }
+            
             TempData.Put("message", new ResultMessage()
             {
-                Title = "Hesap Açışışı",
+                Title = "Hesap Açılışı",
                 Message = "Hesap başarılı bir şekilde oluşturuldu. ",
                 Css = "warning"
             });
