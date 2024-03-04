@@ -46,21 +46,22 @@
                         </small>
                     </div>
                     <div class="card-footer text-center">
-                        <a asp-controller="Room" asp-action="Detail" asp-route-id="@room.Id" class="btn btn-outline-primary btn-sm">Details</a>
                         @if (@User.Identity.IsAuthenticated)
                         {
                             if(room.RoomChatterUsers.Exists(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
                             {
+                                <a asp-controller="Room" asp-action="Detail" asp-route-id="@room.Id" class="btn btn-outline-primary btn-sm">Sohbete Git</a>
+
                                 <form asp-controller="Room" asp-action="LeaveRoom" method="post" style="display:inline;">
                                     <input type="hidden" name="roomId" value="@room.Id">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm ml-3">Leave</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm ml-3">Ayrıl</button>
                                 </form>
                             }
                             else
                             {
                                 <form asp-controller="Room" asp-action="JoinRoom" method="post" style="display:inline;">
                                     <input type="hidden" name="roomId" value="@room.Id">
-                                    <button type="submit" class="btn btn-outline-primary btn-sm ml-3">Join</button>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm ml-3">Katıl</button>
                                 </form>
                             }
                         }
