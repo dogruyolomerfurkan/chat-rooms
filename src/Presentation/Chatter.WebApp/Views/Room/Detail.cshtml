@@ -215,7 +215,7 @@
                                 Odadan Ayrıl
                             </button>
                         </li>
-                        @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
+                        @if (User.IsInRole(ChatPermissionType.Admin.ToString()) || Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
                         {
                             <li>
                                 <button type="button" class="dropdown-item" onclick="$('#EditRoomForm #Id').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#EditRoomModal">Odayı düzenle</button>
