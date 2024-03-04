@@ -22,7 +22,7 @@ $(function () {
         signalRConnection.on("ChatRoom", function (chatMessage, userShortInfo, senderConnectionId) {
             var connectionId = signalRConnection.connectionId;
 
-            if (connectionId != senderConnectionId) {
+            if (userShortInfo.id != userId) {
                 $MessageBox.append(`<div class="message received-message">
                                 <span class="message username">${userShortInfo.userName}</span>
                                 <p>${chatMessage.message}</p>
@@ -52,10 +52,10 @@ $(function () {
             $(`.user-profile #${userId}`).css('color', 'green');
 
         }
-    function setOffline(userId){
-        $(`.user-profile #${userId}`).css('color', 'red');
-
-    }
+        function setOffline(userId){
+            $(`.user-profile #${userId}`).css('color', 'red');
+    
+        }
 
         document.getElementById('newMessageInput').addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {

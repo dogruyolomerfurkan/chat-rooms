@@ -1,10 +1,12 @@
+@using Chatter.WebApp.HUB
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model System.Collections.Generic.List<Chatter.Domain.Entities.EFCore.Identity.ChatterUser>
 
 
 @section Css{
     <link rel="stylesheet" href="~/modules/datatables/media/css/jquery.dataTables.css">
     <link rel="stylesheet" href="~/modules/datatables/media/css/jquery.dataTables.min.css">
-    
+
     <style>
     .user-profile {
       display: flex;
@@ -31,6 +33,8 @@
     <script>
       $(document).ready(function () {
              $('#userTable').DataTable();
+             
+              
          }); 
     </script>
 }
@@ -43,6 +47,7 @@
     <thead>
     <tr>
         <th> </th>
+        <th>Session</th>
         <th>User ID</th>
         <th>Username</th>
         <th>Name</th>
@@ -71,9 +76,21 @@
                         <i class="fas fa-key"></i>
                     </a>
                 </td>
+                @if (ActiveConnections.SignalRConnections.FirstOrDefault(x => x.UserId == user.Id) != null)
+                {
+                    <td>
+                        <span  style="color:green" id="@user.Id">&#11044;&nbsp&nbsp</span>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <span style="color:red" id="@user.Id">&#11044;&nbsp&nbsp</span>
+                    </td>
+                }
                 <td>@user.Id</td>
                 <td>
-                    
+
                     <div class="user-profile">
                         <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon">
                         <span class="user-name">@user.UserName</span>
@@ -82,8 +99,9 @@
                 <td>@user.FirstName</td>
                 <td>@user.LastName</td>
                 <td>@user.CreatedDate</td>
-                
+
             </tr>
+          
         }
     }
     </tbody>

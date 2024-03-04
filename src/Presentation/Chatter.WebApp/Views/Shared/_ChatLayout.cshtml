@@ -12,11 +12,11 @@
     @RenderSection("Css", false)
 
 </head>
-<body style=" background-color: #054640">
+<body>
 <header>
     @Html.Partial("_navbar")
 </header>
-<div class="mb-5" style="padding-top: 70px;">
+<div class="mb-5">
     @if (TempData["message"] != null)
     {
         @Html.Partial("_resultmessage", TempData.Get<ResultMessage>("message"))
@@ -28,15 +28,14 @@
     </main>
 </div>
 
-<footer class="border-top footer text-muted">
-    <div class="container" style="color:white">
+<footer class="border-top footer">
+    <div class="container">
         &copy; 2024 - Emre Onur | Chatter App - Privacy
     </div>
 </footer>
 
 <script src="~/modules/jquery/dist/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="~/modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="~/modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
 
