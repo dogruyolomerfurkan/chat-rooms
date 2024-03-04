@@ -31,8 +31,7 @@ public class RoomService : BaseService, IRoomService
     public async Task<List<RoomDto>> GetRoomsAsync()
     {
         var rooms = await _roomRepository.Query(true)
-            .Where(x => !x.IsDeleted)
-            .Include(x => x.RoomChatterUsers.Where(x => !x.IsDeleted))
+            .Include(x => x.RoomChatterUsers)
             .ToListAsync();
 
         return rooms.Adapt<List<RoomDto>>();
@@ -42,12 +41,12 @@ public class RoomService : BaseService, IRoomService
     {
         var roomIds = await _userRepository.Query(true)
             .Where(x => x.Id == userId)
-            .Include(x => x.RoomChatterUsers.Where(x => !x.IsDeleted))
+            .Include(x => x.RoomChatterUsers)
             .SelectMany(x => x.RoomChatterUsers!).Select(x => x.RoomId).ToListAsync();
 
         var rooms = await _roomRepository.Query()
-            .Include(x => x.RoomChatterUsers.Where(x => !x.IsDeleted))
-            .Where(x => roomIds.Contains(x.Id) && !x.IsDeleted).ToListAsync();
+            .Include(x => x.RoomChatterUsers)
+            .Where(x => roomIds.Contains(x.Id)).ToListAsync();
 
         return rooms.Adapt<List<RoomDto>>();
     }
@@ -55,8 +54,8 @@ public class RoomService : BaseService, IRoomService
     public async Task<List<RoomDto>> GetPublicRooms()
     {
         var rooms = await _roomRepository.Query(true)
-            .Where(x => x.IsPublic && !x.IsDeleted)
-            .Include(x => x.RoomChatterUsers.Where(x => !x.IsDeleted)).ToListAsync();
+            .Where(x => x.IsPublic)
+            .Include(x => x.RoomChatterUsers).ToListAsync();
         
         return rooms.Adapt<List<RoomDto>>();
     }
@@ -66,7 +65,7 @@ public class RoomService : BaseService, IRoomService
         var room = await _roomRepository.Query(true)
             .Where(x => x.Id == roomId)
             .Include(x => x.RoomPermissions)
-            .Include(x => x.RoomChatterUsers.Where(x => !x.IsDeleted))
+            .Include(x => x.RoomChatterUsers)
             .ThenInclude(x => x.ChatterUser).FirstOrDefaultAsync();
 
         if (room is null)
@@ -104,9 +103,9 @@ public class RoomService : BaseService, IRoomService
     public async Task JoinRoomAsync(JoinRoomInput joinRoomInput)
     {
         var room = await _roomRepository.Query()
-            .Include(x => x.RoomChatterUsers.Where(x => !x.IsDeleted))
+            .Include(x => x.RoomChatterUsers)
             .ThenInclude(x => x.ChatterUser)
-            .FirstOrDefaultAsync(x => x.Id == joinRoomInput.RoomId && !x.IsDeleted);
+            .FirstOrDefaultAsync(x => x.Id == joinRoomInput.RoomId);
 
         if (room is null)
             throw new FriendlyException("Oda bulunamadı");
@@ -145,9 +144,9 @@ public class RoomService : BaseService, IRoomService
         // TODO : AsnoTracking yapmayınca Include conditionı çalışmıyor.
         var room = await _roomRepository.Query()
             .Include(x => x.RoomPermissions)
-            .Include(x => x.RoomChatterUsers.Where(x => !x.IsDeleted))
+            .Include(x => x.RoomChatterUsers)
             .ThenInclude(x => x.ChatterUser)
-            .FirstOrDefaultAsync(x => x.Id == leaveRoomInput.RoomId && !x.IsDeleted);
+            .FirstOrDefaultAsync(x => x.Id == leaveRoomInput.RoomId);
 
         if (room is null)
             throw new FriendlyException("Oda bulunamadı");
@@ -174,7 +173,7 @@ public class RoomService : BaseService, IRoomService
     {
         var room = await _roomRepository.Query()
             .Include(x => x.RoomPermissions)
-            .FirstOrDefaultAsync(x => x.Id == deleteRoomInput.RoomId && !x.IsDeleted);
+            .FirstOrDefaultAsync(x => x.Id == deleteRoomInput.RoomId);
 
         if (room is null)
             throw new FriendlyException("Oda bulunamadı");
@@ -183,8 +182,8 @@ public class RoomService : BaseService, IRoomService
         if (user is null)
             throw new FriendlyException("Kullanıcı bulunamadı");
 
-        if (!IsFullAdmin(deleteRoomInput.UserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == deleteRoomInput.UserId)?.PermissionType !=
-            ChatPermissionType.Admin)
+        if (!(IsFullAdmin(deleteRoomInput.UserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == deleteRoomInput.UserId)?.PermissionType ==
+            ChatPermissionType.Admin))
             throw new FriendlyException("Odayı silme yetkiniz yok");
 
         _roomRepository.Delete(room);
@@ -194,7 +193,7 @@ public class RoomService : BaseService, IRoomService
     {
         var room = await _roomRepository.Query()
             .Include(x => x.RoomPermissions)
-            .FirstOrDefaultAsync(x => x.Id == editRoomInput.Id && !x.IsDeleted);
+            .FirstOrDefaultAsync(x => x.Id == editRoomInput.Id);
 
         if (room is null)
             throw new FriendlyException("Oda bulunamadı");
@@ -203,8 +202,8 @@ public class RoomService : BaseService, IRoomService
         if (user is null)
             throw new FriendlyException("Kullanıcı bulunamadı");
 
-        if (!IsFullAdmin(editRoomInput.UserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == editRoomInput.UserId)?.PermissionType !=
-            ChatPermissionType.Admin)
+        if (!(IsFullAdmin(editRoomInput.UserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == editRoomInput.UserId)?.PermissionType ==
+                ChatPermissionType.Admin))
             throw new FriendlyException("Odayı güncelleme yetkiniz yok");
 
         editRoomInput.Adapt(room);
@@ -216,7 +215,7 @@ public class RoomService : BaseService, IRoomService
     {
         var room = await _roomRepository.Query()
             .Include(x => x.RoomPermissions)
-            .FirstOrDefaultAsync(x => x.Id == addPermissionToRoomInput.RoomId && !x.IsDeleted);
+            .FirstOrDefaultAsync(x => x.Id == addPermissionToRoomInput.RoomId);
 
         if (room is null)
             throw new FriendlyException("Oda bulunamadı");
@@ -225,9 +224,8 @@ public class RoomService : BaseService, IRoomService
         if (requesterUser is null)
             throw new FriendlyException("İstek atan kullanıcı bulunamadı");
 
-        if (!IsFullAdmin(addPermissionToRoomInput.RequestedUserId) || room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == addPermissionToRoomInput.RequestedUserId)
-                ?.PermissionType !=
-            ChatPermissionType.Admin)
+        if (!(IsFullAdmin(addPermissionToRoomInput.RequestedUserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == addPermissionToRoomInput.RequestedUserId)?.PermissionType ==
+                         ChatPermissionType.Admin))
             throw new FriendlyException("Odaya izin verme yetkiniz yok");
 
         var newChatterUser = await _userManager.FindByIdAsync(addPermissionToRoomInput.ChatterUserId);
