@@ -69,7 +69,7 @@ public class RoomService : BaseService, IRoomService
             .ThenInclude(x => x.ChatterUser).FirstOrDefaultAsync();
 
         if (room is null)
-            throw new FriendlyException("Oda bulunamadı");
+            throw new FriendlyException("Chat bulunamadı");
 
         return room.Adapt<RoomDto>();
     }
@@ -108,7 +108,7 @@ public class RoomService : BaseService, IRoomService
             .FirstOrDefaultAsync(x => x.Id == joinRoomInput.RoomId);
 
         if (room is null)
-            throw new FriendlyException("Oda bulunamadı");
+            throw new FriendlyException("Chat bulunamadı");
 
         var user = await _userManager.FindByIdAsync(joinRoomInput.UserId);
 
@@ -116,10 +116,10 @@ public class RoomService : BaseService, IRoomService
             throw new FriendlyException("Kullanıcı bulunamadı");
 
         if (room.RoomChatterUsers.Select(x => x.ChatterUserId).Contains(user.Id))
-            throw new FriendlyException("Kullanıcı zaten odada");
+            throw new FriendlyException("Kullanıcı zaten chatte");
 
         if (room.Capacity == room.RoomChatterUsers.Count)
-            throw new FriendlyException("Oda kapasitesi dolu");
+            throw new FriendlyException("Chat kapasitesi dolu");
 
         var roomChatterUser = new RoomChatterUser()
         {
@@ -149,19 +149,19 @@ public class RoomService : BaseService, IRoomService
             .FirstOrDefaultAsync(x => x.Id == leaveRoomInput.RoomId);
 
         if (room is null)
-            throw new FriendlyException("Oda bulunamadı");
+            throw new FriendlyException("Chat bulunamadı");
 
         var user = await _userManager.FindByIdAsync(leaveRoomInput.UserId);
         if (user is null)
             throw new FriendlyException("Kullanıcı bulunamadı");
 
         if (!room.RoomChatterUsers.Select(x => x.ChatterUserId).Contains(user.Id))
-            throw new FriendlyException("Kullanıcı zaten odada değil");
+            throw new FriendlyException("Kullanıcı zaten chatte değil");
 
         if (room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType ==
             ChatPermissionType.Admin &&
             room.RoomPermissions.Count(x => x.PermissionType == ChatPermissionType.Admin) == 1)
-            throw new FriendlyException("Odada başka admin yok. Lütfen başka bir admin atayın.");
+            throw new FriendlyException("Chatte başka admin yok. Lütfen başka bir admin atayın.");
 
         var roomChatterUser = room.RoomChatterUsers.First(x => x.ChatterUserId == user.Id);
         roomChatterUser.IsDeleted = true;
@@ -176,7 +176,7 @@ public class RoomService : BaseService, IRoomService
             .FirstOrDefaultAsync(x => x.Id == deleteRoomInput.RoomId);
 
         if (room is null)
-            throw new FriendlyException("Oda bulunamadı");
+            throw new FriendlyException("Chat bulunamadı");
 
         var user = await _userManager.FindByIdAsync(deleteRoomInput.UserId);
         if (user is null)
@@ -184,7 +184,7 @@ public class RoomService : BaseService, IRoomService
 
         if (!(IsFullAdmin(deleteRoomInput.UserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == deleteRoomInput.UserId)?.PermissionType ==
             ChatPermissionType.Admin))
-            throw new FriendlyException("Odayı silme yetkiniz yok");
+            throw new FriendlyException("Chati silme yetkiniz yok");
 
         _roomRepository.Delete(room);
     }
@@ -196,7 +196,7 @@ public class RoomService : BaseService, IRoomService
             .FirstOrDefaultAsync(x => x.Id == editRoomInput.Id);
 
         if (room is null)
-            throw new FriendlyException("Oda bulunamadı");
+            throw new FriendlyException("Chat bulunamadı");
 
         var user = await _userManager.FindByIdAsync(editRoomInput.UserId);
         if (user is null)
@@ -204,7 +204,7 @@ public class RoomService : BaseService, IRoomService
 
         if (!(IsFullAdmin(editRoomInput.UserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == editRoomInput.UserId)?.PermissionType ==
                 ChatPermissionType.Admin))
-            throw new FriendlyException("Odayı güncelleme yetkiniz yok");
+            throw new FriendlyException("Chat ayarlarını güncelleme yetkiniz yok");
 
         editRoomInput.Adapt(room);
 
@@ -218,7 +218,7 @@ public class RoomService : BaseService, IRoomService
             .FirstOrDefaultAsync(x => x.Id == addPermissionToRoomInput.RoomId);
 
         if (room is null)
-            throw new FriendlyException("Oda bulunamadı");
+            throw new FriendlyException("Chat bulunamadı");
 
         var requesterUser = await _userManager.FindByIdAsync(addPermissionToRoomInput.RequestedUserId);
         if (requesterUser is null)
@@ -226,7 +226,7 @@ public class RoomService : BaseService, IRoomService
 
         if (!(IsFullAdmin(addPermissionToRoomInput.RequestedUserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == addPermissionToRoomInput.RequestedUserId)?.PermissionType ==
                          ChatPermissionType.Admin))
-            throw new FriendlyException("Odaya izin verme yetkiniz yok");
+            throw new FriendlyException("Chate izin verme yetkiniz yok");
 
         var newChatterUser = await _userManager.FindByIdAsync(addPermissionToRoomInput.ChatterUserId);
         if (newChatterUser is null)
@@ -237,7 +237,7 @@ public class RoomService : BaseService, IRoomService
             room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == addPermissionToRoomInput.ChatterUserId);
 
         if (existPermission is null)
-            throw new FriendlyException("İşlem yapılmak istenilen kullanıcı odada değil.");
+            throw new FriendlyException("İşlem yapılmak istenilen kullanıcı chatte değil.");
 
         existPermission!.PermissionType = addPermissionToRoomInput.PermissionType;
 

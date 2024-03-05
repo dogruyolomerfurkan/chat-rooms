@@ -80,6 +80,10 @@
             margin: 10px;
             padding-top: 13px;
         }
+        .user-description{
+            font-size: 13px;
+            opacity: 0.8;
+        }
     </style>
 }
 
@@ -164,11 +168,17 @@
                                         <div class="user-profile" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                                             <span style="color:red" id="@user.Id">&#11044;&nbsp&nbsp</span>
                                             <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon">
-                                            <span class="user-name">@user.UserName</span>
-                                            @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType == ChatPermissionType.Admin)
-                                            {
-                                                <span style="opacity: 0.5; font-size: 13px; margin-left: 10px;"> ~ Admin</span>
-                                            }
+                                            <div class="row">
+                                                <div class="col">
+                                                    <span class="user-name">@user.UserName</span>
+                                                    @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType == ChatPermissionType.Admin)
+                                                    {
+                                                        <span style="opacity: 0.6; font-size: 13px; margin-left: 10px;"> ~ Admin</span>
+                                                    }
+                                                </div>
+                                                <span class="user-description">&nbsp&nbsp @user.StatusDescription</span>
+
+                                            </div>
                                         </div>
                                         <ul class="dropdown-menu">
                                             @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
@@ -208,7 +218,7 @@
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="settingDropdownMenu">
                         <li>
                             <button type="button" class="dropdown-item" onclick="$('#LeaveRoomForm #roomId').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#LeaveRoomModal">
-                                Odadan Ayrıl
+                                Chatten Ayrıl
                             </button>
                         </li>
                         @if (User.IsInRole(ChatPermissionType.Admin.ToString()) || Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)

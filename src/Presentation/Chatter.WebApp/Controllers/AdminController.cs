@@ -65,7 +65,7 @@ public class AdminController : Controller
             }
         }
 
-        user.FirstName = chatterUser.UserName;
+        user.FirstName = chatterUser.FirstName;
         user.LastName = chatterUser.LastName;
         user.UserName = chatterUser.UserName;
         user.Email = chatterUser.Email;
