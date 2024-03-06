@@ -17,6 +17,8 @@ public static class SeedExtension
             var roleManager =
                 (RoleManager<IdentityRole>) scope.ServiceProvider.GetService(typeof(RoleManager<IdentityRole>))!;
 
+            var roles = SeedRoles(roleManager);
+
             string username = "emronr";
             string email = "emre998@hotmail.com";
             string password = "Admin123!+";
@@ -37,9 +39,10 @@ public static class SeedExtension
                 };
 
                 var result = userManager.CreateAsync(user, password).Result;
+                
                 if (result.Succeeded)
                 {
-                    userManager.AddToRoleAsync(user, SeedRoles(roleManager).First(x => x == "Admin")).Wait();
+                    userManager.AddToRoleAsync(user, roles.First(x => x == ChatPermissionType.Admin.ToString())).Wait();
                 }
             }
         }

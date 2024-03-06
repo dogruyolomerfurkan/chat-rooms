@@ -37,16 +37,17 @@
                     <div class="card-footer text-center">
                         @if (@User.Identity.IsAuthenticated)
                         {
-                            if (User.IsInRole(ChatPermissionType.Admin.ToString()) || room.RoomChatterUsers.Exists(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+                            if (User.IsInRole(ChatPermissionType.Admin.ToString()) && !room.RoomChatterUsers.Exists(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
                             {
                                 <a asp-controller="Room" asp-action="Detail" asp-route-id="@room.Id" class="btn btn-outline-success btn-sm">Sohbete Git</a>
-                                if (room.RoomChatterUsers.Exists(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
-                                {
-                                    <form asp-controller="Room" asp-action="LeaveRoom" method="post" style="display:inline;">
-                                        <input type="hidden" name="roomId" value="@room.Id">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm ml-3">Ayrıl</button>
-                                    </form>
-                                }
+                            }
+                            if (room.RoomChatterUsers.Exists(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+                            {
+                                <a asp-controller="Room" asp-action="Detail" asp-route-id="@room.Id" class="btn btn-outline-success btn-sm">Sohbete Git</a>
+                                <form asp-controller="Room" asp-action="LeaveRoom" method="post" style="display:inline;">
+                                    <input type="hidden" name="roomId" value="@room.Id">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm ml-3">Ayrıl</button>
+                                </form>
                             }
                             else
                             {

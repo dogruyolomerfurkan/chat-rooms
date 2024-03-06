@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using Chatter.Common.Exceptions;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Domain.Enums;
@@ -82,7 +83,18 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
-        var user = await _userManager.FindByEmailAsync(loginDto.Email);
+        ChatterUser user = null;
+        try
+        {
+            MailAddress m = new MailAddress(loginDto.Email);
+            user = await _userManager.FindByEmailAsync(loginDto.Email);
+
+        }
+        catch (Exception e)
+        {
+            user = await _userManager.FindByNameAsync(loginDto.Email);
+        }
+        
         if (user is null)
             throw new FriendlyException("Kullanıcı bulunamadı.");
 
@@ -114,15 +126,17 @@ public class AccountController : Controller
     public IActionResult Register()
     {
         var rgt = new RegisterDto();
-        return View(rgt);
+        ViewBag.IsRegister = true;
+        return View("Login", rgt);
     }
 
     [HttpPost]
     public async Task<IActionResult> Register(RegisterDto model)
     {
+        ViewBag.IsRegister = true;
         if (!ModelState.IsValid)
         {
-            return View(model);
+            return View("Login", model);
         }
 
         var user = new ChatterUser()
@@ -143,7 +157,7 @@ public class AccountController : Controller
             if (!roleResult.Succeeded)
             {
                 ModelState.AddModelError("", "Bilinmeyen bir hata oluştu lütfen tekrar deneyiniz");
-                return View(model);
+                return View("Login", model);
             }
 
             TempData.Put("message", new ResultMessage()
@@ -152,6 +166,7 @@ public class AccountController : Controller
                 Message = "Hesap başarılı bir şekilde oluşturuldu. ",
                 Css = "warning"
             });
+            ViewBag.IsRegister = false;
             return RedirectToAction("Login", "Account");
         }
         else
@@ -159,6 +174,6 @@ public class AccountController : Controller
             ModelState.AddModelError("", "Bilinmeyen bir hata oluştu lütfen tekrar deneyiniz");
         }
 
-        return View(model);
+        return View("Login", model);
     }
 }
