@@ -20,14 +20,26 @@ $(function () {
         var signalRConnection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
         signalRConnection.on("ChatRoom", function (chatMessage, userShortInfo, chatRoomId) {
-            if(chatRoomId != roomId)
+            // $("#toast1").toast("show");
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+            var toastList = toastElList.map(function(toastEl) {
+                return new bootstrap.Toast(toastEl)
+            })
+            toastList.forEach(toast => toast.show())
+            if (chatRoomId != roomId) {
+                const audio = new Audio('/audio/new_message.mp3');
+                audio.play();
                 return;
+            }
 
             if (userShortInfo.id != userId) {
+                
                 $MessageBox.append(`<div class="message received-message">
                                 <span class="message username">${userShortInfo.userName}</span>
                                 <p>${chatMessage.message}</p>
                             </div>`);
+                const audio = new Audio('/audio/received_message.mp3');
+                audio.play();
             } else {
                 $MessageBox.append(`<div class="message sent-message">
                                 <span class="message username">${userShortInfo.userName}</span>
@@ -49,13 +61,15 @@ $(function () {
                 setOffline(userId);
             });
         });
-        function setOnline(userId){
+
+        function setOnline(userId) {
             $(`.user-profile #${userId}`).css('color', 'green');
 
         }
-        function setOffline(userId){
+
+        function setOffline(userId) {
             $(`.user-profile #${userId}`).css('color', 'red');
-    
+
         }
 
         document.getElementById('newMessageInput').addEventListener('keydown', function (e) {

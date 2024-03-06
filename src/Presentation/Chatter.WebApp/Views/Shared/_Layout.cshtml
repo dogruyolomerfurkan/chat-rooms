@@ -10,22 +10,45 @@
     <link rel="stylesheet" href="~/modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/site.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
-
     @RenderSection("Css", false)
-    
+
 </head>
 <body>
 <header>
     @Html.Partial("_navbar")
 </header>
-<div class="container">
+<div class="container" id="baseBody">
     @if (TempData["message"] != null)
     {
         @Html.Partial("_resultmessage", TempData.Get<ResultMessage>("message"))
-                @* <partial name="_resultmessage" model="@(TempData.Get<ResultMessage>("message"))" ></partial> *@
     }
     <main role="main" class="pb-3">
         @RenderBody()
+        <div class="toast-container position-static bottom-0 end-0">
+          <div class="toast" role="alert" id="toast1" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+              <img src="..." class="rounded me-2" alt="...">
+              <strong class="me-auto">Bootstrap</strong>
+              <small class="text-body-secondary">just now</small>
+              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+              See? Just like this.
+            </div>
+          </div>
+        
+          <div class="toast" role="alert" id="toast2" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+              <img src="..." class="rounded me-2" alt="...">
+              <strong class="me-auto">Bootstrap</strong>
+              <small class="text-body-secondary">2 seconds ago</small>
+              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+              Heads up, toasts will stack automatically
+            </div>
+          </div>
+        </div>
     </main>
 </div>
 

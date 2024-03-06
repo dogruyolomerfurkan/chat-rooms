@@ -6,7 +6,7 @@
 @{
     var chatMessages = (List<Chatter.Application.Dtos.Chats.ChatMessage>) ViewBag.ChatMessages;
     var currentUserId = (string) ViewBag.CurrentUserId;
-    Layout = "_ChatLayout";
+    Layout = "_Layout";
 }
 
 @section Css
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="/css/chat.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
     <style>
-        .user-profile {
+          .user-profile {
           display: flex;
           align-items: center;
         }
@@ -91,6 +91,9 @@
 {
 
     <script>
+        var baseBody = document.getElementById('baseBody');
+        baseBody.classList.remove("container");
+        baseBody.classList.add("mb-5");
         function displayResults(results) {
             let $resultsDiv = $('#searchResults');
             $resultsDiv.empty();
