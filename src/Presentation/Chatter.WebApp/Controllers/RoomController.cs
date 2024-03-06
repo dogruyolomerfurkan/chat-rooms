@@ -131,6 +131,15 @@ public class RoomController : Controller
         
         return RedirectToAction("Detail", new {id = addPermissionToRoomInput.RoomId});
     }
-
+    
+    [HttpPost]
+    public async Task<IActionResult> RemoveUserInRoom(RemoveUserInRoomInput removeUserInRoomInput)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        removeUserInRoomInput.RequestedUserId = user.Id;
+        await _roomService.RemoveUserInRoomAsync(removeUserInRoomInput);
+        
+        return RedirectToAction("Detail", new {id = removeUserInRoomInput.RoomId});
+    }
   
 }

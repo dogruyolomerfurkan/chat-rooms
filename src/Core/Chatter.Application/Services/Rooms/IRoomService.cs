@@ -83,4 +83,6 @@ public interface IRoomService
     /// <param name="addPermissionToRoomInput"></param>
     /// <returns></returns>
     Task AddPermissionToRoomAsync(AddPermissionToRoomInput addPermissionToRoomInput);
+    
+    Task RemoveUserInRoomAsync(RemoveUserInRoomInput removeUserInRoomInput);
 }

@@ -56,7 +56,7 @@ public class RoomService : BaseService, IRoomService
         var rooms = await _roomRepository.Query(true)
             .Where(x => x.IsPublic)
             .Include(x => x.RoomChatterUsers).ToListAsync();
-        
+
         return rooms.Adapt<List<RoomDto>>();
     }
 
@@ -182,8 +182,9 @@ public class RoomService : BaseService, IRoomService
         if (user is null)
             throw new FriendlyException("Kullanıcı bulunamadı");
 
-        if (!(IsFullAdmin(deleteRoomInput.UserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == deleteRoomInput.UserId)?.PermissionType ==
-            ChatPermissionType.Admin))
+        if (!(IsFullAdmin(deleteRoomInput.UserId) || room.RoomPermissions
+                    .FirstOrDefault(x => x.ChatterUserId == deleteRoomInput.UserId)?.PermissionType ==
+                ChatPermissionType.Admin))
             throw new FriendlyException("Chati silme yetkiniz yok");
 
         _roomRepository.Delete(room);
@@ -202,7 +203,8 @@ public class RoomService : BaseService, IRoomService
         if (user is null)
             throw new FriendlyException("Kullanıcı bulunamadı");
 
-        if (!(IsFullAdmin(editRoomInput.UserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == editRoomInput.UserId)?.PermissionType ==
+        if (!(IsFullAdmin(editRoomInput.UserId) || room.RoomPermissions
+                    .FirstOrDefault(x => x.ChatterUserId == editRoomInput.UserId)?.PermissionType ==
                 ChatPermissionType.Admin))
             throw new FriendlyException("Chat ayarlarını güncelleme yetkiniz yok");
 
@@ -224,14 +226,14 @@ public class RoomService : BaseService, IRoomService
         if (requesterUser is null)
             throw new FriendlyException("İstek atan kullanıcı bulunamadı");
 
-        if (!(IsFullAdmin(addPermissionToRoomInput.RequestedUserId) ||  room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == addPermissionToRoomInput.RequestedUserId)?.PermissionType ==
-                         ChatPermissionType.Admin))
+        if (!(IsFullAdmin(addPermissionToRoomInput.RequestedUserId) || room.RoomPermissions
+                    .FirstOrDefault(x => x.ChatterUserId == addPermissionToRoomInput.RequestedUserId)?.PermissionType ==
+                ChatPermissionType.Admin))
             throw new FriendlyException("Chate izin verme yetkiniz yok");
 
         var newChatterUser = await _userManager.FindByIdAsync(addPermissionToRoomInput.ChatterUserId);
         if (newChatterUser is null)
             throw new FriendlyException("İşlem yapılmak istenilen kullanıcı bulunamadı");
-
 
         var existPermission =
             room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == addPermissionToRoomInput.ChatterUserId);
@@ -242,6 +244,41 @@ public class RoomService : BaseService, IRoomService
         existPermission!.PermissionType = addPermissionToRoomInput.PermissionType;
 
         _roomRepository.Update(room);
+    }
+
+    public async Task RemoveUserInRoomAsync(RemoveUserInRoomInput removeUserInRoomInput)
+    {
+        var room = await _roomRepository.Query()
+            .Include(x => x.RoomPermissions)
+            .Include(x => x.RoomChatterUsers)
+            .FirstOrDefaultAsync(x => x.Id == removeUserInRoomInput.RoomId);
+
+        if (room is null)
+            throw new FriendlyException("Chat bulunamadı");
+
+        var requesterUser = await _userManager.FindByIdAsync(removeUserInRoomInput.RequestedUserId);
+        if (requesterUser is null)
+            throw new FriendlyException("İstek atan kullanıcı bulunamadı");
+
+        if (!(IsFullAdmin(removeUserInRoomInput.RequestedUserId) || room.RoomPermissions
+                    .FirstOrDefault(x => x.ChatterUserId == removeUserInRoomInput.RequestedUserId)?.PermissionType ==
+                ChatPermissionType.Admin))
+            throw new FriendlyException("Chatten atma yetkiniz yok");
+        
+        var deletedInRoomChatterUser = await _userManager.FindByIdAsync(removeUserInRoomInput.ChatterUserId);
+        if (deletedInRoomChatterUser is null)
+            throw new FriendlyException("İşlem yapılmak istenilen kullanıcı bulunamadı");
+
+        var existPermission =
+            room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == removeUserInRoomInput.ChatterUserId);
+
+        if (existPermission is null)
+            throw new FriendlyException("İşlem yapılmak istenilen kullanıcı chatte değil.");
+        
+        var roomChatterUser = room.RoomChatterUsers.First(x => x.ChatterUserId == removeUserInRoomInput.ChatterUserId);
+        roomChatterUser.IsDeleted = true;
+        room.RoomPermissions?.Remove(room.RoomPermissions.First(x => x.ChatterUserId == removeUserInRoomInput.ChatterUserId));
+        _roomRepository.Update(room);   
     }
 
     private bool IsFullAdmin(string userId)

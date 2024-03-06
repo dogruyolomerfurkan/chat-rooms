@@ -183,6 +183,16 @@
                                         <ul class="dropdown-menu">
                                             @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
                                             {
+                                                if (User.FindFirstValue(ClaimTypes.NameIdentifier) != user.Id)
+                                                {
+                                                    <li>
+                                                        <form method="post" asp-controller="Room" asp-action="RemoveUserInRoom">
+                                                            <input type="hidden" name="roomId" value="@Model.Id"/>
+                                                            <input type="hidden" name="chatterUserId" value="@user.Id"/>
+                                                            <button type="submit" class="nav-link text-dark">Odadan At</button>
+                                                        </form>
+                                                    </li>
+                                                }
                                                 if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType != ChatPermissionType.Admin)
                                                 {
                                                     <li>
