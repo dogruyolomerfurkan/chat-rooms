@@ -50,6 +50,7 @@ public static class SeedExtension
         List<string> roles = new List<string>()
         {
             ChatPermissionType.Admin.ToString(),
+            "User",
             ChatPermissionType.Chatter.ToString()
         };
 
