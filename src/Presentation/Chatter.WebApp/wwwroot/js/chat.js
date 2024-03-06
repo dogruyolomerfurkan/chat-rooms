@@ -19,8 +19,9 @@ $(function () {
 
         var signalRConnection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-        signalRConnection.on("ChatRoom", function (chatMessage, userShortInfo, senderConnectionId) {
-            var connectionId = signalRConnection.connectionId;
+        signalRConnection.on("ChatRoom", function (chatMessage, userShortInfo, chatRoomId) {
+            if(chatRoomId != roomId)
+                return;
 
             if (userShortInfo.id != userId) {
                 $MessageBox.append(`<div class="message received-message">

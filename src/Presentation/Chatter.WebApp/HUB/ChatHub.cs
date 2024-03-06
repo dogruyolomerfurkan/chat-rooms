@@ -76,7 +76,7 @@ public class ChatHub : Hub
 
     }
 
-    public async Task<List<Application.Dtos.Chats.ChatMessage>> GetMessages(int roomId)
+    public async Task<List<ChatMessage>> GetMessages(int roomId)
     {
         var messages = await _chatService.GetChatMessagesAsync(roomId);
         return messages;
@@ -102,7 +102,7 @@ public class ChatHub : Hub
         var userShortInfo = checkRoom.Users.FirstOrDefault(x =>x.Id == GetUserId()).Adapt<UserShortInfoDto>();
         // var userShortInfo = _userService.GetUsersShortInfoAsync(GetUserName()).Result.FirstOrDefault();
 
-        await Clients.Groups(roomId.ToString()).SendAsync("ChatRoom", chatMessage, userShortInfo, Context.ConnectionId);
+        await Clients.Groups(roomId.ToString()).SendAsync("ChatRoom", chatMessage, userShortInfo, roomId);
     }
 
     public async Task JoinChatRoom(int roomId)
