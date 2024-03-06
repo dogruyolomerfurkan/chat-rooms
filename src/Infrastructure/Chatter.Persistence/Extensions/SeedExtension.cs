@@ -1,4 +1,5 @@
 using Chatter.Domain.Entities.EFCore.Identity;
+using Chatter.Domain.Enums;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,8 +49,8 @@ public static class SeedExtension
     {
         List<string> roles = new List<string>()
         {
-            "Admin",
-            "User"
+            ChatPermissionType.Admin.ToString(),
+            ChatPermissionType.Chatter.ToString()
         };
 
         foreach (var role in roles)
