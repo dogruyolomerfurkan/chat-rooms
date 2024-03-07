@@ -19,16 +19,21 @@ $(function () {
 
         var signalRConnection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-        signalRConnection.on("ChatRoom", function (chatMessage, userShortInfo, chatRoomId) {
-            // $("#toast1").toast("show");
-            var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-            var toastList = toastElList.map(function(toastEl) {
-                return new bootstrap.Toast(toastEl)
-            })
-            toastList.forEach(toast => toast.show())
-            if (chatRoomId != roomId) {
-                const audio = new Audio('/audio/new_message.mp3');
-                audio.play();
+        signalRConnection.on("ChatRoom", function (chatMessage, userShortInfo, roomInfo ) {
+           
+            if (roomInfo.id != roomId && userShortInfo.id != userId) {
+                const toast = bootstrap.showToast({
+                    header: roomInfo.title,
+                    headerSmall: "Şimdi",
+                    body: `<p>${chatMessage.message}</p>` +
+                        "<div>" +
+                        `<a href="\\Room\\Detail\\${roomInfo.id}" class='btn btn-primary me-1 btn-sm'>Chate git</a>` +
+                        "<button class='btn btn-secondary btn-sm' data-bs-dismiss='toast'>Kapat</button>" +
+                        "</div>",
+                    delay: 5000
+                })
+                const newMessageAudio = new Audio('/audio/new_message.mp3');
+                newMessageAudio.play();
                 return;
             }
 
