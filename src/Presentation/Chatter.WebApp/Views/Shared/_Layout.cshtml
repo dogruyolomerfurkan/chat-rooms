@@ -10,19 +10,17 @@
     <link rel="stylesheet" href="~/modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/site.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
-
     @RenderSection("Css", false)
-    
+
 </head>
 <body>
 <header>
     @Html.Partial("_navbar")
 </header>
-<div class="container">
+<div class="container" id="baseBody">
     @if (TempData["message"] != null)
     {
         @Html.Partial("_resultmessage", TempData.Get<ResultMessage>("message"))
-                @* <partial name="_resultmessage" model="@(TempData.Get<ResultMessage>("message"))" ></partial> *@
     }
     <main role="main" class="pb-3">
         @RenderBody()

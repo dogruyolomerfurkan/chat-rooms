@@ -19,14 +19,32 @@ $(function () {
 
         var signalRConnection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-        signalRConnection.on("ChatRoom", function (chatMessage, userShortInfo, senderConnectionId) {
-            var connectionId = signalRConnection.connectionId;
+        signalRConnection.on("ChatRoom", function (chatMessage, userShortInfo, roomInfo ) {
+           
+            if (roomInfo.id != roomId && userShortInfo.id != userId) {
+                const toast = bootstrap.showToast({
+                    header: roomInfo.title,
+                    headerSmall: "Şimdi",
+                    body: `<p>${chatMessage.message}</p>` +
+                        "<div>" +
+                        `<a href="\\Room\\Detail\\${roomInfo.id}" class='btn btn-primary me-1 btn-sm'>Chate git</a>` +
+                        "<button class='btn btn-secondary btn-sm' data-bs-dismiss='toast'>Kapat</button>" +
+                        "</div>",
+                    delay: 5000
+                })
+                const newMessageAudio = new Audio('/audio/new_message.mp3');
+                newMessageAudio.play();
+                return;
+            }
 
             if (userShortInfo.id != userId) {
+                
                 $MessageBox.append(`<div class="message received-message">
                                 <span class="message username">${userShortInfo.userName}</span>
                                 <p>${chatMessage.message}</p>
                             </div>`);
+                const audio = new Audio('/audio/received_message.mp3');
+                audio.play();
             } else {
                 $MessageBox.append(`<div class="message sent-message">
                                 <span class="message username">${userShortInfo.userName}</span>
@@ -48,13 +66,15 @@ $(function () {
                 setOffline(userId);
             });
         });
-        function setOnline(userId){
+
+        function setOnline(userId) {
             $(`.user-profile #${userId}`).css('color', 'green');
 
         }
-        function setOffline(userId){
+
+        function setOffline(userId) {
             $(`.user-profile #${userId}`).css('color', 'red');
-    
+
         }
 
         document.getElementById('newMessageInput').addEventListener('keydown', function (e) {
