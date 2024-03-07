@@ -1,4 +1,5 @@
 using Chatter.Domain.Entities.EFCore.Identity;
+using Chatter.Domain.Enums;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,8 @@ public static class SeedExtension
                 (UserManager<ChatterUser>) scope.ServiceProvider.GetService(typeof(UserManager<ChatterUser>))!;
             var roleManager =
                 (RoleManager<IdentityRole>) scope.ServiceProvider.GetService(typeof(RoleManager<IdentityRole>))!;
+
+            var roles = SeedRoles(roleManager);
 
             string username = "emronr";
             string email = "emre998@hotmail.com";
@@ -36,9 +39,10 @@ public static class SeedExtension
                 };
 
                 var result = userManager.CreateAsync(user, password).Result;
+                
                 if (result.Succeeded)
                 {
-                    userManager.AddToRoleAsync(user, SeedRoles(roleManager).First(x => x == "Admin")).Wait();
+                    userManager.AddToRoleAsync(user, roles.First(x => x == ChatPermissionType.Admin.ToString())).Wait();
                 }
             }
         }
@@ -48,8 +52,9 @@ public static class SeedExtension
     {
         List<string> roles = new List<string>()
         {
-            "Admin",
-            "User"
+            ChatPermissionType.Admin.ToString(),
+            "User",
+            ChatPermissionType.Chatter.ToString()
         };
 
         foreach (var role in roles)

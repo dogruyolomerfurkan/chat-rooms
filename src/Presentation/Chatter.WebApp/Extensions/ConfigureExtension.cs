@@ -24,7 +24,7 @@ public static class ConfigureExtension
 
         services.AddSignalR();
         
-        services.Configure<MongoDbSettings>(configuration.GetSection("MongoDbSettings"));
+        services.Configure<DatabaseSetting>(configuration.GetSection(nameof(DatabaseSetting)));
 
     }
     

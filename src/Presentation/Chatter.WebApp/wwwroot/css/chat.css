@@ -1,15 +1,16 @@
 .message-container {
-    border: 2px solid #ccc;
-    border-radius: 10px;
+    border-radius: 0 0 10px 10px;
     margin: auto; /* Yatayda ortalamak için */
     overflow: hidden;
     position: relative; /* İçerik pozisyonu için */
 }
 
 .message-body {
-    max-height: 700px; /* Container yüksekliği */
+    max-height: 600px; /* Container yüksekliği */
+    min-height: 600px; /* Container yüksekliği */
     overflow-y: auto; /* Dikey scrollbar sadece gerektiğinde görüntüler */
     margin-bottom: 55px;
+    background-color: #e6e0f5;
 }
 
 .message-list {
@@ -25,18 +26,19 @@
     border-radius: 15px;
 }
 .message.username{
-    color:blue;
-    text-decoration: underline;
+    color:#ff00a9;
+    font-weight: bold;
     padding: 0px;
 }
 
 .sent-message {
-    background-color: #DCF8C6; /* Sağa gönderilen mesajlar için arka plan rengi */
+    background-color: #ffffff; /* Sağa gönderilen mesajlar için arka plan rengi */
     float: right;
+   
 }
 
 .received-message {
-    background-color: #E8E8E8; /* Sola gönderilen mesajlar için arka plan rengi */
+    background-color: #ffffff; /* Sola gönderilen mesajlar için arka plan rengi */
     float: left;
 }
 
@@ -62,6 +64,11 @@
     border-radius: 5px;
     border: none;
     background-color: #007bff;
-    color: white;
     cursor: pointer;
 }
+
+.title-container
+{
+    background-color: #ffffff;
+    border-radius: 10px 10px 0 0;
+} 

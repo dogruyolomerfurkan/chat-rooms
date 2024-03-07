@@ -1,6 +1,3 @@
-using Chatter.Application.Dtos.Invitations;
-using Chatter.Domain.Entities.EFCore.Identity;
-
 namespace Chatter.Application.Dtos.Rooms;
 
 public class EditRoomInput

@@ -4,7 +4,8 @@
 
 <html>
 <head>
-    <meta name="viewport" content="width=device-width"/>
+    <matea charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Chatter</title>
     <link rel="stylesheet" href="~/modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/site.css">
@@ -16,27 +17,23 @@
 <header>
     @Html.Partial("_navbar")
 </header>
-<div class="container pt-100 mb-5">
+<div class="container" id="baseBody">
     @if (TempData["message"] != null)
     {
         @Html.Partial("_resultmessage", TempData.Get<ResultMessage>("message"))
-                @* <partial name="_resultmessage" model="@(TempData.Get<ResultMessage>("message"))" ></partial> *@
     }
     <main role="main" class="pb-3">
-
         @RenderBody()
     </main>
 </div>
 
-<footer class="border-top footer text-muted">
+<footer class="border-top footer">
     <div class="container">
         &copy; 2024 - Emre Onur | Chatter App - Privacy
     </div>
 </footer>
-
 <script src="~/modules/jquery/dist/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="~/modules/bootstrap/dist/js/bootstrap.min.js"></script>
+@* <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> *@
 <script src="~/modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
 

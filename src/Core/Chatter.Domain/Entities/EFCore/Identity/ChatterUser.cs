@@ -25,9 +25,5 @@ public class ChatterUser : IdentityUser
     public List<Invitation>? SentInvitations { get; set; }
     public List<Invitation>? ReceivedInvitations { get; set; }
     public List<RoomChatterUser>? RoomChatterUsers { get; set; }
-
-    public List<RoomChatterUser>? RoomBlockedChatterUser
-    {
-        get => RoomChatterUsers?.Where(x => x.IsBlocked).ToList();
-    }
+    
 }

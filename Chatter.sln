@@ -18,6 +18,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chatter.Application", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chatter.WebApp", "src\Presentation\Chatter.WebApp\Chatter.WebApp.csproj", "{6D4A3B9B-4887-4D03-81CA-1E3D35795802}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Migrations", "Migrations", "{7FC62B69-672B-4A0A-975C-7C8B6E530075}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chatter.PostgreMigrations", "src\Infrastructure\Migrations\Chatter.PostgreMigrations\Chatter.PostgreMigrations.csproj", "{577AA291-0FDE-48FB-A08D-D0DF30C0EA64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chatter.SqlServerMigrations", "src\Infrastructure\Migrations\Chatter.SqlServerMigrations\Chatter.SqlServerMigrations.csproj", "{8BD99269-0FD1-422A-9750-CDC86C33B3F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +38,9 @@ Global
 		{98131448-EE78-4561-B923-FB7608AF4617} = {C64DC46C-01F4-47E5-BF4E-749C48CA66DD}
 		{90F94BFF-CE17-4A7C-BCA8-13B0B969446B} = {75E085D1-815A-4C36-A906-65F17BABFFFC}
 		{6D4A3B9B-4887-4D03-81CA-1E3D35795802} = {ADDC421C-78DA-4089-BC0E-D164774DE2F1}
+		{7FC62B69-672B-4A0A-975C-7C8B6E530075} = {C64DC46C-01F4-47E5-BF4E-749C48CA66DD}
+		{577AA291-0FDE-48FB-A08D-D0DF30C0EA64} = {7FC62B69-672B-4A0A-975C-7C8B6E530075}
+		{8BD99269-0FD1-422A-9750-CDC86C33B3F7} = {7FC62B69-672B-4A0A-975C-7C8B6E530075}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{659550F2-97B3-4B84-9581-0725EC1BBC0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -54,5 +63,13 @@ Global
 		{6D4A3B9B-4887-4D03-81CA-1E3D35795802}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D4A3B9B-4887-4D03-81CA-1E3D35795802}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D4A3B9B-4887-4D03-81CA-1E3D35795802}.Release|Any CPU.Build.0 = Release|Any CPU
+		{577AA291-0FDE-48FB-A08D-D0DF30C0EA64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{577AA291-0FDE-48FB-A08D-D0DF30C0EA64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{577AA291-0FDE-48FB-A08D-D0DF30C0EA64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{577AA291-0FDE-48FB-A08D-D0DF30C0EA64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BD99269-0FD1-422A-9750-CDC86C33B3F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BD99269-0FD1-422A-9750-CDC86C33B3F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BD99269-0FD1-422A-9750-CDC86C33B3F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BD99269-0FD1-422A-9750-CDC86C33B3F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

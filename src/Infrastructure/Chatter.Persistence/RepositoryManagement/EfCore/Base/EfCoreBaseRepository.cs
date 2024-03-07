@@ -51,8 +51,8 @@ public class EfCoreBaseRepository<TEntity, TKey> : IBaseRepository<TEntity, TKey
     public IQueryable<TEntity> Query(bool asNoTracking = false)
     {
         return asNoTracking
-            ? _context.Set<TEntity>().AsNoTracking()
-            : _context.Set<TEntity>();
+            ? _context.Set<TEntity>().AsQueryable().AsNoTracking()
+            : _context.Set<TEntity>().AsQueryable();
     }
 
 

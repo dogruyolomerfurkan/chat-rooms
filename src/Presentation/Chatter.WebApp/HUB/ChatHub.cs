@@ -18,8 +18,6 @@ public class ChatHub : Hub
     private readonly UserManager<ChatterUser> _userManager;
     private readonly IUserService _userService;
 
-    private static List<SignalRConnection> signalRConnections = null;
-
     public ChatHub(IHttpContextAccessor httpContextAccessor, IChatService chatService, IRoomService roomService,
         UserManager<ChatterUser> userManager, IUserService userService)
     {
@@ -33,10 +31,10 @@ public class ChatHub : Hub
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var userId = GetUserId();
-        var signalRConnection = signalRConnections.FirstOrDefault(s => s.UserId == userId);
+        var signalRConnection = ActiveConnections.SignalRConnections.FirstOrDefault(s => s.UserId == userId);
         if (signalRConnection is not null)
         {
-            signalRConnections.Remove(signalRConnection);
+            ActiveConnections.SignalRConnections.Remove(signalRConnection);
         }
         
         await Clients.All.SendAsync("UserDisconnected", new List<string>(){userId});
@@ -47,16 +45,15 @@ public class ChatHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        signalRConnections ??= new List<SignalRConnection>();
         var userId = GetUserId();
 
         //bu kullanım kullanıcının bütün odalarını getirir. Bulunduğu odada ise mesaj gelir.
         //TODO : Bulunmadığında ise noticiation gelir.
      
-        var signalRConnection = signalRConnections.FirstOrDefault(s => s.UserId == userId);
+        var signalRConnection = ActiveConnections.SignalRConnections.FirstOrDefault(s => s.UserId == userId);
         if (signalRConnection is null)
         {
-            signalRConnections.Add(new()
+            ActiveConnections.SignalRConnections.Add(new()
             {
                 UserId = userId!,
                 ConnectionId = Context.ConnectionId
@@ -79,7 +76,7 @@ public class ChatHub : Hub
 
     }
 
-    public async Task<List<Application.Dtos.Chats.ChatMessage>> GetMessages(int roomId)
+    public async Task<List<ChatMessage>> GetMessages(int roomId)
     {
         var messages = await _chatService.GetChatMessagesAsync(roomId);
         return messages;
@@ -105,7 +102,7 @@ public class ChatHub : Hub
         var userShortInfo = checkRoom.Users.FirstOrDefault(x =>x.Id == GetUserId()).Adapt<UserShortInfoDto>();
         // var userShortInfo = _userService.GetUsersShortInfoAsync(GetUserName()).Result.FirstOrDefault();
 
-        await Clients.Groups(roomId.ToString()).SendAsync("ChatRoom", chatMessage, userShortInfo, Context.ConnectionId);
+        await Clients.Groups(roomId.ToString()).SendAsync("ChatRoom", chatMessage, userShortInfo, checkRoom);
     }
 
     public async Task JoinChatRoom(int roomId)
@@ -120,13 +117,13 @@ public class ChatHub : Hub
             return;
         
         var userListInRoom = checkRoom.RoomChatterUsers.Select(x => x.ChatterUserId).ToList();
-        var userList = signalRConnections.Where(x => userListInRoom.Contains(x.UserId)).Select(x => x.UserId).ToList();
+        var userList = ActiveConnections.SignalRConnections.Where(x => userListInRoom.Contains(x.UserId)).Select(x => x.UserId).ToList();
         await Clients.Group(roomId.ToString()).SendAsync("UserConnected", userList);
     }
 
     public async Task LeaveChatRoom(int roomId)
     {
-        signalRConnections.RemoveAll(x => x.ConnectionId == Context.ConnectionId && x.UserId == GetUserId());
+        ActiveConnections.SignalRConnections.RemoveAll(x => x.ConnectionId == Context.ConnectionId && x.UserId == GetUserId());
 
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.ToString());
         await Clients.Group(roomId.ToString()).SendAsync("ChatRoom", $"{Context.ConnectionId} left {roomId} group.");
@@ -143,8 +140,3 @@ public class ChatHub : Hub
     }
 }
 
-public class SignalRConnection
-{
-    public string UserId { get; set; }
-    public string ConnectionId { get; set; }
-}

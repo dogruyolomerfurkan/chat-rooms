@@ -11,13 +11,12 @@ public class NoSqlBaseRepository<TEntity> : IBaseRepository<TEntity, string>
     where TEntity : BaseEntity, new()
 {
     protected readonly IMongoCollection<TEntity> _collection;
-    protected readonly MongoDbSettings _mongoDbSettings;
 
-    public NoSqlBaseRepository(IOptions<MongoDbSettings> mongoDbSettings)
+    public NoSqlBaseRepository(IOptions<DatabaseSetting> databaseSetting)
     {
-        _mongoDbSettings = mongoDbSettings.Value;
-        var client = new MongoClient(_mongoDbSettings.ConnectionString);
-        var database = client.GetDatabase(_mongoDbSettings.DatabaseName);
+        var mongoDbSettings = databaseSetting.Value.MongoDbSettings;
+        var client = new MongoClient(mongoDbSettings.ConnectionString);
+        var database = client.GetDatabase(mongoDbSettings.DatabaseName);
         _collection = database.GetCollection<TEntity>(typeof(TEntity).Name.ToLowerInvariant());
     }
 

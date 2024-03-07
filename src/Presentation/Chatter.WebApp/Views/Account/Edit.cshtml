@@ -1,0 +1,153 @@
+@model Chatter.Domain.Entities.EFCore.Identity.ChatterUser
+
+
+@section Css{
+    <style>
+        #profilePicDiv {
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #fff;
+        }
+
+        #profilePicDiv img {
+            width: 100%;
+            height: auto;
+        }
+
+        #profilePicDiv:hover .overlay {
+            opacity: 0.7;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            width: 100%;
+            opacity: 0;
+            transition: .5s ease;
+            background-color: #000;
+        }
+
+        .icon {
+            color: white;
+            font-size: 100px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .icon:hover {
+            color: #b3b3b3;
+        }
+    </style>
+}
+
+@section Script{
+
+    <script>
+        function changeProfileImage() {
+            document.getElementById('fileInput').click();
+            
+            document.getElementById('fileInput').addEventListener('change', function(e) {
+                var file = e.target.files[0];
+                var imageType = /image.*/;
+            
+                // Check if the file is an image
+                if (!file.type.match(imageType)) {
+                    alert('Please select an image file (.png, .jpg, .jpeg)');
+                    return;
+                }
+            
+                // Create a file reader
+                var reader = new FileReader();
+            
+                // Set the image to the file reader result
+                reader.onload = function(e) {
+                    document.getElementById('profilePic').src = e.target.result;
+                }
+                // Read the image file as a data URL
+                reader.readAsDataURL(file);
+            });
+            
+            
+        }
+    </script>
+}
+
+
+<div class="row">
+    <div class="col-md-8">
+        @if (ViewBag.ErrorMesage != null)
+        {
+            <div class="text-danger">@ViewBag.ErrorMesage</div>
+        }
+
+        <form asp-controller="Account" asp-action="EditProfile" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div id="profilePicDiv">
+                <img id="profilePic" src="~/img/profileImages/@Model.ProfileImagePath" alt="Avatar">
+                <div class="overlay">
+                    <a href="#" class="icon" title="User Profile" onclick="changeProfileImage();">
+                        <i class="fa fa-upload"></i>
+                    </a>
+                </div>
+            </div>
+            <input type="file" name="profileImage" id="fileInput" value="" style="display: none;"/>
+
+
+            <div class="form-group row">
+                <label for="" class="col-md-2 col-form-label">Ad </label>
+                <div class="col-md-10">
+                    <input asp-for="FirstName" value="@Model.FirstName" class="form-control"/>
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-md-2 col-form-label">Soy ad</label>
+                <div class="col-md-10">
+                    <input asp-for="LastName" value="@Model.LastName" class="form-control"/>
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-md-2 col-form-label">Kullanıcı Adı</label>
+                <div class="col-md-10">
+                    <input asp-for="UserName" value="@Model.UserName" class="form-control"/>
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-md-2 col-form-label">Email</label>
+                <div class="col-md-10">
+                    <input asp-for="Email" value="@Model.Email" class="form-control"/>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            
+             <div class="form-group row">
+                    <label for="" class="col-md-2 col-form-label">Hakkımda</label>
+                    <div class="col-md-10">
+                        <input asp-for="StatusDescription" value="@Model.StatusDescription" class="form-control"/>
+                        <span asp-validation-for="StatusDescription" class="text-danger"></span>
+                    </div>
+                </div>
+            <div class="form-group row">
+                <div class="col-md-10 offset-md-2">
+                    <input asp-for="Id" value="@Model.Id" type="hidden" class="form-control"/>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>

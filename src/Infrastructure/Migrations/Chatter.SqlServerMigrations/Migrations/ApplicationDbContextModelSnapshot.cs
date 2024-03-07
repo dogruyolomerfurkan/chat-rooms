@@ -4,23 +4,20 @@ using Chatter.Persistence.Application.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Chatter.Persistence.Migrations
+namespace Chatter.SqlServerMigrations.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240214143649_JTableChanged")]
-    partial class JTableChanged
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("ProductVersion", "7.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -117,9 +114,6 @@ namespace Chatter.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ChatterUserId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -138,18 +132,12 @@ namespace Chatter.Persistence.Migrations
                     b.Property<int>("RoomId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RoomId1")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ChatterUserId");
-
-                    b.HasIndex("ChatterUserId1");
 
                     b.HasIndex("RoomId");
 
-                    b.HasIndex("RoomId1");
+                    b.HasIndex("ChatterUserId", "RoomId")
+                        .HasFilter("IsDeleted = 0");
 
                     b.ToTable("RoomChatterUser");
                 });
@@ -196,6 +184,12 @@ namespace Chatter.Persistence.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -207,6 +201,9 @@ namespace Chatter.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -216,6 +213,9 @@ namespace Chatter.Persistence.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -233,6 +233,10 @@ namespace Chatter.Persistence.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("ProfileImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -425,22 +429,14 @@ namespace Chatter.Persistence.Migrations
                     b.HasOne("Chatter.Domain.Entities.EFCore.Identity.ChatterUser", "ChatterUser")
                         .WithMany("RoomChatterUsers")
                         .HasForeignKey("ChatterUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("Chatter.Domain.Entities.EFCore.Identity.ChatterUser", null)
-                        .WithMany("RoomBlockedChatterUser")
-                        .HasForeignKey("ChatterUserId1");
 
                     b.HasOne("Chatter.Domain.Entities.EFCore.Application.Room", "Room")
                         .WithMany("RoomChatterUsers")
                         .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("Chatter.Domain.Entities.EFCore.Application.Room", null)
-                        .WithMany("BlockedUsers")
-                        .HasForeignKey("RoomId1");
 
                     b.Navigation("ChatterUser");
 
@@ -519,8 +515,6 @@ namespace Chatter.Persistence.Migrations
 
             modelBuilder.Entity("Chatter.Domain.Entities.EFCore.Application.Room", b =>
                 {
-                    b.Navigation("BlockedUsers");
-
                     b.Navigation("Invitations");
 
                     b.Navigation("RoomChatterUsers");
@@ -531,8 +525,6 @@ namespace Chatter.Persistence.Migrations
             modelBuilder.Entity("Chatter.Domain.Entities.EFCore.Identity.ChatterUser", b =>
                 {
                     b.Navigation("ReceivedInvitations");
-
-                    b.Navigation("RoomBlockedChatterUser");
 
                     b.Navigation("RoomChatterUsers");
 

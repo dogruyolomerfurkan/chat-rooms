@@ -2,6 +2,7 @@ using Chatter.Application.Dtos.Rooms;
 using Chatter.Application.Services.Chats;
 using Chatter.Application.Services.Rooms;
 using Chatter.Domain.Entities.EFCore.Identity;
+using Chatter.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -118,6 +119,27 @@ public class RoomController : Controller
         editRoomInput.UserId = user.Id;
         await _roomService.EditRoomAsync(editRoomInput);
         return RedirectToAction("Detail", new {id = editRoomInput.Id});
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> AddAdminToRoom(AddPermissionToRoomInput addPermissionToRoomInput)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        addPermissionToRoomInput.RequestedUserId = user.Id;
+        addPermissionToRoomInput.PermissionType = ChatPermissionType.Admin;
+        await _roomService.AddPermissionToRoomAsync(addPermissionToRoomInput);
+        
+        return RedirectToAction("Detail", new {id = addPermissionToRoomInput.RoomId});
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> RemoveUserInRoom(RemoveUserInRoomInput removeUserInRoomInput)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        removeUserInRoomInput.RequestedUserId = user.Id;
+        await _roomService.RemoveUserInRoomAsync(removeUserInRoomInput);
+        
+        return RedirectToAction("Detail", new {id = removeUserInRoomInput.RoomId});
     }
   
 }

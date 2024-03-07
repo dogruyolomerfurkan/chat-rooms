@@ -4,14 +4,16 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Core\Chatter.Application\Chatter.Application.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\Migrations\Chatter.PostgreMigrations\Chatter.PostgreMigrations.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\Migrations\Chatter.SqlServerMigrations\Chatter.SqlServerMigrations.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Models\Rooms" />
       <Folder Include="wwwroot\img\profileImages" />
       <Folder Include="wwwroot\lib" />
     </ItemGroup>
@@ -20,6 +22,7 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.26" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.27" />
+      <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.27" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -31,8 +34,9 @@
 
  
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Pages\Room\Create.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Room\Index.cshtml" />
+      <Content Remove="wwwroot\img\profileImages\berfoline.jpg" />
+      <Content Remove="wwwroot\img\profileImages\berfoberfo.jpg" />
     </ItemGroup>
 
+ 
 </Project>

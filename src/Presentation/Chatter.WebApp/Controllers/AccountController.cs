@@ -1,4 +1,7 @@
+using System.Net.Mail;
+using Chatter.Common.Exceptions;
 using Chatter.Domain.Entities.EFCore.Identity;
+using Chatter.Domain.Enums;
 using Chatter.WebApp.Extensions;
 using Chatter.WebApp.Models;
 using Chatter.WebApp.Models.Account;
@@ -17,10 +20,57 @@ public class AccountController : Controller
         _userManager = userManager;
         _signInManager = signInManager;
     }
-    
-    public IActionResult Info()
+
+    public async Task<IActionResult> Info()
     {
-        return View();
+        var user = await _userManager.GetUserAsync(User);
+        user.ProfileImagePath ??= "default_img_orange.jpg";
+        return View("Edit", user);
+    }
+    [HttpPost]
+    public async Task<IActionResult> EditProfile(ChatterUser chatterUser, IFormFile profileImage)
+    {
+        if (chatterUser.Id != _userManager.GetUserId(User))
+            return BadRequest();
+        
+        var user = await _userManager.FindByIdAsync(chatterUser.Id);
+
+        if (profileImage != null)
+        {
+            user.ProfileImagePath = chatterUser.UserName + ".jpg";
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "profileImages",
+                chatterUser.UserName + ".jpg");
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await profileImage.CopyToAsync(stream);
+            }
+        }
+
+        user.FirstName = chatterUser.FirstName;
+        user.LastName = chatterUser.LastName;
+        user.UserName = chatterUser.UserName;
+        user.Email = chatterUser.Email;
+        user.StatusDescription = chatterUser.StatusDescription;
+
+        var result = await _userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        {
+            TempData.Put("message", new ResultMessage()
+            {
+                Title = "Hesap Güncellendi",
+                Message = "Hesap başarılı bir şekilde güncellendi. ",
+                Css = "success"
+            });
+            return RedirectToAction("Index", "Room");
+        }
+        else
+        {
+            ModelState.AddModelError("", "Bilinmeyen bir hata oluştu lütfen tekrar deneyiniz");
+        }
+
+        return RedirectToAction("Index","Room");
     }
 
     public IActionResult Login(string? ReturnUrl = null)
@@ -29,22 +79,34 @@ public class AccountController : Controller
         loginDto.ReturnUrl = ReturnUrl;
         return View(loginDto);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
-        var user = await _userManager.FindByEmailAsync(loginDto.Email);
-        if(user is null)
-            throw new Exception("User not found");
+        ChatterUser user = null;
+        try
+        {
+            MailAddress m = new MailAddress(loginDto.Email);
+            user = await _userManager.FindByEmailAsync(loginDto.Email);
+
+        }
+        catch (Exception e)
+        {
+            user = await _userManager.FindByNameAsync(loginDto.Email);
+        }
         
+        if (user is null)
+            throw new FriendlyException("Kullanıcı bulunamadı.");
+
         var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, false, false);
         if (result.Succeeded)
         {
             return Redirect(loginDto.ReturnUrl ?? "~/");
         }
+
         return View();
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Logout()
     {
@@ -59,21 +121,22 @@ public class AccountController : Controller
 
         return Redirect("~/");
     }
-    
+
     [HttpGet]
     public IActionResult Register()
     {
-
         var rgt = new RegisterDto();
-        return View(rgt);
+        ViewBag.IsRegister = true;
+        return View("Login", rgt);
     }
 
     [HttpPost]
     public async Task<IActionResult> Register(RegisterDto model)
     {
+        ViewBag.IsRegister = true;
         if (!ModelState.IsValid)
         {
-            return View(model);
+            return View("Login", model);
         }
 
         var user = new ChatterUser()
@@ -89,12 +152,21 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
+            var roleResult = await _userManager.AddToRoleAsync(user, ChatPermissionType.Chatter.ToString());
+
+            if (!roleResult.Succeeded)
+            {
+                ModelState.AddModelError("", "Bilinmeyen bir hata oluştu lütfen tekrar deneyiniz");
+                return View("Login", model);
+            }
+
             TempData.Put("message", new ResultMessage()
             {
-                Title = "Hesap Açışışı",
+                Title = "Hesap Açılışı",
                 Message = "Hesap başarılı bir şekilde oluşturuldu. ",
                 Css = "warning"
             });
+            ViewBag.IsRegister = false;
             return RedirectToAction("Login", "Account");
         }
         else
@@ -102,7 +174,6 @@ public class AccountController : Controller
             ModelState.AddModelError("", "Bilinmeyen bir hata oluştu lütfen tekrar deneyiniz");
         }
 
-        return View(model);
+        return View("Login", model);
     }
-
 }

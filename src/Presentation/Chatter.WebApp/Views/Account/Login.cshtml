@@ -1,46 +1,106 @@
-@model Chatter.WebApp.Models.Account.LoginDto
-@{
-    ViewData["Title"] = "Login";
+@model dynamic
+
+
+@section Css{
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.9/css/unicons.css">
+    <link rel="stylesheet" href="/css/login.css">
 }
-@section Script
-{
-    <script src="~/modules/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/modules/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+@section Script{
+    <script>
+    let boolString = @ViewBag.IsRegister?.ToString()?.ToLower() 
+    boolString = boolString == null ? "false" : boolString;
+
+    window.onload = function () {
+        document.getElementById("reg-log").checked = boolString
+    }
+    </script>
 }
 
-<h1>Login</h1>
-<hr />
+<div class="section">
+    <div class="container">
+        <div class="row full-height justify-content-center">
+            <div class="col-12 text-center align-self-center">
+                <div class="section pb-5 pt-5 pt-sm-2 text-center">
+                    <h6 class="mb-0 pb-3">
+                        <span>Oturum Aç </span><span>Kayıt Ol</span>
+                    </h6>
+                    <input class="checkbox" type="checkbox" id="reg-log" name="reg-log"/>
+                    <label for="reg-log"></label>
+                    <div class="card-3d-wrap mx-auto">
+                        <div class="card-3d-wrapper">
+                            <div class="card-front">
+                                <div class="center-wrap">
+                                    <div class="section text-center">
+                                        <h4 class="mb-4 pb-3">Oturum Aç</h4>
+                                        @if (ViewBag.ErrorMesage != null)
+                                        {
+                                            <div class="text-danger">@ViewBag.ErrorMesage</div>
+                                        }
+                                        <form asp-controller="Account" asp-action="Login" method="post">
+                                            <div asp-validation-summary="All" class="text-danger"></div>
+                                            <div class="form-group">
+                                                <input id="LoginDto.Email" name="Email" class="form-style" placeholder="Kullanıcı adı veya email" autocomplete="off">
+                                                <i class="input-icon uil uil-at"></i>
+                                            </div>
+                                            <div class="form-group mt-2">
+                                                <input id="LoginDto.Password" name="Password" type="password" class="form-style" placeholder="Şifreniz" autocomplete="off">
+                                                <i class="input-icon uil uil-lock-alt"></i>
+                                            </div>
+                                            <button type="submit" class="btn mt-4">Giriş Yap</button>
+                                            <p class="mb-0 mt-4 text-center">
+                                                <a href="#" class="link">Şifremi Unuttum</a>
+                                            </p>
+                                        </form>
 
-<div class="row">
-    <div class="col-md-8">
-        @if( ViewBag.ErrorMesage != null)
-        {
-            <div class="text-danger">@ViewBag.ErrorMesage</div>
-        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <div class="center-wrap">
+                                    <div class="section text-center">
+                                        <h4 class="mb-4 pb-3">Kayıt Ol</h4>
+                                        @if (ViewBag.ErrorMesage != null)
+                                        {
+                                            <div class="text-danger">@ViewBag.ErrorMesage</div>
+                                        }
 
-        <form asp-controller="Account" asp-action="Login" method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group row">
-                <label for="" class="col-md-2 col-form-label">Email</label>
-                <div class="col-md-10">
-                    <input asp-for="@Model.Email"  class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
+                                        <form asp-controller="Account" asp-action="Register" method="post">
+                                            <div asp-validation-summary="All" class="text-danger"></div>
+                                            <div class="form-group mt-2">
+                                                <input name="FirstName" id="RegisterDto.FirstName" type="text" class="form-style" placeholder="Ad" autocomplete="off">
+                                                <i class="input-icon uil uil-user"></i>
+                                            </div>
+                                            <div class="form-group mt-2">
+                                                <input name="LastName" id="RegisterDto.LastName" type="text" class="form-style" placeholder="Soyad" autocomplete="off">
+                                                <i class="input-icon uil uil-user"></i>
+                                            </div>
+                                            <div class="form-group mt-2">
+                                                <input name="UserName" id="RegisterDto.UserName" type="text" class="form-style" placeholder="Kullanıcı Adı" autocomplete="off">
+                                                <i class="input-icon uil uil-user"></i>
+                                            </div>
+                                            <div class="form-group mt-2">
+                                                <input name="Email" id="RegisterDto.Email" type="email" class="form-style" placeholder="Email" autocomplete="off">
+                                                <i class="input-icon uil uil-at"></i>
+                                            </div>
+                                            <div class="form-group mt-2">
+                                                <input name="Password" id="RegisterDto.Password" type="password" class="form-style" placeholder="Şifre" autocomplete="off">
+                                                <i class="input-icon uil uil-lock-alt"></i>
+                                            </div>
+                                            <div class="form-group mt-2">
+                                                <input name="RePassword" id="RegisterDto.RePassword" type="password" class="form-style" placeholder="Şifre Tekrar" autocomplete="off">
+                                                <i class="input-icon uil uil-lock-alt"></i>
+                                            </div>
+                                            <button type="submit" class="btn mt-4">Kaydol</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="form-group row">
-                <label for="" class="col-md-2 col-form-label">Parola</label>
-                <div class="col-md-10">
-                    <input asp-for="@Model.Password"  type="password" class="form-control" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-            </div>
-          
-             <div class="form-group row">
-                <div class="col-md-10 offset-md-2">
-                    <button type="submit" class="btn btn-primary">Giriş Yap</button>
-                </div>
-            </div>
-            
-        </form>
+        </div>
     </div>
 </div>
