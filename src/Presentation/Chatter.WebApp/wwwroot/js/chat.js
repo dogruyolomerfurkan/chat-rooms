@@ -19,9 +19,9 @@ $(function () {
 
         var signalRConnection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-        signalRConnection.on("ChatRoom", function (chatMessage, userShortInfo, roomInfo ) {
-           
-            if (roomInfo.id != roomId && userShortInfo.id != userId) {
+        signalRConnection.on("ChatRoom", function (chatMessage, userShortInfo, roomInfo) {
+
+            if ((typeof roomId === 'undefined' || roomInfo.id != roomId) && userShortInfo.id != userId) {
                 const toast = bootstrap.showToast({
                     header: roomInfo.title,
                     headerSmall: "Şimdi",
@@ -74,16 +74,18 @@ $(function () {
 
         function setOffline(userId) {
             $(`.user-profile #${userId}`).css('color', 'red');
-
         }
 
-        document.getElementById('newMessageInput').addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        $SendMessageBtn.click(sendMessage);
+        if (document.getElementById('newMessageInput') != null) {
+            document.getElementById('newMessageInput').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+        if (document.getElementById('sendMessageBtn') != null) {
+            $SendMessageBtn.click(sendMessage);
+        }
 
         function sendMessage() {
 

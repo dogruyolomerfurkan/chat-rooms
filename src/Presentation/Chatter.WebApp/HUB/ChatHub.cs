@@ -39,14 +39,15 @@ public class ChatHub : Hub
         
         await Clients.All.SendAsync("UserDisconnected", new List<string>(){userId});
 
-
         await base.OnDisconnectedAsync(exception);
     }
 
     public override async Task OnConnectedAsync()
     {
         var userId = GetUserId();
-
+        if(userId is null)
+            return;
+        
         //bu kullanım kullanıcının bütün odalarını getirir. Bulunduğu odada ise mesaj gelir.
         //TODO : Bulunmadığında ise noticiation gelir.
      
@@ -80,6 +81,12 @@ public class ChatHub : Hub
     {
         var messages = await _chatService.GetChatMessagesAsync(roomId);
         return messages;
+    }
+
+    public async Task<bool> CheckUserAlive(string userId)
+    {
+        var user = ActiveConnections.SignalRConnections.FirstOrDefault(x => x.UserId == userId);
+        return user is not null;
     }
 
     public async Task SendMessage(string message, int roomId)
