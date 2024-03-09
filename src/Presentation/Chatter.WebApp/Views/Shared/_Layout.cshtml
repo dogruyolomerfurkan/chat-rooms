@@ -11,28 +11,25 @@
     <link rel="stylesheet" href="~/modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/site.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    
     @RenderSection("Css", false)
 
 </head>
-<body>
+<body id="siteBody">
 <header>
     @Html.Partial("_navbar")
 </header>
-<div class="container" id="baseBody">
+<div class="container" id="contentBody">
     @if (TempData["message"] != null)
     {
         @Html.Partial("_resultmessage", TempData.Get<ResultMessage>("message"))
     }
-    <main role="main" class="pb-3">
+    <main role="main" >
         @RenderBody()
     </main>
 </div>
 
-<footer class="border-top footer">
-    <div class="container">
-        &copy; 2024 - Emre Onur | Chatter App - Privacy
-    </div>
-</footer>
 <script>
     let isAuthenticated = '@User.Identity.IsAuthenticated' === 'True';
     let userId = null;
@@ -42,7 +39,6 @@
 </script>
 
 <script src="~/modules/jquery/dist/jquery.min.js"></script>
-@* <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> *@
 <script src="~/modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
 @RenderSection("Script", false)

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Chatter.WebApp.Controllers;
 
+[Authorize]
 public class RoomController : Controller
 {
     private readonly IRoomService _roomService;
@@ -43,14 +44,12 @@ public class RoomController : Controller
     }
 
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> Create()
     {
         return View();
     }
 
     [HttpPost]
-    [Authorize]
     public async Task<IActionResult> Create(CreateRoomInput createRoomInput)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -61,8 +60,19 @@ public class RoomController : Controller
     }
 
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> Detail(int id)
+    {
+        var room = await _roomService.GetRoomDetailAsync(id);
+        var chatMessages = await _chatService.GetChatMessagesAsync(id);
+
+        ViewBag.ChatMessages = chatMessages;
+        ViewBag.CurrentUserId = _userManager.GetUserId(User);
+
+        return View(room);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> Chat(int id)
     {
         var room = await _roomService.GetRoomDetailAsync(id);
         var chatMessages = await _chatService.GetChatMessagesAsync(id);

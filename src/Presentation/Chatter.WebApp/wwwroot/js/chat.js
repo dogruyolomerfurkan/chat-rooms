@@ -6,13 +6,13 @@ $(function () {
         let $MessageBody = $("#message-body");
         let $UserProfileDiv = $(".user-profile ");
         let $NewMessageInput = $("#newMessageInput");
-
         let $notificationBell = $("#notification-bell");
 
 
         function scrollToBottom() {
-            var container = document.getElementById("message-body");
-            container.scrollTop = container.scrollHeight;
+
+            document.documentElement.scrollTop= document.documentElement.scrollHeight;
+            $MessageBody.animate({ scrollTop: $MessageBody[0].scrollHeight }, 1000);
         }
 
         window.onload = scrollToBottom;
@@ -37,19 +37,25 @@ $(function () {
                 return;
             }
 
+            let date = new Date(chatMessage.sentDate);
             if (userShortInfo.id != userId) {
-                
                 $MessageBox.append(`<div class="message received-message">
                                 <span class="message username">${userShortInfo.userName}</span>
-                                <p>${chatMessage.message}</p>
+                                 <div class="message-content">
+                                    <p class="message-text">${chatMessage.message}</p>
+                                    <small class="message-date">${date.getHours()}:${date.getMinutes()}</small>
+                                </div>
                             </div>`);
                 const audio = new Audio('/audio/received_message.mp3');
                 audio.play();
-            } else {
+            } else if(roomInfo.id == roomId) {
                 $MessageBox.append(`<div class="message sent-message">
                                 <span class="message username">${userShortInfo.userName}</span>
-                                <p>${chatMessage.message}</p>
-                            </div>`);
+                                    <div class="message-content">
+                                        <p class="message-text">${chatMessage.message}</p>
+                                        <small class="message-date">${date.getHours()}:${date.getMinutes()}</small>
+                                    </div>
+                                </div>`);
 
             }
             scrollToBottom();
@@ -68,12 +74,12 @@ $(function () {
         });
 
         function setOnline(userId) {
-            $(`.user-profile #${userId}`).css('color', 'green');
+            $(`.user-profile #${userId}-icon`).css('color', 'green');
 
         }
 
         function setOffline(userId) {
-            $(`.user-profile #${userId}`).css('color', 'red');
+            $(`.user-profile #${userId}-icon`).css('color', 'red');
         }
 
         if (document.getElementById('newMessageInput') != null) {
