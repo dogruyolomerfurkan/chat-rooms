@@ -2,6 +2,7 @@ using Chatter.Application.Dtos.Chats;
 using Chatter.Persistence.RepositoryManagement.Base;
 using Chatter.Persistence.RepositoryManagement.EfCore.Users;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using ChatMessage = Chatter.Domain.Entities.NoSql.ChatMessage;
 
 namespace Chatter.Application.Services.Chats;
@@ -44,5 +45,23 @@ public class ChatService : IChatService
             x.UserInfo = users.FirstOrDefault(u => u.Id == x.SenderUserId)!.Adapt<Dtos.Users.UserShortInfoDto>();
         });
         return chatMessages;
+    }
+
+    public async Task<Dtos.Chats.ChatMessage> GetLastMessageAsync(int roomId)
+    {
+        var chatMessage =  _chatRepository.Query()
+            .Where(x => x.RoomId == roomId)
+            .OrderByDescending(x => x.SentDate)
+            .ProjectToType<Dtos.Chats.ChatMessage>().FirstOrDefault();
+
+
+        if(chatMessage is null)
+            return null;
+        
+        var users = await _userRepository.Query()
+            .FirstOrDefaultAsync(x => x.Id == chatMessage.SenderUserId);
+        
+        chatMessage.UserInfo = users?.Adapt<Dtos.Users.UserShortInfoDto>();
+        return chatMessage;
     }
 }

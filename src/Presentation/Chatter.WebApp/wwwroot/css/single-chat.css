@@ -201,6 +201,21 @@ li {
 .chat-list .dropend:hover{
     background-color: #ccc;
 }
+.chat-info{
+    border-bottom: 1px solid white;
+}
+.chat-info a{
+    color: #ffeba7;
+    text-decoration: none;
+}
+
+.chat-info.message-date{
+    position:relative; 
+    opacity: 0.6;
+    padding-right:20px
+}
+
+
 
 #userList .dropend:hover{
     background-color: #ccc;

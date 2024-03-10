@@ -48,9 +48,6 @@ public class ChatHub : Hub
         if(userId is null)
             return;
         
-        //bu kullanım kullanıcının bütün odalarını getirir. Bulunduğu odada ise mesaj gelir.
-        //TODO : Bulunmadığında ise noticiation gelir.
-     
         var signalRConnection = ActiveConnections.SignalRConnections.FirstOrDefault(s => s.UserId == userId);
         if (signalRConnection is null)
         {
@@ -74,19 +71,12 @@ public class ChatHub : Hub
         await base.OnConnectedAsync();
         
         await Clients.All.SendAsync("UserConnected", new List<string>(){userId});
-
     }
 
     public async Task<List<ChatMessage>> GetMessages(int roomId)
     {
         var messages = await _chatService.GetChatMessagesAsync(roomId);
         return messages;
-    }
-
-    public async Task<bool> CheckUserAlive(string userId)
-    {
-        var user = ActiveConnections.SignalRConnections.FirstOrDefault(x => x.UserId == userId);
-        return user is not null;
     }
 
     public async Task SendMessage(string message, int roomId)
@@ -122,10 +112,12 @@ public class ChatHub : Hub
         var checkRoom = await _roomService.GetRoomDetailAsync(roomId);
         if (checkRoom is null)
             return;
+
+        checkRoom.LastChatMessage = await _chatService.GetLastMessageAsync(roomId);
         
         var userListInRoom = checkRoom.RoomChatterUsers.Select(x => x.ChatterUserId).ToList();
-        var userList = ActiveConnections.SignalRConnections.Where(x => userListInRoom.Contains(x.UserId)).Select(x => x.UserId).ToList();
-        await Clients.Group(roomId.ToString()).SendAsync("UserConnected", userList);
+        var otherUserIds = ActiveConnections.SignalRConnections.Where(x => userListInRoom.Contains(x.UserId)).Select(x => x.UserId).ToList();
+        await Clients.Group(roomId.ToString()).SendAsync("UserConnected", otherUserIds, checkRoom);
     }
 
     public async Task LeaveChatRoom(int roomId)

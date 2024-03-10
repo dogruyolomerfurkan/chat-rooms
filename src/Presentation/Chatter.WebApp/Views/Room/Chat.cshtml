@@ -5,6 +5,7 @@
 @{
     var chatMessages = (List<Chatter.Application.Dtos.Chats.ChatMessage>) ViewBag.ChatMessages;
     var currentUserId = (string) ViewBag.CurrentUserId;
+
 }
 
 @section Css{
@@ -31,7 +32,7 @@
                                     });
                      if (existUser.length === 0) {
                          $resultsDiv.append('<p>' +  '<div class="user-profile">' +
-                          `<img src="/img/profileImages/' + item.profileImagePath + '" alt="User Name"  class="profile-icon search" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">`
+                          `<img src="/img/profileImages/` + item.profileImagePath + `" alt="User Name"  class="profile-icon search" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">`
                           + '<span class="user-name search">' + item.userName + '</span></div></p>'); // Arama sonuçlarını ekranda gösterin.
               
                       }
@@ -109,59 +110,7 @@
             </a>
         </div>
     </div>
-    <div class="user-content-container">
-        <div class="chat-list">
-            <ul>
-                @foreach (var user in Model.Users)
-                {
-                    <li>
-                        <div class="dropend">
-                            <div class="user-profile" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                                <span style="color:red" id="@user.Id-icon">&#11044;&nbsp&nbsp</span>
-                                <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">
-                                <div class="row">
-                                    <div class="col">
-                                        <span class="user-name">@user.UserName</span>
-                                        @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType == ChatPermissionType.Admin)
-                                        {
-                                            <span style="opacity: 0.6; font-size: 13px; margin-left: 10px;"> ~ Admin</span>
-                                        }
-                                    </div>
-                                    <span class="user-description">&nbsp&nbsp @user.StatusDescription</span>
-
-                                </div>
-                            </div>
-                            <ul class="dropdown-menu">
-                                @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
-                                {
-                                    if (User.FindFirstValue(ClaimTypes.NameIdentifier) != user.Id)
-                                    {
-                                        <li>
-                                            <form method="post" asp-controller="Room" asp-action="RemoveUserInRoom">
-                                                <input type="hidden" name="roomId" value="@Model.Id"/>
-                                                <input type="hidden" name="chatterUserId" value="@user.Id"/>
-                                                <button type="submit" class="nav-link text-dark">Odadan At</button>
-                                            </form>
-                                        </li>
-                                    }
-                                    if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType != ChatPermissionType.Admin)
-                                    {
-                                        <li>
-                                            <form method="post" asp-controller="Room" asp-action="AddAdminToRoom">
-                                                <input type="hidden" name="roomId" value="@Model.Id"/>
-                                                <input type="hidden" name="chatterUserId" value="@user.Id"/>
-                                                <button type="submit" class="nav-link text-dark">Admin Yap</button>
-                                            </form>
-                                        </li>
-                                    }
-                                }
-
-                            </ul>
-                        </div>
-                    </li>
-                }
-            </ul>
-        </div>
+    <div class="chat-list" id="chat-list">
     </div>
 </div>
 <div class="chat-container">
@@ -169,7 +118,7 @@
         <h4 class="card-title">
             <b style="margin-left: 20px;">@Model.Title</b>
         </h4>
-        <div class="mb-1 justify-content-between d-flex">
+        <div class="justify-content-between d-flex">
             <div class="closeDiv" style="margin:auto">
                 <a href="javascript:changeShowChatterContainer()">
                     <h4>
@@ -220,7 +169,7 @@
                                 <span class="message username">@message.UserInfo.UserName</span>
                                 <div class="message-content">
                                     <p class="message-text">@message.Message</p>
-                                    <small class="message-date">@message.SentDate.ToShortTimeString()</small>
+                                    <small class="message-date">@message.SentDate.ToLocalTime().ToShortTimeString()</small>
                                 </div>
                             </div>
                         }
@@ -230,7 +179,7 @@
                                 <span class="message username">@message.UserInfo.UserName</span>
                                 <div class="message-content">
                                     <p class="message-text">@message.Message</p>
-                                    <small class="message-date">@message.SentDate.ToShortTimeString()</small>
+                                    <small class="message-date">@message.SentDate.ToLocalTime().ToShortTimeString()</small>
                                 </div>
                             </div>
                         }
