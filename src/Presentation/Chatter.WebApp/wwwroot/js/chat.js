@@ -27,7 +27,7 @@ $(function () {
                     headerSmall: "Şimdi",
                     body: `<p>${chatMessage.message}</p>` +
                         "<div>" +
-                        `<a href="\\Room\\Detail\\${roomInfo.id}" class='btn btn-primary me-1 btn-sm'>Chate git</a>` +
+                        `<a href="\\Room\\Chat\\${roomInfo.id}" class='btn btn-primary me-1 btn-sm'>Chate git</a>` +
                         "<button class='btn btn-secondary btn-sm' data-bs-dismiss='toast'>Kapat</button>" +
                         "</div>",
                     delay: 5000

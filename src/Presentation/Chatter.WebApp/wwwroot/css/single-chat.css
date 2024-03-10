@@ -194,7 +194,13 @@ li {
     margin-left: 0;
 }
 
+.chat-list{
+    margin-top:10px;
+}
 
+.chat-list .dropend:hover{
+    background-color: #ccc;
+}
 
 #userList .dropend:hover{
     background-color: #ccc;
@@ -210,6 +216,24 @@ li {
 #settingIcon{
     margin: 10px;
     padding-top: 13px;
+}
+
+.closeDiv{
+}
+
+.closeDiv a:link{
+    text-decoration: none;
+}
+.closeDiv b{
+    color: #ffeba7;
+    vertical-align: -webkit-baseline-middle;
+    
+}
+
+.closeDivIcon{
+    margin: 10px;
+    padding-top: 13px;
+    
 }
 .user-description{
     font-size: 13px;

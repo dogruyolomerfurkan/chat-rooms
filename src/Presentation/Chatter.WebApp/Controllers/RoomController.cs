@@ -93,7 +93,7 @@ public class RoomController : Controller
             UserId = user.Id
         };
         await _roomService.JoinRoomAsync(joinRoomInput);
-        return RedirectToAction("Detail", new {id = roomId});
+        return RedirectToAction("Chat", new {id = roomId});
     }
 
     [HttpPost]
@@ -128,7 +128,7 @@ public class RoomController : Controller
         var user = await _userManager.GetUserAsync(User);
         editRoomInput.UserId = user.Id;
         await _roomService.EditRoomAsync(editRoomInput);
-        return RedirectToAction("Detail", new {id = editRoomInput.Id});
+        return RedirectToAction("Chat", new {id = editRoomInput.Id});
     }
     
     [HttpPost]
@@ -139,7 +139,7 @@ public class RoomController : Controller
         addPermissionToRoomInput.PermissionType = ChatPermissionType.Admin;
         await _roomService.AddPermissionToRoomAsync(addPermissionToRoomInput);
         
-        return RedirectToAction("Detail", new {id = addPermissionToRoomInput.RoomId});
+        return RedirectToAction("Chat", new {id = addPermissionToRoomInput.RoomId});
     }
     
     [HttpPost]
@@ -149,7 +149,7 @@ public class RoomController : Controller
         removeUserInRoomInput.RequestedUserId = user.Id;
         await _roomService.RemoveUserInRoomAsync(removeUserInRoomInput);
         
-        return RedirectToAction("Detail", new {id = removeUserInRoomInput.RoomId});
+        return RedirectToAction("Chat", new {id = removeUserInRoomInput.RoomId});
     }
   
 }
