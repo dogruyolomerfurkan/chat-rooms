@@ -91,9 +91,9 @@
 {
 
     <script>
-        var baseBody = document.getElementById('baseBody');
-        baseBody.classList.remove("container");
-        baseBody.classList.add("mb-5");
+        var contentBody = document.getElementById('contentBody');
+        contentBody.classList.remove("container");
+        contentBody.classList.add("mb-5");
         function displayResults(results) {
             let $resultsDiv = $('#searchResults');
             $resultsDiv.empty();
@@ -117,7 +117,6 @@
         } 
         
         let roomId = @Model.Id.ToString();
-        let userId = '@User.FindFirstValue(ClaimTypes.NameIdentifier)'
         
         document.getElementById('searchInput').addEventListener('input', function (e) {
                 var searchResults = document.getElementById('searchResults');
@@ -147,11 +146,6 @@
       });
     
     </script>
-    
-    <script src="~/js/bootstrap-toast.js"></script>
-    <script src="~/js/chat.js"></script>
-    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
-
 }
 
 <div class="row" id="detailDiv">

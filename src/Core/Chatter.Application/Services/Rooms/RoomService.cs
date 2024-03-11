@@ -1,4 +1,5 @@
 using Chatter.Application.Dtos.Rooms;
+using Chatter.Application.Services.Chats;
 using Chatter.Common.Exceptions;
 using Chatter.Domain.Entities.EFCore.Application;
 using Chatter.Domain.Entities.EFCore.Identity;
@@ -18,14 +19,16 @@ public class RoomService : BaseService, IRoomService
     private readonly IInvitationRepository _invitationRepository;
     private readonly UserManager<ChatterUser> _userManager;
     private readonly IUserRepository _userRepository;
+    private readonly IChatService _chatService;
 
     public RoomService(IRoomRepository roomRepository, IInvitationRepository invitationRepository,
-        UserManager<ChatterUser> userManager, IUserRepository userRepository)
+        UserManager<ChatterUser> userManager, IUserRepository userRepository, IChatService chatService)
     {
         _roomRepository = roomRepository;
         _invitationRepository = invitationRepository;
         _userManager = userManager;
         _userRepository = userRepository;
+        _chatService = chatService;
     }
 
     public async Task<List<RoomDto>> GetRoomsAsync()
@@ -47,8 +50,14 @@ public class RoomService : BaseService, IRoomService
         var rooms = await _roomRepository.Query()
             .Include(x => x.RoomChatterUsers)
             .Where(x => roomIds.Contains(x.Id)).ToListAsync();
+        
+        var roomDtos = rooms.Adapt<List<RoomDto>>();
+        foreach (var room in roomDtos)
+        {
+            room.LastChatMessage = await _chatService.GetLastMessageAsync(room.Id);
+        }
 
-        return rooms.Adapt<List<RoomDto>>();
+        return roomDtos.OrderByDescending(x => x.LastChatMessage != null ? x.LastChatMessage?.SentDate : x.CreatedDate).ToList();
     }
 
     public async Task<List<RoomDto>> GetPublicRooms()
@@ -141,7 +150,6 @@ public class RoomService : BaseService, IRoomService
 
     public async Task LeaveRoomAsync(LeaveRoomInput leaveRoomInput)
     {
-        // TODO : AsnoTracking yapmayınca Include conditionı çalışmıyor.
         var room = await _roomRepository.Query()
             .Include(x => x.RoomPermissions)
             .Include(x => x.RoomChatterUsers)

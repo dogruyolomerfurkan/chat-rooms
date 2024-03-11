@@ -1,3 +1,4 @@
+using Chatter.Application.Dtos.Chats;
 using Chatter.Application.Dtos.Invitations;
 using Chatter.Domain.Entities.EFCore.Application;
 using Chatter.Domain.Entities.EFCore.Identity;
@@ -56,5 +57,10 @@ public class RoomDto
     /// Bloklu kullanıcılar
     /// </summary>
     public List<RoomChatterUser>? BlockedUsers { get; set; }
+    
+    /// <summary>
+    /// Son Mesaj bilgisini getirir
+    /// </summary>
+    public ChatMessage? LastChatMessage { get; set; }
     
 }

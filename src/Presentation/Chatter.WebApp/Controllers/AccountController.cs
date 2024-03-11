@@ -1,12 +1,16 @@
 using System.Net.Mail;
+using System.Security.Claims;
+using System.Security.Principal;
 using Chatter.Common.Exceptions;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Domain.Enums;
 using Chatter.WebApp.Extensions;
 using Chatter.WebApp.Models;
 using Chatter.WebApp.Models.Account;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Chatter.WebApp.Controllers;
 

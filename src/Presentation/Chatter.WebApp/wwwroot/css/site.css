@@ -14,10 +14,13 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
-  background-color: #6B5B95;
+  /*margin-bottom: 60px;*/
+  background-color: #30313f;
+  color: #ffeba7;
   /*background-color: #054640;*/
 }
+
+
 
 
 .pt-100{
@@ -32,10 +35,45 @@ body {
   line-height: 60px; /* Vertically center the text there */
 }
 
-footer{
-  color:white;
-}
+
 
 .navbar{
-  background-color: #34568B;
+  background-color: #30313f;
 }
+.navbar .navbar-brand{
+  color:#ffeba7;
+}
+.nav-item .nav-link{
+  color:#ffeba7;
+}
+
+.custom-toggler.navbar-toggler {
+  border-color: #ffeba7;
+}
+
+.custom-toggler .navbar-toggler-icon {
+  background-image: url(
+  "data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgb(255,235,167)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+.custom-toggler.navbar-toggler-icon:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #555;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #3b4b48;
+}
+
+
+

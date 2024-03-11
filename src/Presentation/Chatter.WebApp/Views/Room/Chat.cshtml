@@ -1,0 +1,360 @@
+@using Chatter.Domain.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Security.Claims
+@model Chatter.Application.Dtos.Rooms.RoomDto
+@{
+    var chatMessages = (List<Chatter.Application.Dtos.Chats.ChatMessage>) ViewBag.ChatMessages;
+    var currentUserId = (string) ViewBag.CurrentUserId;
+
+}
+
+@section Css{
+
+    <link rel="stylesheet" href="/css/single-chat.css">
+}
+
+@section Script
+{
+    <script>
+       let contentBody = document.getElementById('contentBody');
+       if (contentBody != null){
+          contentBody.classList.remove("container");
+        }
+            function displayResults(results) {
+                let $resultsDiv = $('#searchResults');
+                $resultsDiv.empty();
+                $resultsDiv.css('background-color', '#ccc'); // İsteğe bağlı olarak, sonuçlar bölümünün arka plan rengini değiştirebilirsiniz.
+    
+                if (results.length > 0) {
+                    $.each(results, function(index, item) {
+                         var existUser = $('#userList .user-name').filter(function() {
+                                        return $(this).text() === item.userName;
+                                    });
+                     if (existUser.length === 0) {
+                         $resultsDiv.append('<p>' +  '<div class="user-profile">' +
+                          `<img src="/img/profileImages/` + item.profileImagePath + `" alt="User Name"  class="profile-icon search" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">`
+                          + '<span class="user-name search">' + item.userName + '</span></div></p>'); // Arama sonuçlarını ekranda gösterin.
+              
+                      }
+                    });
+                    $resultsDiv.show(); // Sonuçlar gösterildiğinde sonuçlar bölümünü görünür hale getirin.
+                } else {
+                    $resultsDiv.hide(); // Sonuç bulunamadıysa sonuçları gizleyin.
+                }
+            } 
+         
+           function changeShowUserContainer() {
+              let userContainer = document.getElementById("user-container");
+            
+              if (userContainer.style.display === "none") {
+                  userContainer.style.display = "block";
+              } else {
+                userContainer.style.display = "none";
+                }
+            }   
+       
+             function changeShowChatterContainer() {
+                   let userContainer = document.getElementById("chatter-container");
+                   
+                   if (userContainer.style.display === "none") {
+                       userContainer.style.display = "block";
+                   } else {
+                       userContainer.style.display = "none";
+                   }
+              }
+       
+            // let userId = '@currentUserId';
+            let roomId = @Model.Id.ToString();
+            window.addEventListener("DOMContentLoaded", (event) => {
+            document.getElementById('searchInput').addEventListener('input', function (e) {
+                    var searchResults = document.getElementById('searchResults');
+                    searchResults.innerHTML = '';
+                    var searchValue = e.target.value;
+                    if (searchValue.length > 0) {
+                        fetch('/api/v1/users/search/' + searchValue)
+                            .then(response => response.json())
+                            .then(data => {
+                                displayResults(data)
+                                
+                            });
+                    }
+                });
+       
+            document.getElementById('newMessageInput').addEventListener('input', function (e) {
+              if (e.target.value.length <= 0) {
+                  document.getElementById('sendMessageBtn').style.pointerEvents = "none";
+                    
+                  document.getElementById('sendMessageIcon').style.opacity =  0.5;
+              }
+              else {
+                   document.getElementById('sendMessageBtn').style.pointerEvents = "auto";
+                  document.getElementById('sendMessageIcon').style.opacity = 1;
+              }
+          });
+        });
+       
+        </script>
+
+}
+
+
+<div class="main-div">
+<div class="chatter-container" id="chatter-container" style="display: none">
+    <div class="d-flex justify-content-between title-container">
+        <h4 class="card-title">
+            <b style="margin-left: 20px;">Chats</b>
+        </h4>
+        <div class="closeDiv">
+            <a href="javascript:changeShowChatterContainer()">
+                <i class="fa-sharp fa-solid fa-xmark fa-xl closeDivIcon" style="color: #ffeba7;"></i>
+            </a>
+        </div>
+    </div>
+    <div class="chat-list" id="chat-list">
+    </div>
+</div>
+<div class="chat-container">
+    <div class="d-flex justify-content-between title-container">
+        <h4 class="card-title">
+            <b style="margin-left: 20px;">@Model.Title</b>
+        </h4>
+        <div class="justify-content-between d-flex">
+            <div class="closeDiv" style="margin:auto">
+                <a href="javascript:changeShowChatterContainer()">
+                    <h4>
+                        <b>Chats</b>
+                    </h4>
+                </a>
+
+            </div>
+            <div>
+                <a href="javascript:changeShowUserContainer()">
+                    <i class="fa-sharp fa-solid fa-user fa-xl closeDivIcon" style="color: #ffeba7;"></i>
+                </a>
+            </div>
+            <div class="dropstart" id="roomSettingDropDown">
+                <a class="nav-link" href="#" role="button" id="settingDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false" style="padding-right: 10px;">
+                    <i id="settingIcon" class="fa-sharp fa-solid fa-gear fa-xl"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="settingDropdownMenu">
+                    <li>
+                        <button type="button" class="dropdown-item" onclick="$('#LeaveRoomForm #roomId').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#LeaveRoomModal">
+                            Chatten Ayrıl
+                        </button>
+                    </li>
+                    @if (User.IsInRole(ChatPermissionType.Admin.ToString()) || Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
+                    {
+                        <li>
+                            <button type="button" class="dropdown-item" onclick="$('#EditRoomForm #Id').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#EditRoomModal">Odayı Düzenle</button>
+                        </li>
+                        <li>
+                            <button type="button" class="dropdown-item" onclick="$('#DeleteRoomForm #roomId').val('@Model.Id');" data-bs-toggle="modal" data-bs-target="#DeleteRoomModal">Odayı Sil</button>
+                        </li>
+                    }
+
+                </ul>
+            </div>
+
+        </div>
+    </div>
+    <div class="message-container">
+        <div class="message-body" id="message-body">
+            <ul class="message-list" id="message-list">
+                @{
+                    foreach (var message in chatMessages)
+                    {
+                        if (message.SenderUserId == currentUserId)
+                        {
+                            <div class="message sent-message ">
+                                <span class="message username">@message.UserInfo.UserName</span>
+                                <div class="message-content">
+                                    <p class="message-text">@message.Message</p>
+                                    <small class="message-date">@message.SentDate.ToLocalTime().ToShortTimeString()</small>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="message received-message ">
+                                <span class="message username">@message.UserInfo.UserName</span>
+                                <div class="message-content">
+                                    <p class="message-text">@message.Message</p>
+                                    <small class="message-date">@message.SentDate.ToLocalTime().ToShortTimeString()</small>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            </ul>
+        </div>
+        <div class="message-footer">
+            <input type="text" id="newMessageInput" placeholder="Mesajınızı yazın...">
+            <a id="sendMessageBtn" href="#" style="pointer-events: none;"
+               data-toggle="tooltip" data-placement="bottom" title="Send">
+                <i id="sendMessageIcon" class="fas fa-solid fa-paper-plane fa-xl" style="color: #74C0FC; opacity: 0.5"></i>
+            </a>
+
+        </div>
+    </div>
+</div>
+<div class="user-container" id="user-container" style="display: none">
+    <div class="d-flex justify-content-between title-container">
+        <h4 class="card-title">
+            <b style="margin-left: 20px;">Kullanıcılar</b>
+        </h4>
+        <div class="closeDiv">
+            <a href="javascript:changeShowUserContainer()">
+                <i class="fa-sharp fa-solid fa-xmark fa-xl closeDivIcon" style="color: #ffeba7;"></i>
+            </a>
+        </div>
+    </div>
+    <div class="user-content-container">
+        <div class="search-user">
+            <input type="text" id="searchInput"/>
+            <div id="searchResults" style="display: none;"></div>
+        </div>
+        <div id="userList">
+            <ul>
+                @foreach (var user in Model.Users)
+                {
+                    <li>
+                        <div class="dropdown" style="position:relative">
+                            <div class="user-profile" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                <span style="color:red" id="@user.Id-icon">&#11044;&nbsp&nbsp</span>
+                                <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">
+                                <div class="row g-0">
+                                    <div class="col">
+                                        <span class="user-name">@user.UserName</span>
+                                        @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType == ChatPermissionType.Admin)
+                                        {
+                                            <span style="opacity: 0.6; font-size: 13px; margin-left: 10px;"> ~ Admin</span>
+                                        }
+                                    </div>
+                                    <span class="user-description">&nbsp&nbsp @user.StatusDescription</span>
+
+                                </div>
+                            </div>
+                            <ul class="dropdown-menu" style="position: absolute;">
+                                @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
+                                {
+                                    if (User.FindFirstValue(ClaimTypes.NameIdentifier) != user.Id)
+                                    {
+                                        <li>
+                                            <form method="post" asp-controller="Room" asp-action="RemoveUserInRoom">
+                                                <input type="hidden" name="roomId" value="@Model.Id"/>
+                                                <input type="hidden" name="chatterUserId" value="@user.Id"/>
+                                                <button type="submit" class="nav-link text-dark">Odadan At</button>
+                                            </form>
+                                        </li>
+                                    }
+                                    if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType != ChatPermissionType.Admin)
+                                    {
+                                        <li>
+                                            <form method="post" asp-controller="Room" asp-action="AddAdminToRoom">
+                                                <input type="hidden" name="roomId" value="@Model.Id"/>
+                                                <input type="hidden" name="chatterUserId" value="@user.Id"/>
+                                                <button type="submit" class="nav-link text-dark">Admin Yap</button>
+                                            </form>
+                                        </li>
+                                    }
+                                }
+
+                            </ul>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="EditRoomModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Oda Güncelleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form asp-controller="Room" asp-action="EditRoom" method="POST" id="EditRoomForm">
+                <div class="modal-body">
+                    <input type="hidden" name="Id" id="Id" value="" asp-for="Id"/>
+                    <div class="form-group row">
+                        <label asp-for="Title" class="col-md-2 col-form-label">Oda Konusu</label>
+                        <div class="col-md-10">
+                            <input type="text" name="Title" id="Title" asp-for="Title" required/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="IsPublic" class="col-md-2 col-form-label">Herkese Açık</label>
+                        <div class="col-md-10">
+                            <select class="form-control" id="IsPublic" name="IsPublic" asp-for="IsPublic" required>
+                                <option value="true">Evet</option>
+                                <option value="false">Hayır</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Capacity" class="col-md-2 col-form-label">Kapasite</label>
+                        <div class="col-md-10">
+                            <input type="number" name="Capacity" id="Capacity" asp-for="Capacity" required/>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hayır</button>
+                    <button type="submit" class="btn btn-primary">Evet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal" id="DeleteRoomModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bu oda silenecek emin misin?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hayır</button>
+                <form method="post" asp-controller="Room" asp-action="DeleteRoom" id="DeleteRoomForm">
+                    <input type="hidden" name="roomId" id="roomId" value=""/>
+                    <button type="submit" class="btn btn-primary">Evet</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="LeaveRoomModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bu odadan ayrılacaksınız. Emin misin?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hayır</button>
+                <form method="post" asp-controller="Room" asp-action="LeaveRoom" id="LeaveRoomForm">
+                    <input type="hidden" name="roomId" id="roomId" value=""/>
+                    <button type="submit" class="btn btn-primary">Evet</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
