@@ -3,9 +3,11 @@ using Chatter.Application.Services.Chats;
 using Chatter.Application.Services.Rooms;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Domain.Enums;
+using Chatter.WebApp.HUB;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Chatter.WebApp.Controllers;
 
@@ -14,15 +16,16 @@ public class RoomController : Controller
 {
     private readonly IRoomService _roomService;
     private readonly UserManager<ChatterUser> _userManager;
-
+    private readonly IHubContext<ChatHub> _hubContext;
     private readonly IChatService _chatService;
 
     // GET
-    public RoomController(IRoomService roomService, UserManager<ChatterUser> userManager, IChatService chatService)
+    public RoomController(IRoomService roomService, UserManager<ChatterUser> userManager, IChatService chatService, IHubContext<ChatHub> hubContext)
     {
         _roomService = roomService;
         _userManager = userManager;
         _chatService = chatService;
+        _hubContext = hubContext;
     }
 
     public async Task<IActionResult> Index()
@@ -106,6 +109,12 @@ public class RoomController : Controller
             UserId = user.Id
         };
         await _roomService.LeaveRoomAsync(leaveRoomInput);
+
+        var connectionId = ActiveConnections.SignalRConnections.FirstOrDefault(x => x.UserId == user.Id)?.ConnectionId;
+        
+        ActiveConnections.SignalRConnections.RemoveAll(x => x.ConnectionId == connectionId && x.UserId == user.Id);
+        await _hubContext.Groups.RemoveFromGroupAsync(connectionId, roomId.ToString());
+        await _hubContext.Clients.Group(roomId.ToString()).SendAsync("LeavedRoom", user.Id, roomId);
         return RedirectToAction("Index");
     }
     
