@@ -40,11 +40,12 @@ body {
 .navbar{
   background-color: #30313f;
 }
-.navbar .navbar-brand{
-  color:#ffeba7;
+.navbar .navbar-brand, .nav-item .nav-link, .navbar-nav .nav-link.active, .navbar-nav .nav-link.show{
+  color: #ffeba7;
 }
-.nav-item .nav-link{
-  color:#ffeba7;
+
+.nav-link{
+  padding-left:10px;
 }
 
 .custom-toggler.navbar-toggler {
