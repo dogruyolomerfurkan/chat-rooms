@@ -26,11 +26,10 @@
     {
         var resultMessage = TempData.Get<ResultMessage>("message");
         <script type="text/javascript">
-         window.onload = function () {
-             showNotification('@resultMessage.Title', '@resultMessage.Css', '@resultMessage.Message');
-         };
-    </script>
-        @* @Html.Partial("_resultmessage", TempData.Get<ResultMessage>("message")) *@
+        window.addEventListener('load', function() {
+                 showNotification('@resultMessage.Title', '@resultMessage.Css', '@resultMessage.Message');
+             });
+        </script>
     }
     <main role="main" >
         @RenderBody()
@@ -61,8 +60,7 @@
             header: title,
             closeButtonClass: "btn-close-white",
             toastClass:  "custom-toast",
-            body: `<p>${message}</p>`,
-            delay: Infinity
+            body: `<p>${message}</p>`
         });
     }
 </script>
