@@ -75,5 +75,12 @@ body {
   background: #3b4b48;
 }
 
+.custom-toast{
+  --bs-toast-bg: rgb(59, 75, 72, 0.9);
+  --bs-toast-header-color: none;
+  --bs-toast-header-bg: none;
+  --bs-toast-color: #ffeba7;
+}
+
 
 

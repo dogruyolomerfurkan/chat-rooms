@@ -1,5 +1,6 @@
 ﻿@using Chatter.WebApp.Extensions
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 
 <!DOCTYPE html>
 
@@ -23,7 +24,13 @@
 <div class="container" id="contentBody">
     @if (TempData["message"] != null)
     {
-        @Html.Partial("_resultmessage", TempData.Get<ResultMessage>("message"))
+        var resultMessage = TempData.Get<ResultMessage>("message");
+        <script type="text/javascript">
+         window.onload = function () {
+             showNotification('@resultMessage.Title', '@resultMessage.Css', '@resultMessage.Message');
+         };
+    </script>
+        @* @Html.Partial("_resultmessage", TempData.Get<ResultMessage>("message")) *@
     }
     <main role="main" >
         @RenderBody()
@@ -45,6 +52,19 @@
 <script src="~/js/bootstrap-toast.js"></script>
 <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
 <script src="~/js/chat.js"></script>
-
+<script>
+ function showNotification(title, css, message) {
+         if (message === null || message === undefined) {
+          return;
+         }
+        const toast = bootstrap.showToast({
+            header: title,
+            closeButtonClass: "btn-close-white",
+            toastClass:  "custom-toast",
+            body: `<p>${message}</p>`,
+            delay: Infinity
+        });
+    }
+</script>
 </body>
 </html>

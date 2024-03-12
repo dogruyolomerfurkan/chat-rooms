@@ -29,7 +29,7 @@ $(function () {
                 header: roomInfo.title,
                 headerSmall: "Şimdi",
                 closeButtonClass: "btn-close-white",
-                toastClass: "text-bg-secondary",
+                toastClass: "custom-toast",
                 body: `<p>${chatMessage.message}</p>` + "<div>" + `<a href="\\Room\\Chat\\${roomInfo.id}" class='btn btn-primary me-1 btn-sm'>Chate git</a>` + "<button class='btn btn-secondary btn-sm' data-bs-dismiss='toast'>Kapat</button>" + "</div>",
                 delay: 5000
             })
