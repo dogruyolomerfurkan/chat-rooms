@@ -27,13 +27,14 @@
     
                 if (results.length > 0) {
                     $.each(results, function(index, item) {
-                         var existUser = $('#userList .user-name').filter(function() {
-                                        return $(this).text() === item.userName;
-                                    });
-                     if (existUser.length === 0) {
-                         $resultsDiv.append('<p>' +  '<div class="user-profile">' +
-                          `<img src="/img/profileImages/` + item.profileImagePath + `" alt="User Name"  class="profile-icon search" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">`
-                          + '<span class="user-name search">' + item.userName + '</span></div></p>'); // Arama sonuçlarını ekranda gösterin.
+                         let existRoomUser = $(`.user-name:contains('${item.userName}')`); 
+                         let existInviteUser = $(`.invite-user:contains('${item.userName}')`);
+                     if (existRoomUser.length === 0 && existInviteUser.length === 0) {
+                         $resultsDiv.append(`<div class="user-profile" id="searched-user-${item.userName}">
+                         <a style="text-decoration: none; color: #ffeba7;" href="javascript:inviteUser('${item.userName}')">
+                          <img src="/img/profileImages/${item.profileImagePath}" alt="User Name"  class="profile-icon search" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">
+                          <span class="user-name search">${item.userName}</span>
+                            </a></div>`); // Arama sonuçlarını ekranda gösterin.
               
                       }
                     });
@@ -53,7 +54,7 @@
                 }
             }   
        
-             function changeShowChatterContainer() {
+           function changeShowChatterContainer() {
                    let userContainer = document.getElementById("chatter-container");
                    
                    if (userContainer.style.display === "none") {
@@ -67,19 +68,11 @@
             let roomId = @Model.Id.ToString();
             window.addEventListener("DOMContentLoaded", (event) => {
             document.getElementById('searchInput').addEventListener('input', function (e) {
-                    var searchResults = document.getElementById('searchResults');
-                    searchResults.innerHTML = '';
-                    var searchValue = e.target.value;
-                    if (searchValue.length > 0) {
-                        fetch('/api/v1/users/search/' + searchValue)
-                            .then(response => response.json())
-                            .then(data => {
-                                displayResults(data)
-                                
-                            });
-                    }
+                var searchValue = e.target.value;
+                   searchUser(searchValue);
                 });
-       
+          
+
             document.getElementById('newMessageInput').addEventListener('input', function (e) {
               if (e.target.value.length <= 0) {
                   document.getElementById('sendMessageBtn').style.pointerEvents = "none";
@@ -91,8 +84,40 @@
                   document.getElementById('sendMessageIcon').style.opacity = 1;
               }
           });
+            
         });
-       
+            
+              
+            function searchUser(searchValue){
+                 var searchResults = document.getElementById('searchResults');
+                searchResults.innerHTML = '';
+                if (searchValue.length > 0) {
+                    fetch('/api/v1/users/search/' + searchValue)
+                        .then(response => response.json())
+                        .then(data => {
+                            displayResults(data)
+                            
+                        });
+                  }
+                }
+                
+             function deleteInInvitelist(username){
+                let selectedUsers = document.getElementById('selectedUsers');
+                let userDiv = document.getElementById(`invited-user-${username}`);
+                selectedUsers.removeChild(userDiv);
+                searchUser( document.getElementById('searchInput').value);
+            }
+              function inviteUser(username){
+                 let selectedUsers = document.getElementById('selectedUsers');
+                 // selectedUsers.style.display = "flex";
+                    let userDiv = document.createElement('div');
+                    userDiv.classList.add("invite-user-selected");
+                    userDiv.id = `invited-user-${username}`;
+                    userDiv.innerHTML = `<span class="user-name search">${username}</span>`;
+                    userDiv.innerHTML += `<a href="javascript:deleteInInvitelist('${username}')"><i class="fa-sharp fa-solid fa-xmark fa-l" style="padding:5px; color: #ffeba7;"></i></a>`;
+                    selectedUsers.appendChild(userDiv);
+                    document.getElementById(`searched-user-${username}`).remove();
+                }
         </script>
 
 }
@@ -111,7 +136,6 @@
             </div>
         </div>
         <div class="chat-list" id="chat-list">
-
             @* example *@
             @* <div class="chat-info" id="chat-info-${otherRoomInfo.id}"> *@
             @*     <a href="\\Room\\Chat\\${otherRoomInfo.id}"> *@
@@ -225,10 +249,15 @@
             </div>
         </div>
         <div class="user-content-container">
-            <div class="search-user">
-                <input type="text" id="searchInput"/>
-                <div id="searchResults" style="display: none;"></div>
+            <div class="invite-user">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#SearchUserModal">
+                    Kullanıcı Davet Et
+                </button>
             </div>
+            @* <div class="search-user"> *@
+            @*     <input type="text" id="searchInput"/> *@
+            @*     <div id="searchResults" style="display: none;"></div> *@
+            @* </div> *@
             <div id="user-list">
                 <ul>
                     @foreach (var user in Model.Users)
@@ -241,7 +270,7 @@
                                     <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">
                                     <div class="row g-0">
                                         <div class="col">
-                                            <span class="user-name">@user.UserName</span>
+                                            <span class="user-name" id="user-name-@user.UserName">@user.UserName</span>
                                             @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType == ChatPermissionType.Admin)
                                             {
                                                 <span style="opacity: 0.6; font-size: 13px; margin-left: 10px;"> ~ Admin</span>
@@ -281,6 +310,30 @@
                         </li>
                     }
                 </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="SearchUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Kullanıcı Davet</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="search-user">
+                <div id="selectedUsers">
+                    
+                </div>
+                <input type="text" id="searchInput"/>
+                <div id="searchResults" style="display: none;"></div>
+                <button class="btn btn-primary">
+                    Davet Et
+                </button>
             </div>
         </div>
     </div>
@@ -330,7 +383,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- Modal -->
 <div class="modal" id="DeleteRoomModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
