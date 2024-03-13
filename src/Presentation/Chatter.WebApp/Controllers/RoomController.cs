@@ -1,9 +1,14 @@
 using Chatter.Application.Dtos.Rooms;
 using Chatter.Application.Services.Chats;
 using Chatter.Application.Services.Rooms;
+using Chatter.Application.Services.Users;
+using Chatter.Common.Exceptions;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Domain.Enums;
+using Chatter.WebApp.Extensions;
 using Chatter.WebApp.HUB;
+using Chatter.WebApp.Models;
+using Chatter.WebApp.Models.Room;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,13 +24,15 @@ public class RoomController : Controller
     private readonly IHubContext<ChatHub> _hubContext;
     private readonly IChatService _chatService;
 
+    private readonly IUserService _userService;
     // GET
-    public RoomController(IRoomService roomService, UserManager<ChatterUser> userManager, IChatService chatService, IHubContext<ChatHub> hubContext)
+    public RoomController(IRoomService roomService, UserManager<ChatterUser> userManager, IChatService chatService, IHubContext<ChatHub> hubContext, IUserService userService)
     {
         _roomService = roomService;
         _userManager = userManager;
         _chatService = chatService;
         _hubContext = hubContext;
+        _userService = userService;
     }
 
     public async Task<IActionResult> Index()
@@ -159,6 +166,45 @@ public class RoomController : Controller
         await _roomService.RemoveUserInRoomAsync(removeUserInRoomInput);
         
         return RedirectToAction("Chat", new {id = removeUserInRoomInput.RoomId});
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> InviteUsersToRoom(InviteUsersToRoomInput inviteUsersToRoomInput)
+    {
+        if (string.IsNullOrWhiteSpace(inviteUsersToRoomInput.UserIds))
+            throw new FriendlyException("Lütfen kullanıcı seçiniz.");
+        
+        var user = await _userManager.GetUserAsync(User);
+        foreach(var userId in inviteUsersToRoomInput.UserIds.Split(","))
+        {
+            var inviteUserToRoomInput = new InviteUserToRoomInput();
+            inviteUserToRoomInput.RoomId = inviteUsersToRoomInput.RoomId;
+            inviteUserToRoomInput.RequestedUserId = user.Id;
+            inviteUserToRoomInput.ChatterUserId = userId;
+            await _roomService.InviteUserToRoomAsync(inviteUserToRoomInput);
+        }
+        TempData.Put("message", new ResultMessage()
+        {
+            Title = "Başarılı İşlem.",
+            Message = "Kullanıcılar başarıyla davet edildi.",
+            Css = "success"
+        });    
+        return RedirectToAction("Chat", new {id = inviteUsersToRoomInput.RoomId});
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> MyPendingInvitations()
+    {
+        
+        var user = await _userManager.GetUserAsync(User);
+        var pendingInvitations = await _userService.GetMyPendingInvitationsAsync(user.Id);
+        TempData.Put("message", new ResultMessage()
+        {
+            Title = "Başarılı İşlem.",
+            Message = "Kullanıcılar başarıyla davet edildi.",
+            Css = "success"
+        });    
+        return RedirectToAction("Chat", new {id = 6});
     }
   
 }

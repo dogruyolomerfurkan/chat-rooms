@@ -1,0 +1,19 @@
+namespace Chatter.Application.Dtos.Rooms;
+
+public class InviteUserToRoomInput
+{
+    /// <summary>
+    ///  Oda Id'si
+    /// </summary>
+    public int RoomId { get; set; }
+    
+    /// <summary>
+    /// ChatterUserId'yi odadan atan kullanıcının Id'si
+    /// </summary>
+    public string RequestedUserId { get; set; }
+
+    /// <summary>
+    ///  Odaya ait izin verilen kullanıcının Id'si
+    /// </summary>
+    public string ChatterUserId { get; set; }
+}

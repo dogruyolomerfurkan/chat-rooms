@@ -153,6 +153,11 @@ body{
     background-color: #30313f;
     color:white
 }
+.user-content-container{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
 
 .user-profile {
     display: flex;
@@ -193,19 +198,20 @@ body{
     margin : 3px;
 }
 
-.invite-user{
-    display: flex;
-    justify-content: center;
-    align-items: center;    
-    margin: 10px;
-}
-.invite-user button{
+/*.invite-user{*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    align-items: center;    */
+/*    margin: 10px;*/
+/*}*/
+.single-chat-btn{
 
     background-color: #1f2029;
     color: #ffeba7;
+    margin: 10px;
 }
 
-.invite-user button:hover{
+.single-chat-btn:hover{
 
     color: #1f2029;
     background-color: #ffeba7;
@@ -238,9 +244,6 @@ li {
     margin-top:10px;
 }
 
-.chat-list .dropend:hover{
-    background-color: #ccc;
-}
 .chat-info{
     padding-left:10px;
     border-bottom: 1px solid white;
@@ -256,11 +259,6 @@ li {
     padding-right:20px
 }
 
-
-
-#userList .dropend:hover{
-    background-color: #ccc;
-}
 #detailDiv
 {
     margin-right: auto;

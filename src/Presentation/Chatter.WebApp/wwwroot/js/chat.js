@@ -74,10 +74,9 @@ $(function () {
         if (userInfoElement != null) {
             return;
         }
-     
-
+        
         let userList = document.getElementById("user-list");
-        ulTag.innerHTML +=`<li class="user-info" id="user-info-${userInfo.id}-${roomInfo.id}"> <!--- user-info-UserId-RoomId--->
+        userList.innerHTML +=`<li class="user-info" id="user-info-${userInfo.id}-${roomInfo.id}"> <!--- user-info-UserId-RoomId--->
                             <div class="dropdown" style="position:relative">
                                 <div class="user-profile" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                                     <span style="color:red" id="session-icon-${userInfo.id}">&#11044;&nbsp&nbsp</span>

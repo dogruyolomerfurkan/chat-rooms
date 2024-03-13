@@ -1,4 +1,5 @@
 using Chatter.Application.Dtos.Rooms;
+using Chatter.Domain.Entities.EFCore.Application;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Domain.Enums;
 
@@ -25,7 +26,8 @@ public class InvitationDto
     /// </summary>
     public InvitationStatus Status { get; set; }
 
-    public RoomDto Room { get; set; }
+    // TODO : Change Type to RoomDto
+    public Room Room { get; set; }
     public ChatterUser SenderUser { get; set; }
     public ChatterUser InvitedUser { get; set; }
 }

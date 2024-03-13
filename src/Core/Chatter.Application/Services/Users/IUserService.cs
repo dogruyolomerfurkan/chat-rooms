@@ -1,3 +1,4 @@
+using Chatter.Application.Dtos.Invitations;
 using Chatter.Application.Dtos.Users;
 
 namespace Chatter.Application.Services.Users;
@@ -10,5 +11,7 @@ public interface IUserService
     /// <param name="searchValue"></param>
     /// <returns></returns>
     Task<List<UserShortInfoDto>> GetUsersShortInfoAsync(string searchValue);
+
+    Task<List<GetMyPendingInvitations>> GetMyPendingInvitationsAsync(string userId);
 
 }
