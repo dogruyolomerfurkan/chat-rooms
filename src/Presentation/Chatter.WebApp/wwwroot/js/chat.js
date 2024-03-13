@@ -77,7 +77,6 @@ $(function () {
      
 
         let userList = document.getElementById("user-list");
-        let ulTag = userList.getElementsByTagName("ul")[0];
         ulTag.innerHTML +=`<li class="user-info" id="user-info-${userInfo.id}-${roomInfo.id}"> <!--- user-info-UserId-RoomId--->
                             <div class="dropdown" style="position:relative">
                                 <div class="user-profile" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">

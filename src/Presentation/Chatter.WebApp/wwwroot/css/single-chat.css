@@ -118,17 +118,29 @@ body{
 
 
 .user-container{
-    width: 35em;
-    min-width: 20em;
+    width: 0;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    overflow-x: hidden;
     height: 100%;
     border-left: 1px solid white;
+    position: fixed;
+    transition: 0.5s;
+    background-color: #30313f;
 }
 
 .chatter-container{
-    width: 35em;
-    min-width: 20em;
+    width: 0;
     height: 100%;
+    z-index: 1;
     border-right: 1px solid white;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+    position: fixed;
+    transition: 0.5s;
+    background-color: #30313f;
 }
 
 .chatter-container.card-body{
