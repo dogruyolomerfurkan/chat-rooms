@@ -165,12 +165,12 @@ $(function () {
     }
 
     function setOnline(userId) {
-        $(`.user-profile #session-icon-${userId}`).css('color', 'green');
+        $(`#session-icon-${userId}`).css('color', 'green');
 
     }
 
     function setOffline(userId) {
-        $(`.user-profile #session-icon-${userId}`).css('color', 'red');
+        $(`#session-icon-${userId}`).css('color', 'red');
     }
 
     if (document.getElementById('newMessageInput') != null) {

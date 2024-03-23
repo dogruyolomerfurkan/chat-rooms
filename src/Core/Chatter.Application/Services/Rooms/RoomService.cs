@@ -1,4 +1,3 @@
-using Chatter.Application.Dtos.Invitations;
 using Chatter.Application.Dtos.Rooms;
 using Chatter.Application.Services.Chats;
 using Chatter.Common.Exceptions;

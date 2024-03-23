@@ -40,7 +40,7 @@
                         {
                             if (User.IsInRole(ChatPermissionType.Admin.ToString()) && !room.RoomChatterUsers.Exists(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
                             {
-                                <a asp-controller="Room" asp-action="Detail" asp-route-id="@room.Id" class="btn btn-outline-success btn-sm">Sohbete Git</a>
+                                <a asp-controller="Room" asp-action="Chat" asp-route-id="@room.Id" class="btn btn-outline-success btn-sm">Sohbete Git</a>
                             }
                             if (room.RoomChatterUsers.Exists(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
                             {

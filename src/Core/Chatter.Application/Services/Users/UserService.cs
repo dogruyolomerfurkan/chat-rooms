@@ -23,11 +23,11 @@ public class UserService : BaseService, IUserService
             .ProjectToType<UserShortInfoDto>().ToListAsync();
     }
 
-    public async Task<List<GetMyPendingInvitations>> GetMyPendingInvitationsAsync(string userId)
+    public async Task<List<PendingInvitationDto>> GetPendingInvitationsAsync(string userId)
     {
         return _invitationRepository.Query()
             .Include(x => x.Room)
             .Include(x => x.SenderUser)
-            .Where(x => x.InvitedUserId == userId).Adapt<List<GetMyPendingInvitations>>();
+            .Where(x => x.InvitedUserId == userId).Adapt<List<PendingInvitationDto>>();
     }
 }

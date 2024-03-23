@@ -1,5 +1,3 @@
-using Chatter.Domain.Enums;
-
 namespace Chatter.Application.Dtos.Rooms;
 
 public class RemoveUserInRoomInput

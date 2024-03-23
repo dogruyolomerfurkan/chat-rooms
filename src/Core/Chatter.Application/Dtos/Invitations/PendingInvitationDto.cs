@@ -3,7 +3,7 @@ using Chatter.Domain.Entities.EFCore.Identity;
 
 namespace Chatter.Application.Dtos.Invitations;
 
-public class GetMyPendingInvitations
+public class PendingInvitationDto
 {
     /// <summary>
     /// Oda Id'si

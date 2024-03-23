@@ -1,4 +1,3 @@
-using Chatter.Application.Dtos.Rooms;
 using Chatter.Domain.Entities.EFCore.Application;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Domain.Enums;

@@ -83,5 +83,8 @@ body {
   --bs-toast-color: #ffeba7;
 }
 
-
+.invitation-pending-menu{
+  height: 300px;
+  width: 300px;
+}
 
