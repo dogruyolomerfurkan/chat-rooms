@@ -84,7 +84,10 @@ body {
 }
 
 .invitation-pending-menu{
-  height: 300px;
-  width: 300px;
+}
+.invite{
+  border: 1px solid;
+  padding: 10px;
+  margin: 10px;
 }
 

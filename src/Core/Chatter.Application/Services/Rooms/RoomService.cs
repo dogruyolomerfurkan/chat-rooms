@@ -16,16 +16,14 @@ namespace Chatter.Application.Services.Rooms;
 public class RoomService : BaseService, IRoomService
 {
     private readonly IRoomRepository _roomRepository;
-    private readonly IInvitationRepository _invitationRepository;
     private readonly UserManager<ChatterUser> _userManager;
     private readonly IUserRepository _userRepository;
     private readonly IChatService _chatService;
 
-    public RoomService(IRoomRepository roomRepository, IInvitationRepository invitationRepository,
-        UserManager<ChatterUser> userManager, IUserRepository userRepository, IChatService chatService)
+    public RoomService(IRoomRepository roomRepository,
+        UserManager<ChatterUser> userManager, IUserRepository userRepository, IChatService chatService) : base(userManager)
     {
         _roomRepository = roomRepository;
-        _invitationRepository = invitationRepository;
         _userManager = userManager;
         _userRepository = userRepository;
         _chatService = chatService;
@@ -50,14 +48,15 @@ public class RoomService : BaseService, IRoomService
         var rooms = await _roomRepository.Query()
             .Include(x => x.RoomChatterUsers)
             .Where(x => roomIds.Contains(x.Id)).ToListAsync();
-        
+
         var roomDtos = rooms.Adapt<List<RoomDto>>();
         foreach (var room in roomDtos)
         {
             room.LastChatMessage = await _chatService.GetLastMessageAsync(room.Id);
         }
 
-        return roomDtos.OrderByDescending(x => x.LastChatMessage != null ? x.LastChatMessage?.SentDate : x.CreatedDate).ToList();
+        return roomDtos.OrderByDescending(x => x.LastChatMessage != null ? x.LastChatMessage?.SentDate : x.CreatedDate)
+            .ToList();
     }
 
     public async Task<List<RoomDto>> GetPublicRooms()
@@ -74,7 +73,7 @@ public class RoomService : BaseService, IRoomService
         var room = await _roomRepository.Query(true)
             .Where(x => x.Id == roomId)
             .Include(x => x.RoomPermissions)
-            .Include(x => x.Invitations.Where(inv =>inv.Status == InvitationStatus.Pending))
+            .Include(x => x.Invitations.Where(inv => inv.Status == InvitationStatus.Pending))
             .ThenInclude(x => x.InvitedUser)
             .Include(x => x.RoomChatterUsers)
             .ThenInclude(x => x.ChatterUser)
@@ -82,7 +81,7 @@ public class RoomService : BaseService, IRoomService
 
         if (room is null)
             throw new FriendlyException("Chat bulunamadı");
-        
+
         return room.Adapt<RoomDto>(CreateTypeAdapterConfig(3));
     }
 
@@ -275,7 +274,7 @@ public class RoomService : BaseService, IRoomService
                     .FirstOrDefault(x => x.ChatterUserId == removeUserInRoomInput.RequestedUserId)?.PermissionType ==
                 ChatPermissionType.Admin))
             throw new FriendlyException("Chatten atma yetkiniz yok");
-        
+
         var deletedInRoomChatterUser = await _userManager.FindByIdAsync(removeUserInRoomInput.ChatterUserId);
         if (deletedInRoomChatterUser is null)
             throw new FriendlyException("İşlem yapılmak istenilen kullanıcı bulunamadı");
@@ -285,59 +284,11 @@ public class RoomService : BaseService, IRoomService
 
         if (existPermission is null)
             throw new FriendlyException("İşlem yapılmak istenilen kullanıcı chatte değil.");
-        
+
         var roomChatterUser = room.RoomChatterUsers.First(x => x.ChatterUserId == removeUserInRoomInput.ChatterUserId);
         roomChatterUser.IsDeleted = true;
-        room.RoomPermissions?.Remove(room.RoomPermissions.First(x => x.ChatterUserId == removeUserInRoomInput.ChatterUserId));
-        _roomRepository.Update(room);   
-    }
-
-    public async Task InviteUserToRoomAsync(InviteUserToRoomInput inviteUserToRoomInput)
-    {
-        var room = await _roomRepository.Query()
-            .Include(x => x.RoomPermissions)
-            .Include(x => x.RoomChatterUsers)
-            .FirstOrDefaultAsync(x => x.Id == inviteUserToRoomInput.RoomId);
-
-        if (room is null)
-            throw new FriendlyException("Chat bulunamadı");
-
-        var requesterUser = await _userManager.FindByIdAsync(inviteUserToRoomInput.RequestedUserId);
-        if (requesterUser is null)
-            throw new FriendlyException("İstek atan kullanıcı bulunamadı");
-
-        if (!(IsFullAdmin(inviteUserToRoomInput.RequestedUserId) || room.RoomPermissions
-                    .FirstOrDefault(x => x.ChatterUserId == inviteUserToRoomInput.RequestedUserId)?.PermissionType ==
-                ChatPermissionType.Admin))
-            throw new FriendlyException("Chatten atma yetkiniz yok");
-        
-        var invitedRoomChatterUser = await _userManager.FindByIdAsync(inviteUserToRoomInput.ChatterUserId);
-        if (invitedRoomChatterUser is null)
-            throw new FriendlyException("İşlem yapılmak istenilen kullanıcı bulunamadı");
-
-        var existPermission =
-            room.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == inviteUserToRoomInput.ChatterUserId);
-
-        if (existPermission is not null)
-            throw new FriendlyException("İşlem yapılmak istenilen kullanıcı zaten chatte.");
-        
-        var newInvite = new Invitation()
-        {
-            RoomId = room.Id,
-            SenderUserId = inviteUserToRoomInput.RequestedUserId,
-            InvitedUserId = inviteUserToRoomInput.ChatterUserId,
-            Status = InvitationStatus.Pending
-        };
-        
-        await _invitationRepository.CreateAsync(newInvite);
-        
-    }
-
-    private bool IsFullAdmin(string userId)
-    {
-        var user = _userManager.FindByIdAsync(userId).Result;
-        var userRoles = _userManager.GetRolesAsync(user).Result;
-
-        return userRoles.Any(x => x == ChatPermissionType.Admin.ToString());
+        room.RoomPermissions?.Remove(room.RoomPermissions.First(x =>
+            x.ChatterUserId == removeUserInRoomInput.ChatterUserId));
+        _roomRepository.Update(room);
     }
 }

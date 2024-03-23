@@ -12,6 +12,5 @@ public interface IUserService
     /// <returns></returns>
     Task<List<UserShortInfoDto>> GetUsersShortInfoAsync(string searchValue);
 
-    Task<List<PendingInvitationDto>> GetPendingInvitationsAsync(string userId);
 
 }

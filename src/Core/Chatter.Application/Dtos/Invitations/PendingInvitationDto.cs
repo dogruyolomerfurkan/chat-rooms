@@ -5,6 +5,8 @@ namespace Chatter.Application.Dtos.Invitations;
 
 public class PendingInvitationDto
 {
+    
+    public int Id { get; set; }
     /// <summary>
     /// Oda Id'si
     /// </summary>

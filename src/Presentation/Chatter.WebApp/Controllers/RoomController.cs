@@ -1,5 +1,7 @@
+using Chatter.Application.Dtos.Invitations;
 using Chatter.Application.Dtos.Rooms;
 using Chatter.Application.Services.Chats;
+using Chatter.Application.Services.Invites;
 using Chatter.Application.Services.Rooms;
 using Chatter.Application.Services.Users;
 using Chatter.Common.Exceptions;
@@ -23,16 +25,15 @@ public class RoomController : Controller
     private readonly UserManager<ChatterUser> _userManager;
     private readonly IHubContext<ChatHub> _hubContext;
     private readonly IChatService _chatService;
-
-    private readonly IUserService _userService;
-    // GET
-    public RoomController(IRoomService roomService, UserManager<ChatterUser> userManager, IChatService chatService, IHubContext<ChatHub> hubContext, IUserService userService)
+    private readonly IInvitationService _invitationService;
+    
+    public RoomController(IRoomService roomService, UserManager<ChatterUser> userManager, IChatService chatService, IHubContext<ChatHub> hubContext, IInvitationService invitationService)
     {
         _roomService = roomService;
         _userManager = userManager;
         _chatService = chatService;
         _hubContext = hubContext;
-        _userService = userService;
+        _invitationService = invitationService;
     }
 
     public async Task<IActionResult> Index()
@@ -181,7 +182,7 @@ public class RoomController : Controller
             inviteUserToRoomInput.RoomId = inviteUsersToRoomInput.RoomId;
             inviteUserToRoomInput.RequestedUserId = user.Id;
             inviteUserToRoomInput.ChatterUserId = userId;
-            await _roomService.InviteUserToRoomAsync(inviteUserToRoomInput);
+            await _invitationService.InviteUserToRoomAsync(inviteUserToRoomInput);
         }
         TempData.Put("message", new ResultMessage()
         {
@@ -192,19 +193,22 @@ public class RoomController : Controller
         return RedirectToAction("Chat", new {id = inviteUsersToRoomInput.RoomId});
     }
     
-    [HttpGet]
-    public async Task<IActionResult> MyPendingInvitations()
+    [HttpPost]
+    public async Task<IActionResult> AcceptInvitation(AcceptInvitationInput acceptInvitationInput)
     {
-        
         var user = await _userManager.GetUserAsync(User);
-        var pendingInvitations = await _userService.GetMyPendingInvitationsAsync(user.Id);
-        TempData.Put("message", new ResultMessage()
-        {
-            Title = "Başarılı İşlem.",
-            Message = "Kullanıcılar başarıyla davet edildi.",
-            Css = "success"
-        });    
-        return RedirectToAction("Chat", new {id = 6});
+        acceptInvitationInput.ChatterUserId = user.Id;    
+        await _invitationService.AcceptInviteAsync(acceptInvitationInput);
+        return RedirectToAction("Chat", new {id = acceptInvitationInput.RoomId});
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> RejectInvitation(RejectInvitationInput rejectInvitationInput)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        rejectInvitationInput.ChatterUserId = user.Id;    
+        await _invitationService.RejectInviteAsync(rejectInvitationInput);
+        return RedirectToAction("Index");
     }
   
 }

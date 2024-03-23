@@ -90,11 +90,5 @@ public interface IRoomService
     /// <param name="removeUserInRoomInput"></param>
     /// <returns></returns>
     Task RemoveUserInRoomAsync(RemoveUserInRoomInput removeUserInRoomInput);
-    
-    /// <summary>
-    /// Odaya kullanıcı davet eder
-    /// </summary>
-    /// <param name="inviteUserToRoomInput"></param>
-    /// <returns></returns>
-    Task InviteUserToRoomAsync(InviteUserToRoomInput inviteUserToRoomInput);
+ 
 }

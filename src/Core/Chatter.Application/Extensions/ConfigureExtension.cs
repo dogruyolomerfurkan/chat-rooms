@@ -1,4 +1,5 @@
 using Chatter.Application.Services.Chats;
+using Chatter.Application.Services.Invites;
 using Chatter.Application.Services.Rooms;
 using Chatter.Application.Services.Users;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,9 +13,9 @@ public static class ConfigureExtension
         services.AddScoped<IRoomService, RoomService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IChatService, ChatService>();
+        services.AddScoped<IInvitationService, InvitationService>();
         
         services.AddMapsterConfigurations();
-
     }
     
 }

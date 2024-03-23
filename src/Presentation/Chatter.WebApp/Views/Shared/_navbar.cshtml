@@ -4,11 +4,11 @@
         <a class="navbar-brand" asp-controller="Room" asp-action="Index">Chatter</a>
         <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenuContent" aria-controls="navbarMenuContent" aria-expanded="false">
             <span class="navbar-toggler-icon"></span>
-            </button>
+        </button>
         <div class="collapse navbar-collapse " id="navbarMenuContent">
             <ul class="navbar-nav mr-auto flex-grow-1">
                 <li class="nav-item">
-                      <a class="nav-link" asp-area="" asp-controller="Room" asp-action="Index">Ana Sayfa </a>
+                    <a class="nav-link" asp-area="" asp-controller="Room" asp-action="Index">Ana Sayfa </a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -23,7 +23,7 @@
                         }
                     </div>
                 </li>
-                @if (User.IsInRole(ChatPermissionType.Admin.ToString()))
+             @if (User.IsInRole(ChatPermissionType.Admin.ToString()))
                 {
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -38,6 +38,14 @@
             <ul class="navbar-nav ml-auto">
                 @if (@User.Identity.IsAuthenticated)
                 {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Davetler
+                        </a> 
+                        <div class="dropdown-menu dropdown-menu-dark">
+                            @(await Component.InvokeAsync("PendingInvitations"))    
+                        </div>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             @User.Identity.Name

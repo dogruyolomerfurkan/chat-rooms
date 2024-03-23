@@ -1,10 +1,9 @@
 ﻿@using Chatter.WebApp.Extensions
 @using System.Security.Claims
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 
 <!DOCTYPE html>
 
-<html>
+<html class="dark" data-bs-theme="dark">
 <head>
     <matea charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -19,7 +18,7 @@
 </head>
 <body id="siteBody">
 <header>
-    @Html.Partial("_navbar")
+    @await Html.PartialAsync("_navbar")
 </header>
 <div class="container" id="contentBody">
     @if (TempData["message"] != null)
