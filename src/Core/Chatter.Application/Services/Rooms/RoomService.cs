@@ -129,9 +129,12 @@ public class RoomService : BaseService, IRoomService
         if (room.RoomChatterUsers.Select(x => x.ChatterUserId).Contains(user.Id))
             throw new FriendlyException("Kullanıcı zaten chatte");
 
-        if (room.Capacity == room.RoomChatterUsers.Count)
+        if (room.Capacity <= room.RoomChatterUsers.Count)
             throw new FriendlyException("Chat kapasitesi dolu");
-
+        
+        if(!IsFullAdmin(joinRoomInput.UserId) && room.IsPublic == false)
+            throw new FriendlyException("Chat özel ve davetli değilsiniz");
+        
         var roomChatterUser = new RoomChatterUser()
         {
             ChatterUserId = user.Id,
