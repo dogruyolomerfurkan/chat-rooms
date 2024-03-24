@@ -157,7 +157,7 @@
 <div class="chatter-container" id="chatter-container">
     <div class="d-flex justify-content-between title-container">
         <h4 class="card-title">
-            <b style="margin-left: 20px;">Chats</b>
+            <b style="margin-left: 20px;">Chatler</b>
         </h4>
         <div class="closeDiv">
             <a href="javascript:changeShowChatterContainer()">
@@ -185,23 +185,18 @@
 </div>
 <div class="chat-container">
     <div class="d-flex justify-content-between title-container">
-        <h4 class="card-title">
-            <b style="margin-left: 20px;">@Model.Title</b>
-        </h4>
-        <div class="justify-content-between d-flex">
-            <div class="closeDiv" style="margin:auto">
-                <a href="javascript:changeShowChatterContainer()">
-                    <h4>
-                        <b>Chats</b>
-                    </h4>
-                </a>
+        <div class="closeDiv" style="margin-left: 20px;">
+            <a href="javascript:changeShowChatterContainer()">
+                <h4>
+                    <b>Chat Listesi</b>
+                </h4>
+            </a>
+        </div>
 
-            </div>
-            <div>
-                <a href="javascript:changeShowUserContainer()">
-                    <i class="fa-sharp fa-solid fa-user fa-xl closeDivIcon" style="color: #ffeba7;"></i>
-                </a>
-            </div>
+        <div class="justify-content-between d-flex">
+            <h4 class="card-title">
+                <b style="margin-left: 20px;">@Model.Title</b>
+            </h4>
             <div class="dropstart" id="roomSettingDropDown">
                 <a class="nav-link" href="#" role="button" id="settingDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false" style="padding-right: 10px;">
                     <i id="settingIcon" class="fa-sharp fa-solid fa-gear fa-xl"></i>
@@ -223,6 +218,11 @@
                     }
 
                 </ul>
+            </div>
+            <div style="margin-right: 10px;">
+                <a href="javascript:changeShowUserContainer()">
+                    <i class="fa-sharp fa-solid fa-user fa-xl closeDivIcon" style="color: #ffeba7;"></i>
+                </a>
             </div>
 
         </div>
@@ -313,7 +313,7 @@
                                             <form method="post" asp-controller="Room" asp-action="RemoveUserInRoom">
                                                 <input type="hidden" name="roomId" value="@Model.Id"/>
                                                 <input type="hidden" name="chatterUserId" value="@user.Id"/>
-                                                <button type="submit" class="nav-link text-dark">Odadan At</button>
+                                                <button type="submit" class="nav-link">Odadan At</button>
                                             </form>
                                         </li>
                                     }
@@ -323,7 +323,7 @@
                                             <form method="post" asp-controller="Room" asp-action="AddAdminToRoom">
                                                 <input type="hidden" name="roomId" value="@Model.Id"/>
                                                 <input type="hidden" name="chatterUserId" value="@user.Id"/>
-                                                <button type="submit" class="nav-link text-dark">Admin Yap</button>
+                                                <button type="submit" class="nav-link">Admin Yap</button>
                                             </form>
                                         </li>
                                     }
@@ -335,58 +335,61 @@
                 }
             </ul>
         </div>
-        <div class="invite-user" style="display: flex;flex-direction: column;margin-top: 20px;">
-            <div class="d-flex justify-content-between title-container">
-                <h4 class="card-title">
-                    <b style="margin-left: 20px;">Bekleyen Davetler</b>
-                </h4>
-            </div>
-            <button type="button" class="btn single-chat-btn" data-bs-toggle="modal" data-bs-target="#InviteUserModal">
-                Kullanıcı Davet Et
-            </button>
+        @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
+        {
+            <div class="invite-user" style="display: flex;flex-direction: column;margin-top: 20px;">
+                <div class="d-flex justify-content-between title-container">
+                    <h4 class="card-title">
+                        <b style="margin-left: 20px;">Bekleyen Davetler</b>
+                    </h4>
+                </div>
+                <button type="button" class="btn single-chat-btn" data-bs-toggle="modal" data-bs-target="#InviteUserModal">
+                    Kullanıcı Davet Et
+                </button>
 
-            <ul style="overflow-y: auto" id="invited-list">
-                @foreach (var user in Model.Invitations.Select(x => x.InvitedUser))
-                {
-                    <li class="user-info" id="user-info-@user.Id-@Model.Id">
-                        <!--- user-info-UserId-RoomId--->
-                        <div class="dropdown" style="position:relative">
-                            <div class="user-profile" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                                <span style="color:red" id="session-icon-@user.Id">&#11044;&nbsp&nbsp</span>
-                                <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">
-                                <div class="row g-0">
-                                    <div class="col">
-                                        <span class="user-name" id="user-name-@user.UserName">@user.UserName</span>
-                                        @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType == ChatPermissionType.Admin)
-                                        {
-                                            <span style="opacity: 0.6; font-size: 13px; margin-left: 10px;"> ~ Admin</span>
-                                        }
+                <ul style="overflow-y: auto" id="invited-list">
+                    @foreach (var user in Model.Invitations.Select(x => x.InvitedUser))
+                    {
+                        <li class="user-info" id="user-info-@user.Id-@Model.Id">
+                            <!--- user-info-UserId-RoomId--->
+                            <div class="dropdown" style="position:relative">
+                                <div class="user-profile" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                    <span style="color:red" id="session-icon-@user.Id">&#11044;&nbsp&nbsp</span>
+                                    <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">
+                                    <div class="row g-0">
+                                        <div class="col">
+                                            <span class="user-name" id="user-name-@user.UserName">@user.UserName</span>
+                                            @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType == ChatPermissionType.Admin)
+                                            {
+                                                <span style="opacity: 0.6; font-size: 13px; margin-left: 10px;"> ~ Admin</span>
+                                            }
+                                        </div>
+                                        <span class="user-description">&nbsp&nbsp @user.StatusDescription</span>
                                     </div>
-                                    <span class="user-description">&nbsp&nbsp @user.StatusDescription</span>
                                 </div>
+                                @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
+                                {
+                                    <ul class="dropdown-menu" style="position: absolute;">
+
+                                        @if (User.FindFirstValue(ClaimTypes.NameIdentifier) != user.Id)
+                                        {
+                                            <li>
+                                                <form method="post" asp-controller="Room" asp-action="RemoveUserInRoom">
+                                                    <input type="hidden" name="roomId" value="@Model.Id"/>
+                                                    <input type="hidden" name="chatterUserId" value="@user.Id"/>
+                                                    <button type="submit" class="nav-link text-dark">Davet İptal Et</button>
+                                                </form>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                }
                             </div>
-                            @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
-                            {
-                                <ul class="dropdown-menu" style="position: absolute;">
-
-                                    @if (User.FindFirstValue(ClaimTypes.NameIdentifier) != user.Id)
-                                    {
-                                        <li>
-                                            <form method="post" asp-controller="Room" asp-action="RemoveUserInRoom">
-                                                <input type="hidden" name="roomId" value="@Model.Id"/>
-                                                <input type="hidden" name="chatterUserId" value="@user.Id"/>
-                                                <button type="submit" class="nav-link text-dark">Davet İptal Et</button>
-                                            </form>
-                                        </li>
-                                    }
-
-                                </ul>
-                            }
-                        </div>
-                    </li>
-                }
-            </ul>
-        </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
     </div>
 </div>
 </div>
