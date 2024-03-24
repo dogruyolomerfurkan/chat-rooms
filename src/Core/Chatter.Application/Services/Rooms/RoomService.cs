@@ -4,7 +4,6 @@ using Chatter.Common.Exceptions;
 using Chatter.Domain.Entities.EFCore.Application;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Domain.Enums;
-using Chatter.Persistence.RepositoryManagement.EfCore.Invitations;
 using Chatter.Persistence.RepositoryManagement.EfCore.Rooms;
 using Chatter.Persistence.RepositoryManagement.EfCore.Users;
 using Mapster;

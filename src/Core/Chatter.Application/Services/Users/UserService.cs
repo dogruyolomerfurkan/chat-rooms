@@ -1,4 +1,3 @@
-using Chatter.Application.Dtos.Invitations;
 using Chatter.Application.Dtos.Users;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Persistence.RepositoryManagement.EfCore.Invitations;

@@ -3,7 +3,6 @@ using Chatter.Application.Dtos.Rooms;
 using Chatter.Application.Services.Chats;
 using Chatter.Application.Services.Invites;
 using Chatter.Application.Services.Rooms;
-using Chatter.Application.Services.Users;
 using Chatter.Common.Exceptions;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Chatter.Domain.Enums;

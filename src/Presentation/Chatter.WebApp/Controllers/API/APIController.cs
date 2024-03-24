@@ -1,5 +1,3 @@
-using Chatter.Application.Dtos.Chats;
-using Chatter.Application.Services.Chats;
 using Chatter.Application.Services.Rooms;
 using Chatter.Application.Services.Users;
 using Microsoft.AspNetCore.Mvc;

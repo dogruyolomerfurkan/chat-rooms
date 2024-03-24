@@ -1,5 +1,4 @@
 using Chatter.Application.Services.Invites;
-using Chatter.Application.Services.Users;
 using Chatter.Domain.Entities.EFCore.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
