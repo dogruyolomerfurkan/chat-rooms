@@ -108,24 +108,31 @@ public class ChatHub : Hub
         //Önce grubu ön tarafta oluştur. Kullanıcıyı gruba ata,
         await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString());
         
+        
         //odadaki bütün kullanıcıları çek SignalRConnection da olanları userConnected yap
         var checkRoom = await _roomService.GetRoomDetailAsync(roomId);
         if (checkRoom is null)
             return;
 
+        var userInfo = checkRoom.Users.FirstOrDefault(x => x.Id == GetUserId());
+        await Clients.Group(roomId.ToString()).SendAsync("JoinedRoom", userInfo, checkRoom);
+
+        
         checkRoom.LastChatMessage = await _chatService.GetLastMessageAsync(roomId);
         
         var userListInRoom = checkRoom.RoomChatterUsers.Select(x => x.ChatterUserId).ToList();
         var otherUserIds = ActiveConnections.SignalRConnections.Where(x => userListInRoom.Contains(x.UserId)).Select(x => x.UserId).ToList();
+
         await Clients.Group(roomId.ToString()).SendAsync("UserConnected", otherUserIds, checkRoom);
     }
 
     public async Task LeaveChatRoom(int roomId)
     {
-        ActiveConnections.SignalRConnections.RemoveAll(x => x.ConnectionId == Context.ConnectionId && x.UserId == GetUserId());
+        var userId = GetUserId();
+        ActiveConnections.SignalRConnections.RemoveAll(x => x.ConnectionId == Context.ConnectionId && x.UserId == userId);
 
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.ToString());
-        await Clients.Group(roomId.ToString()).SendAsync("ChatRoom", $"{Context.ConnectionId} left {roomId} group.");
+        await Clients.Group(roomId.ToString()).SendAsync("LeavedRoom", userId, roomId);
     }
 
     private string GetUserId()

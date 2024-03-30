@@ -40,11 +40,12 @@ body {
 .navbar{
   background-color: #30313f;
 }
-.navbar .navbar-brand{
-  color:#ffeba7;
+.navbar .navbar-brand, .nav-item .nav-link, .navbar-nav .nav-link.active, .navbar-nav .nav-link.show{
+  color: #ffeba7;
 }
-.nav-item .nav-link{
-  color:#ffeba7;
+
+.nav-link{
+  padding-left:10px;
 }
 
 .custom-toggler.navbar-toggler {
@@ -75,5 +76,18 @@ body {
   background: #3b4b48;
 }
 
+.custom-toast{
+  --bs-toast-bg: rgb(59, 75, 72, 0.9);
+  --bs-toast-header-color: none;
+  --bs-toast-header-bg: none;
+  --bs-toast-color: #ffeba7;
+}
 
+.invitation-pending-menu{
+}
+.invite{
+  border: 1px solid;
+  padding: 10px;
+  margin: 10px;
+}
 

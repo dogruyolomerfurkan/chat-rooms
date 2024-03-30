@@ -1,6 +1,6 @@
 namespace Chatter.Application.Dtos.Rooms;
 
-public class RemoveUserInRoomInput
+public class InviteUserToRoomInput
 {
     /// <summary>
     ///  Oda Id'si

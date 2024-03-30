@@ -4,8 +4,7 @@
 
 
 @section Css{
-    <link rel="stylesheet" href="~/modules/datatables/media/css/jquery.dataTables.css">
-    <link rel="stylesheet" href="~/modules/datatables/media/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.bootstrap5.css">
 
     <style>
     .user-profile {
@@ -23,12 +22,14 @@
     .user-name {
       font-size: 20px;
     }
+
     </style>
 }
 
 @section Script{
-    <script src="~/modules/datatables/media/js/jquery.dataTables.js"></script>
-    <script src="~/modules/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.0.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.2/js/dataTables.bootstrap5.js"></script>
 
     <script>
       $(document).ready(function () {
@@ -40,10 +41,10 @@
 }
 
 
-<h2>Rooms</h2>
+<h2>Kullanıcılar</h2>
 <hr/>
 
-<table id="userTable" class="cell-border">
+<table id="userTable" class="table table-striped" style="width:100%">
     <thead>
     <tr>
         <th> </th>
@@ -79,13 +80,13 @@
                 @if (ActiveConnections.SignalRConnections.FirstOrDefault(x => x.UserId == user.Id) != null)
                 {
                     <td>
-                        <span  style="color:green" id="@user.Id">&#11044;&nbsp&nbsp</span>
+                        <span  style="color:green" id="session-icon-@user.Id">&#11044;&nbsp&nbsp</span>
                     </td>
                 }
                 else
                 {
                     <td>
-                        <span style="color:red" id="@user.Id">&#11044;&nbsp&nbsp</span>
+                        <span style="color:red" id="session-icon-@user.Id">&#11044;&nbsp&nbsp</span>
                     </td>
                 }
                 <td>@user.Id</td>

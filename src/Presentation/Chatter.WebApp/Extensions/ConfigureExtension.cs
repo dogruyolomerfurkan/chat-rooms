@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Chatter.Application.Extensions;
 using Chatter.Common.Settings;
 using Chatter.Persistence.Extensions;
@@ -15,11 +16,14 @@ public static class ConfigureExtension
         
         services.AddHttpContextAccessor();
         services.AddControllersWithViews().AddRazorRuntimeCompilation();
-        services.AddEndpointsApiExplorer(); 
+        services.AddEndpointsApiExplorer();
         services.AddMvc(options =>
         {
             options.Filters.Add<CustomErrorAttribute>();
             options.EnableEndpointRouting = true;
+        }).AddJsonOptions(opt =>
+        {
+            opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         });
 
         services.AddSignalR();

@@ -4,33 +4,33 @@
         <a class="navbar-brand" asp-controller="Room" asp-action="Index">Chatter</a>
         <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenuContent" aria-controls="navbarMenuContent" aria-expanded="false">
             <span class="navbar-toggler-icon"></span>
-            </button>
+        </button>
         <div class="collapse navbar-collapse " id="navbarMenuContent">
             <ul class="navbar-nav mr-auto flex-grow-1">
                 <li class="nav-item">
-                      <a class="nav-link" asp-area="" asp-controller="Room" asp-action="Index">Ana Sayfa </a>
+                    <a class="nav-link" asp-area="" asp-controller="Room" asp-action="Index">Ana Sayfa </a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Chat
                     </a>
-                    <div class="dropdown-menu">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Room" asp-action="Index">Bütün Chatler</a>
+                    <div class="dropdown-menu dropdown-menu-dark">
+                        <a class="nav-link " asp-area="" asp-controller="Room" asp-action="Index">Bütün Chatler</a>
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Room" asp-action="Create">Yeni Chat</a>
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Room" asp-action="MyRooms">Aktif Chatlerim </a>
+                            <a class="nav-link" asp-area="" asp-controller="Room" asp-action="Create">Yeni Chat</a>
+                            <a class="nav-link" asp-area="" asp-controller="Room" asp-action="MyRooms">Aktif Chatlerim </a>
                         }
                     </div>
                 </li>
-                @if (User.IsInRole(ChatPermissionType.Admin.ToString()))
+             @if (User.IsInRole(ChatPermissionType.Admin.ToString()))
                 {
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Ayarlar
                         </a>
-                        <div class="dropdown-menu">
-                            <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">Admin Menüsü</a>
+                        <div class="dropdown-menu dropdown-menu-dark">
+                            <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin Menüsü</a>
                         </div>
                     </li>
                 }
@@ -40,11 +40,19 @@
                 {
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Davetler
+                        </a> 
+                        <div class="dropdown-menu dropdown-menu-dark">
+                            @(await Component.InvokeAsync("PendingInvitations"))    
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             @User.Identity.Name
                         </a>
-                        <div class="dropdown-menu">
-                            <a asp-controller="Account" asp-action="Info" class="nav-link text-dark">Profilim</a>
-                            <a asp-controller="Account" asp-action="Logout" class="nav-link text-dark">Çıkış yap</a>
+                        <div class="dropdown-menu dropdown-menu-dark">
+                            <a asp-controller="Account" asp-action="Info" class="nav-link ">Profilim</a>
+                            <a asp-controller="Account" asp-action="Logout" class="nav-link ">Çıkış yap</a>
                         </div>
                     </li>
                 }

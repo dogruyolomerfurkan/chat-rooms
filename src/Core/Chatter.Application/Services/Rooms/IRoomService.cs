@@ -84,5 +84,11 @@ public interface IRoomService
     /// <returns></returns>
     Task AddPermissionToRoomAsync(AddPermissionToRoomInput addPermissionToRoomInput);
     
+    /// <summary>
+    /// Odadaki kullanıcıyı odadan çıkarır
+    /// </summary>
+    /// <param name="removeUserInRoomInput"></param>
+    /// <returns></returns>
     Task RemoveUserInRoomAsync(RemoveUserInRoomInput removeUserInRoomInput);
+ 
 }

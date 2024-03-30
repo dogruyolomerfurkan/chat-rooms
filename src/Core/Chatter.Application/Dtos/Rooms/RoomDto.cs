@@ -62,5 +62,5 @@ public class RoomDto
     /// Son Mesaj bilgisini getirir
     /// </summary>
     public ChatMessage? LastChatMessage { get; set; }
-    
+
 }

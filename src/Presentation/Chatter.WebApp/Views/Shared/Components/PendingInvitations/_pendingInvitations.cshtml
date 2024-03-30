@@ -1,0 +1,34 @@
+@model List<Chatter.Application.Dtos.Invitations.PendingInvitationDto>?
+<div class="invitation-pending-menu">
+
+    @{
+        if (Model is null || !Model.Any())
+        {
+            <p>Bekleyen davet bulunamadı...</p>
+        }
+        else
+        {
+            foreach (var invitation in Model)
+            {
+                <div class="invite d-flex justify-content-between ">
+                    <p style="margin-right: 20px;">
+                        @invitation.Room.Title
+                    </p>
+                    <div class=" d-flex justify-content-between" >
+                        <form method="post" asp-controller="Room" asp-action="AcceptInvitation">
+                            <input type="hidden" name="roomId" id="roomId" value="@invitation.RoomId"/>
+                            <input type="hidden" name="invitationId" id="invitationId" value="@invitation.Id"/>
+                            <button type="submit" class="btn btn-success" style="font-size:13px; margin-right: 10px; width: max-content;">Kabul Et</button>
+                        </form>
+                          <form method="post" asp-controller="Room" asp-action="RejectInvitation">
+                            <input type="hidden" name="roomId" id="roomId" value="@invitation.RoomId"/>
+                            <input type="hidden" name="invitationId" id="invitationId" value="@invitation.Id"/>
+                            <button type="submit" class="btn btn-danger" style="font-size:13px; margin-right: 10px; width: max-content;">Reddet</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    }
+
+</div>

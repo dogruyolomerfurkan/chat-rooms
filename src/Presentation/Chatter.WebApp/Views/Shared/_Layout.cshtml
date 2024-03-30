@@ -3,7 +3,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html class="dark" data-bs-theme="dark">
 <head>
     <matea charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -18,12 +18,17 @@
 </head>
 <body id="siteBody">
 <header>
-    @Html.Partial("_navbar")
+    @await Html.PartialAsync("_navbar")
 </header>
 <div class="container" id="contentBody">
     @if (TempData["message"] != null)
     {
-        @Html.Partial("_resultmessage", TempData.Get<ResultMessage>("message"))
+        var resultMessage = TempData.Get<ResultMessage>("message");
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+                 showNotification('@resultMessage.Title', '@resultMessage.Css', '@resultMessage.Message');
+             });
+        </script>
     }
     <main role="main" >
         @RenderBody()
@@ -45,6 +50,18 @@
 <script src="~/js/bootstrap-toast.js"></script>
 <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
 <script src="~/js/chat.js"></script>
-
+<script>
+ function showNotification(title, css, message) {
+         if (message === null || message === undefined) {
+          return;
+         }
+        const toast = bootstrap.showToast({
+            header: title,
+            closeButtonClass: "btn-close-white",
+            toastClass:  "custom-toast",
+            body: `<p>${message}</p>`
+        });
+    }
+</script>
 </body>
 </html>

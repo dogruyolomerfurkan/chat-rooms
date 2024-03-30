@@ -23,19 +23,22 @@
             function displayResults(results) {
                 let $resultsDiv = $('#searchResults');
                 $resultsDiv.empty();
-                $resultsDiv.css('background-color', '#ccc'); // İsteğe bağlı olarak, sonuçlar bölümünün arka plan rengini değiştirebilirsiniz.
+                $resultsDiv.css('margin-bottom', '10px'); // İsteğe bağlı olarak, sonuçlar bölümünün arka plan rengini değiştirebilirsiniz.
     
                 if (results.length > 0) {
                     $.each(results, function(index, item) {
-                         var existUser = $('#userList .user-name').filter(function() {
-                                        return $(this).text() === item.userName;
-                                    });
-                     if (existUser.length === 0) {
-                         $resultsDiv.append('<p>' +  '<div class="user-profile">' +
-                          `<img src="/img/profileImages/` + item.profileImagePath + `" alt="User Name"  class="profile-icon search" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">`
-                          + '<span class="user-name search">' + item.userName + '</span></div></p>'); // Arama sonuçlarını ekranda gösterin.
-              
-                      }
+                        
+                         let existRoomUser = $(`.user-name:contains('${item.userName}')`); 
+                         let existSelectedInviteUser = $(`.invite-user:contains('${item.userName}')`);
+                         
+                         if (existRoomUser.length === 0 && existSelectedInviteUser.length === 0) {
+                             $resultsDiv.append(`<div style="padding:5px;" id="searched-user-${item.userName}">
+                             <a style="text-decoration: none; color: #ffeba7;" href="javascript:selectToInviteUser('${item.id}', '${item.userName}')">
+                              <img src="/img/profileImages/${item.profileImagePath}" alt="User Name"  class="profile-icon search" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">
+                              <span class="user-name search">${item.userName}</span>
+                                </a></div>`); // Arama sonuçlarını ekranda gösterin.
+                  
+                          }
                     });
                     $resultsDiv.show(); // Sonuçlar gösterildiğinde sonuçlar bölümünü görünür hale getirin.
                 } else {
@@ -46,40 +49,32 @@
            function changeShowUserContainer() {
               let userContainer = document.getElementById("user-container");
             
-              if (userContainer.style.display === "none") {
-                  userContainer.style.display = "block";
-              } else {
-                userContainer.style.display = "none";
-                }
+                if (userContainer.style.width === "20em") {
+                    userContainer.style.width = "0";
+                } else {
+                  userContainer.style.width = "20em";
+                  }
             }   
        
-             function changeShowChatterContainer() {
+           function changeShowChatterContainer() {
                    let userContainer = document.getElementById("chatter-container");
                    
-                   if (userContainer.style.display === "none") {
-                       userContainer.style.display = "block";
+                    if (userContainer.style.width === "20em") {
+                       userContainer.style.width = "0";
                    } else {
-                       userContainer.style.display = "none";
-                   }
+                     userContainer.style.width = "20em";
+                     }
               }
        
             // let userId = '@currentUserId';
             let roomId = @Model.Id.ToString();
             window.addEventListener("DOMContentLoaded", (event) => {
             document.getElementById('searchInput').addEventListener('input', function (e) {
-                    var searchResults = document.getElementById('searchResults');
-                    searchResults.innerHTML = '';
-                    var searchValue = e.target.value;
-                    if (searchValue.length > 0) {
-                        fetch('/api/v1/users/search/' + searchValue)
-                            .then(response => response.json())
-                            .then(data => {
-                                displayResults(data)
-                                
-                            });
-                    }
+                var searchValue = e.target.value;
+                   searchToInviteUser(searchValue);
                 });
-       
+          
+
             document.getElementById('newMessageInput').addEventListener('input', function (e) {
               if (e.target.value.length <= 0) {
                   document.getElementById('sendMessageBtn').style.pointerEvents = "none";
@@ -91,18 +86,78 @@
                   document.getElementById('sendMessageIcon').style.opacity = 1;
               }
           });
+            
         });
-       
+            
+              
+            function searchToInviteUser(searchValue){
+                 var searchResults = document.getElementById('searchResults');
+                searchResults.innerHTML = '';
+                if (searchValue.length > 0) {
+                    fetch('/api/v1/users/search/' + searchValue)
+                        .then(response => response.json())
+                        .then(data => {
+                            displayResults(data)
+                            
+                        });
+                  }
+                }
+                
+             function deleteInInviteList(username){
+                let selectedUsers = document.getElementById('selectedUsers');
+                let userDiv = document.getElementById(`selected-invite-user-${username}`);
+                selectedUsers.removeChild(userDiv);
+                searchToInviteUser( document.getElementById('searchInput').value);
+            }
+    
+              function selectToInviteUser(userId, username){
+                 let selectedUsers = document.getElementById('selectedUsers');
+                 // selectedUsers.style.display = "flex";
+                    let userDiv = document.createElement('div');
+                    userDiv.classList.add("invite-user-selected");
+                    userDiv.id = `selected-invite-user-${username}`;
+                    userDiv.innerHTML = `<span class="user-name search" data-userId="${userId}">${username}</span>`;
+                    userDiv.innerHTML += `<a href="javascript:deleteInInviteList('${username}')"><i class="fa-sharp fa-solid fa-xmark fa-l" style="padding:5px; color: #ffeba7;"></i></a>`;
+                    selectedUsers.appendChild(userDiv);
+                    document.getElementById(`searched-user-${username}`).remove();
+                }
+                
+                function prepareDataForInvite(){
+                    let selectedUsers = document.getElementById('selectedUsers');
+                    let inviteUserForm = document.getElementById('InviteUserForm');
+                    let userIds = [];
+                    let userNamesDivs = selectedUsers.getElementsByClassName('user-name');
+                    for (let i = 0; i < userNamesDivs.length; i++) {
+                        userIds.push(userNamesDivs[i].getAttribute('data-userId'));
+                    }
+                    inviteUserForm.elements['userIds'].value = userIds.join(',');
+                    inviteUserForm.elements['roomId'].value = roomId;
+                }
+                
+                function filterUser() {
+                  var input = document.getElementById("filter-user");
+                  var filter = input.value.toUpperCase();
+                  var ul = document.getElementById("user-list");
+                  var li = ul.getElementsByTagName("li");
+                  for (i = 0; i < li.length; i++) {
+                    span = li[i].getElementsByClassName("user-name")[0];
+                    if (span && span.textContent.toUpperCase().indexOf(filter) > -1) {
+                      li[i].style.display = "";
+                    } else {
+                      li[i].style.display = "none";
+                    }
+                  }
+                }
         </script>
 
 }
 
 
 <div class="main-div">
-<div class="chatter-container" id="chatter-container" style="display: none">
+<div class="chatter-container" id="chatter-container">
     <div class="d-flex justify-content-between title-container">
         <h4 class="card-title">
-            <b style="margin-left: 20px;">Chats</b>
+            <b style="margin-left: 20px;">Chatler</b>
         </h4>
         <div class="closeDiv">
             <a href="javascript:changeShowChatterContainer()">
@@ -111,27 +166,37 @@
         </div>
     </div>
     <div class="chat-list" id="chat-list">
+        @* example *@
+        @* <div class="chat-info" id="chat-info-${otherRoomInfo.id}"> *@
+        @*     <a href="\\Room\\Chat\\${otherRoomInfo.id}"> *@
+        @*         <div class="d-flex justify-content-between "> *@
+        @*             <h4 class="card-title" style="margin:0"> *@
+        @*                 <b style="">${otherRoomInfo.title}</b> *@
+        @*             </h4> *@
+        @*             <span class="message-date" style="position:relative; opacity: 0.6; padding-right:20px">${new Date(otherRoomInfo.lastChatMessage.sentDate).getHours()}:${new Date(otherRoomInfo.lastChatMessage.sentDate).getMinutes().toString().padStart(2, '0')}</span> *@
+        @*         </div> *@
+        @*         <div> *@
+        @*             <span>${otherRoomInfo.lastChatMessage.userInfo.userName}: ${otherRoomInfo.lastChatMessage.message}</span> *@
+        @*         </div> *@
+        @*     </a> *@
+        @* </div> *@
+
     </div>
 </div>
 <div class="chat-container">
     <div class="d-flex justify-content-between title-container">
-        <h4 class="card-title">
-            <b style="margin-left: 20px;">@Model.Title</b>
-        </h4>
-        <div class="justify-content-between d-flex">
-            <div class="closeDiv" style="margin:auto">
-                <a href="javascript:changeShowChatterContainer()">
-                    <h4>
-                        <b>Chats</b>
-                    </h4>
-                </a>
+        <div class="closeDiv" style="margin-left: 20px;">
+            <a href="javascript:changeShowChatterContainer()">
+                <h4>
+                    <b>Chat Listesi</b>
+                </h4>
+            </a>
+        </div>
 
-            </div>
-            <div>
-                <a href="javascript:changeShowUserContainer()">
-                    <i class="fa-sharp fa-solid fa-user fa-xl closeDivIcon" style="color: #ffeba7;"></i>
-                </a>
-            </div>
+        <div class="justify-content-between d-flex">
+            <h4 class="card-title">
+                <b style="margin-left: 20px;">@Model.Title</b>
+            </h4>
             <div class="dropstart" id="roomSettingDropDown">
                 <a class="nav-link" href="#" role="button" id="settingDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false" style="padding-right: 10px;">
                     <i id="settingIcon" class="fa-sharp fa-solid fa-gear fa-xl"></i>
@@ -153,6 +218,11 @@
                     }
 
                 </ul>
+            </div>
+            <div style="margin-right: 10px;">
+                <a href="javascript:changeShowUserContainer()">
+                    <i class="fa-sharp fa-solid fa-user fa-xl closeDivIcon" style="color: #ffeba7;"></i>
+                </a>
             </div>
 
         </div>
@@ -197,7 +267,7 @@
         </div>
     </div>
 </div>
-<div class="user-container" id="user-container" style="display: none">
+<div class="user-container" id="user-container">
     <div class="d-flex justify-content-between title-container">
         <h4 class="card-title">
             <b style="margin-left: 20px;">Kullanıcılar</b>
@@ -209,64 +279,146 @@
         </div>
     </div>
     <div class="user-content-container">
-        <div class="search-user">
-            <input type="text" id="searchInput"/>
-            <div id="searchResults" style="display: none;"></div>
-        </div>
-        <div id="userList">
-            <ul>
+        <div>
+            <div style="padding:5px;">
+                <input type="text" id="filter-user" onkeyup="filterUser()" placeholder="Search.." style="width: -webkit-fill-available"/>
+            </div>
+            <ul style="overflow-y: auto" id="user-list">
                 @foreach (var user in Model.Users)
                 {
-                    <li>
+                    <li class="user-info" id="user-info-@user.Id-@Model.Id">
+                        <!--- user-info-UserId-RoomId--->
                         <div class="dropdown" style="position:relative">
                             <div class="user-profile" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                                <span style="color:red" id="@user.Id-icon">&#11044;&nbsp&nbsp</span>
+                                <span style="color:red" id="session-icon-@user.Id">&#11044;&nbsp&nbsp</span>
                                 <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">
                                 <div class="row g-0">
                                     <div class="col">
-                                        <span class="user-name">@user.UserName</span>
+                                        <span class="user-name" id="user-name-@user.UserName">@user.UserName</span>
                                         @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType == ChatPermissionType.Admin)
                                         {
                                             <span style="opacity: 0.6; font-size: 13px; margin-left: 10px;"> ~ Admin</span>
                                         }
                                     </div>
                                     <span class="user-description">&nbsp&nbsp @user.StatusDescription</span>
-
                                 </div>
                             </div>
-                            <ul class="dropdown-menu" style="position: absolute;">
-                                @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
-                                {
-                                    if (User.FindFirstValue(ClaimTypes.NameIdentifier) != user.Id)
+                            @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
+                            {
+                                <ul class="dropdown-menu" style="position: absolute;">
+
+                                    @if (User.FindFirstValue(ClaimTypes.NameIdentifier) != user.Id)
                                     {
                                         <li>
                                             <form method="post" asp-controller="Room" asp-action="RemoveUserInRoom">
                                                 <input type="hidden" name="roomId" value="@Model.Id"/>
                                                 <input type="hidden" name="chatterUserId" value="@user.Id"/>
-                                                <button type="submit" class="nav-link text-dark">Odadan At</button>
+                                                <button type="submit" class="nav-link">Odadan At</button>
                                             </form>
                                         </li>
                                     }
-                                    if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType != ChatPermissionType.Admin)
+                                    @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType != ChatPermissionType.Admin)
                                     {
                                         <li>
                                             <form method="post" asp-controller="Room" asp-action="AddAdminToRoom">
                                                 <input type="hidden" name="roomId" value="@Model.Id"/>
                                                 <input type="hidden" name="chatterUserId" value="@user.Id"/>
-                                                <button type="submit" class="nav-link text-dark">Admin Yap</button>
+                                                <button type="submit" class="nav-link">Admin Yap</button>
                                             </form>
                                         </li>
                                     }
-                                }
 
-                            </ul>
+                                </ul>
+                            }
                         </div>
                     </li>
                 }
             </ul>
         </div>
+        @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
+        {
+            <div class="invite-user" style="display: flex;flex-direction: column;margin-top: 20px;">
+                <div class="d-flex justify-content-between title-container">
+                    <h4 class="card-title">
+                        <b style="margin-left: 20px;">Bekleyen Davetler</b>
+                    </h4>
+                </div>
+                <button type="button" class="btn single-chat-btn" data-bs-toggle="modal" data-bs-target="#InviteUserModal">
+                    Kullanıcı Davet Et
+                </button>
+
+                <ul style="overflow-y: auto" id="invited-list">
+                    @foreach (var user in Model.Invitations.Select(x => x.InvitedUser))
+                    {
+                        <li class="user-info" id="user-info-@user.Id-@Model.Id">
+                            <!--- user-info-UserId-RoomId--->
+                            <div class="dropdown" style="position:relative">
+                                <div class="user-profile" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                    <span style="color:red" id="session-icon-@user.Id">&#11044;&nbsp&nbsp</span>
+                                    <img src="/img/profileImages/@user.ProfileImagePath" alt="User Name" class="profile-icon" onerror="this.onerror=null; this.src='/img/profileImages/default_img_orange.jpg'">
+                                    <div class="row g-0">
+                                        <div class="col">
+                                            <span class="user-name" id="user-name-@user.UserName">@user.UserName</span>
+                                            @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == user.Id)?.PermissionType == ChatPermissionType.Admin)
+                                            {
+                                                <span style="opacity: 0.6; font-size: 13px; margin-left: 10px;"> ~ Admin</span>
+                                            }
+                                        </div>
+                                        <span class="user-description">&nbsp&nbsp @user.StatusDescription</span>
+                                    </div>
+                                </div>
+                                @if (Model.RoomPermissions.FirstOrDefault(x => x.ChatterUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))?.PermissionType == ChatPermissionType.Admin)
+                                {
+                                    <ul class="dropdown-menu" style="position: absolute;">
+
+                                        @if (User.FindFirstValue(ClaimTypes.NameIdentifier) != user.Id)
+                                        {
+                                            <li>
+                                                <form method="post" asp-controller="Room" asp-action="RemoveUserInRoom">
+                                                    <input type="hidden" name="roomId" value="@Model.Id"/>
+                                                    <input type="hidden" name="chatterUserId" value="@user.Id"/>
+                                                    <button type="submit" class="nav-link text-dark">Davet İptal Et</button>
+                                                </form>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                }
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
     </div>
 </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="InviteUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Kullanıcı Davet</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+
+            </div>
+            <div class="search-user">
+                <div id="selectedUsers">
+
+                </div>
+                <input type="text" id="searchInput"/>
+                <div id="searchResults" style="display: none;"></div>
+                <form asp-controller="Room" asp-action="InviteUsersToRoom" method="POST" id="InviteUserForm">
+                    <input type="hidden" name="roomId" id="roomId" value=""/>
+                    <input type="hidden" name="userIds" id="userIds" value=""/>
+                    <button class="btn single-chat-btn" onclick="prepareDataForInvite()">
+                        Davet Et
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal -->
@@ -275,9 +427,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Oda Güncelleme</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+
             </div>
             <form asp-controller="Room" asp-action="EditRoom" method="POST" id="EditRoomForm">
                 <div class="modal-body">
@@ -307,13 +458,12 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hayır</button>
-                    <button type="submit" class="btn btn-primary">Evet</button>
+                    <button type="submit" class="btn single-chat-btn">Evet</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
 
 <!-- Modal -->
 <div class="modal" id="DeleteRoomModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -321,15 +471,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Bu oda silenecek emin misin?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hayır</button>
                 <form method="post" asp-controller="Room" asp-action="DeleteRoom" id="DeleteRoomForm">
                     <input type="hidden" name="roomId" id="roomId" value=""/>
-                    <button type="submit" class="btn btn-primary">Evet</button>
+                    <button type="submit" class="btn single-chat-btn">Evet</button>
                 </form>
 
             </div>
@@ -343,15 +492,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Bu odadan ayrılacaksınız. Emin misin?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hayır</button>
                 <form method="post" asp-controller="Room" asp-action="LeaveRoom" id="LeaveRoomForm">
                     <input type="hidden" name="roomId" id="roomId" value=""/>
-                    <button type="submit" class="btn btn-primary">Evet</button>
+                    <button type="submit" class="btn single-chat-btn">Evet</button>
                 </form>
 
             </div>

@@ -27,7 +27,7 @@ public class RoomPermissionDto
     /// Odaya ait iznin veriliş tarihi
     /// </summary>
     public DateTime CreatedDate { get; set; } = DateTime.Now;
-
+//TODO : Change Type to RoomDto
     public Room Room { get; set; }
     public ChatterUser ChatterUser { get; set; }
 }
